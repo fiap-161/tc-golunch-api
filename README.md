@@ -60,7 +60,8 @@ A API estará disponível em `http://localhost:8080`.
 
 ### Diagrama de Entidades
 
-![Diagrama de Entidades](![alt text](image.png))
+![lanchonete-fase01drawio drawio](https://github.com/user-attachments/assets/7d68f06b-056a-4252-9608-f2bea084c8cc)
+
 
 > ℹ️ O diagrama acima mostra as relações entre os usuários, pedidos, produtos e pagamentos dentro do sistema.
 
