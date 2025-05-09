@@ -1,0 +1,31 @@
+basePath: /
+definitions:
+  main.PongResponse:
+    properties:
+      message:
+        example: pong
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Rest API para facilitar o gerenciamento de pedidos em uma lanchonete
+  title: GoLunch
+  version: "1.0"
+paths:
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Health Check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.PongResponse'
+      summary: Responde com "Pong"
+      tags:
+      - Ping
+swagger: "2.0"
