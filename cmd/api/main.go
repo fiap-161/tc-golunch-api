@@ -1,6 +1,10 @@
 package main
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/user/adapters/drivens/postgre"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/user/adapters/drivers/rest"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/user/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/user/service"
 	"log"
 	"os"
 
@@ -9,8 +13,8 @@ import (
 
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 // @title           GoLunch
@@ -21,15 +25,25 @@ import (
 func main() {
 	r := gin.Default()
 
-	_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r.GET("/ping", ping)
+	err = db.AutoMigrate(&model.User{})
+	if err != nil {
+		log.Fatalf("error to migrate: %v", err)
+	}
 
-	// use ginSwagger middleware to serve the API docs
+	userRepository := postgre.NewRepository(db)
+	userService := service.New(userRepository)
+	userHandler := rest.NewUserHandler(userService)
+
+	// registering api routes
+	r.GET("/user/:id", userHandler.GetUserByID)
+	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.Run(":8080")
 }
 
