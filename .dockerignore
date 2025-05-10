@@ -1,6 +1,6 @@
-# Diretórios de volume/dados
+# Volumes
 pg-data/
 
-# Outros
+# Others
 .git
 Makefile

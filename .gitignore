@@ -1,9 +1,9 @@
-# Binários e arquivos de compilação Go
+# Binaries and build directories
 /app
 *.out
 *.exe
 
-# Arquivos temporários
+# Temporary files
 *.log
 *.tmp
 
@@ -15,5 +15,5 @@ pg-data/
 # MacOS
 .DS_Store
 
-# Sensivel
+# Sensitive files
 .env
