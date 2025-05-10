@@ -1,0 +1,19 @@
+# Binários e arquivos de compilação Go
+/app
+*.out
+*.exe
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# Docker
+.env
+pg-data/
+*.pid
+
+# MacOS
+.DS_Store
+
+# Sensivel
+.env

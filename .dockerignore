@@ -1,0 +1,6 @@
+# Diretórios de volume/dados
+pg-data/
+
+# Outros
+.git
+Makefile
