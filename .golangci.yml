@@ -1,58 +1,66 @@
-
-run:
-  timeout: 5m
-  # Add this to skip Go standard library
-linters-settings:
-  # rest of your config remains the same
-  lll:
-    line-length: 140
-    tab-width: 4
-  revive:
-    severity: error
-    rules:
-      - name: atomic
-      - name: context-as-argument
-      - name: comment-spacings
-      - name: error-naming
-      - name: error-return
-      - name: error-strings
-      - name: exported
-      - name: receiver-naming
-      - name: use-any
-      - name: waitgroup-by-value
-  stylecheck:
-    checks: [ "all", "-ST1000" ]
-  staticcheck:
-    checks: [ "all" ]
-  gosimple:
-    checks: [ "all" ]
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    # Do not ignore errors.
     - errcheck
-    - gofmt
-    - goimports
-    - govet
-    # Comments must end with a period.
     - godot
-    # No more than 100 characters per line.
+    - govet
     - lll
-    - sqlclosecheck
+    - misspell
     - revive
     - rowserrcheck
-    - staticcheck
-    - stylecheck
-    - gosimple
-    - misspell
     - sloglint
-issues:
-  exclude-dirs:
-    - /usr/local/go/
-  # Make sure it only checks your project
-  exclude-files:
-    - ".*\\.pb\\.go$"  # skip protobuf generated files if you have them
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
+    - sqlclosecheck
+    - staticcheck
+  settings:
+    lll:
+      line-length: 140
+      tab-width: 4
+    revive:
+      severity: error
+      rules:
+        - name: atomic
+        - name: context-as-argument
+        - name: comment-spacings
+        - name: error-naming
+        - name: error-return
+        - name: error-strings
+        - name: exported
+        - name: receiver-naming
+        - name: use-any
+        - name: waitgroup-by-value
+    staticcheck:
+      checks:
+        - all
+        - -ST1000
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - errcheck
+        path: _test\.go
+    paths:
+      - main.go
+      - .*\.pb\.go$
+      - /usr/local/go/
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - main.go
+      - .*\.pb\.go$
+      - /usr/local/go/
+      - third_party$
+      - builtin$
+      - examples$
