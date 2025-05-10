@@ -1,6 +1,12 @@
 package main
 
 import (
+	"log"
+	"os"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -15,11 +21,16 @@ import (
 func main() {
 	r := gin.Default()
 
+	_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	r.GET("/ping", ping)
 
 	// use ginSwagger middleware to serve the API docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run()
+	r.Run(":8080")
 }
 
 // Ping godoc
