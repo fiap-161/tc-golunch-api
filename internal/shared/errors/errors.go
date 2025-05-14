@@ -1,5 +1,10 @@
 package errors
 
+type ErrorDTO struct {
+	Message      string `json:"message"`
+	MessageError string `json:"message_error"`
+}
+
 type ValidationError struct {
 	Msg string
 }

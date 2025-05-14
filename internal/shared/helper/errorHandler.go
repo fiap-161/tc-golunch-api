@@ -20,8 +20,8 @@ func HandleError(c *gin.Context, err error) {
 		message = "Unauthorized"
 	}
 
-	c.JSON(status, gin.H{
-		"message":       message,
-		"message_error": err.Error(),
+	c.JSON(status, appError.ErrorDTO{
+		Message:      message,
+		MessageError: err.Error(),
 	})
 }

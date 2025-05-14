@@ -1,5 +1,51 @@
 basePath: /
 definitions:
+  dto.ProductRequestDTO:
+    properties:
+      category:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    required:
+    - category
+    - description
+    - image_url
+    - name
+    - preparing_time
+    - price
+    type: object
+  dto.ProductResponseDTO:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    type: object
+  errors.ErrorDTO:
+    properties:
+      message:
+        type: string
+      message_error:
+        type: string
+    type: object
   main.PongResponse:
     properties:
       message:
@@ -28,4 +74,31 @@ paths:
       summary: Responde com "Pong"
       tags:
       - Ping
+  /product/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: Product to create. Note category is an integer number. See [GET]
+          /product/category
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProductResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Create Product
+      tags:
+      - product
 swagger: "2.0"
