@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	restProduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
+	servicesProduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -23,7 +24,8 @@ func main() {
 		}
 	*/
 
-	productHandler := restProduct.NewProductHandler()
+	productService := servicesProduct.NewProductService()
+	productHandler := restProduct.NewProductHandler(productService)
 
 	// registering api routes
 	r.POST("/product", productHandler.Create)

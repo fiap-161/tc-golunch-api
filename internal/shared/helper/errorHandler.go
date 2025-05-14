@@ -1,0 +1,27 @@
+package helper
+
+import (
+	"net/http"
+
+	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	"github.com/gin-gonic/gin"
+)
+
+func HandleError(c *gin.Context, err error) {
+	status := http.StatusInternalServerError
+	message := "Internal Server Error"
+
+	switch err.(type) {
+	case *appError.ValidationError:
+		status = http.StatusBadRequest
+		message = "Validation failed"
+	case *appError.UnauthorizedError:
+		status = http.StatusUnauthorized
+		message = "Unauthorized"
+	}
+
+	c.JSON(status, gin.H{
+		"message":       message,
+		"message_error": err.Error(),
+	})
+}
