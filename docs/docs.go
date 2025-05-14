@@ -48,12 +48,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product Domain"
                 ],
                 "summary": "Create Product",
                 "parameters": [
                     {
-                        "description": "Product to create. Note category is an integer number. See [GET] /product/category",
+                        "description": "Product to create. Note category is an integer number. See [GET] /product/categories to get a valid category_id",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -77,13 +77,39 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/product/categories": {
+            "get": {
+                "description": "List Categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Domain"
+                ],
+                "summary": "List Categories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/enum.CategoryDTO"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "dto.ProductRequestDTO": {
             "type": "object",
             "required": [
-                "category",
+                "category_id",
                 "description",
                 "image_url",
                 "name",
@@ -91,7 +117,7 @@ const docTemplate = `{
                 "price"
             ],
             "properties": {
-                "category": {
+                "category_id": {
                     "type": "integer"
                 },
                 "description": {
@@ -134,6 +160,17 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
+                }
+            }
+        },
+        "enum.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

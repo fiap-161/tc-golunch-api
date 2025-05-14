@@ -24,7 +24,7 @@ func NewProductHandler(service ports.ProductService) *ProductHandler {
 // @Tags         Product Domain
 // @Accept       json
 // @Produce      json
-// @Param        request body dto.ProductRequestDTO true "Product to create. Note category is an integer number. See [GET] /product/category"
+// @Param        request body dto.ProductRequestDTO true "Product to create. Note category is an integer number. See [GET] /product/categories to get a valid category_id"
 // @Success      201  {object}  dto.ProductResponseDTO
 // @Failure      400  {object}  errors.ErrorDTO
 // @Router       /product/ [post]
@@ -47,4 +47,17 @@ func (controller *ProductHandler) Create(c *gin.Context) {
 
 	productRespDTO := dto.FromModelToResponseDTO(product)
 	c.JSON(http.StatusCreated, productRespDTO)
+}
+
+// List Categories godoc
+// @Summary      List Categories
+// @Description  List Categories
+// @Tags         Product Domain
+// @Accept       json
+// @Produce      json
+// @Success      200   {array}   enum.CategoryDTO
+// @Router       /product/categories [get]
+func (controller *ProductHandler) ListCategories(c *gin.Context) {
+	c.JSON(http.StatusOK, controller.Service.ListCategories())
+	return
 }

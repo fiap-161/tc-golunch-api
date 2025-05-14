@@ -2,7 +2,7 @@ basePath: /
 definitions:
   dto.ProductRequestDTO:
     properties:
-      category:
+      category_id:
         type: integer
       description:
         type: string
@@ -15,7 +15,7 @@ definitions:
       price:
         type: number
     required:
-    - category
+    - category_id
     - description
     - image_url
     - name
@@ -38,6 +38,13 @@ definitions:
         type: integer
       price:
         type: number
+    type: object
+  enum.CategoryDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   errors.ErrorDTO:
     properties:
@@ -81,7 +88,7 @@ paths:
       description: Create a new product
       parameters:
       - description: Product to create. Note category is an integer number. See [GET]
-          /product/category
+          /product/categories to get a valid category_id
         in: body
         name: request
         required: true
@@ -100,5 +107,22 @@ paths:
             $ref: '#/definitions/errors.ErrorDTO'
       summary: Create Product
       tags:
-      - product
+      - Product Domain
+  /product/categories:
+    get:
+      consumes:
+      - application/json
+      description: List Categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/enum.CategoryDTO'
+            type: array
+      summary: List Categories
+      tags:
+      - Product Domain
 swagger: "2.0"

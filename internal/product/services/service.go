@@ -29,3 +29,7 @@ func (s *ProductService) Create(product model.Product) (model.Product, error) {
 		ImageURL:      product.ImageURL,
 	}, nil
 }
+
+func (s *ProductService) ListCategories() []enum.CategoryDTO {
+	return enum.GetAllCategories()
+}

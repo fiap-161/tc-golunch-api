@@ -1,5 +1,10 @@
 package enum
 
+type CategoryDTO struct {
+	ID   uint   `json:"id"`
+	Name string `json:"name"`
+}
+
 type Category uint
 
 const (
@@ -38,4 +43,15 @@ func IsValidCategory(value uint) bool {
 func FromCategoryString(name string) (Category, bool) {
 	cat, ok := stringToCategory[name]
 	return cat, ok
+}
+
+func GetAllCategories() []CategoryDTO {
+	categories := make([]CategoryDTO, 0, len(categoryToString))
+	for cat, name := range categoryToString {
+		categories = append(categories, CategoryDTO{
+			ID:   uint(cat),
+			Name: name,
+		})
+	}
+	return categories
 }

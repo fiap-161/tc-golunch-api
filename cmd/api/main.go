@@ -29,6 +29,7 @@ func main() {
 
 	// registering api routes
 	r.POST("/product", productHandler.Create)
+	r.GET("/product/categories", productHandler.ListCategories)
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
