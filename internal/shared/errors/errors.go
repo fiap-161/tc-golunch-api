@@ -1,0 +1,22 @@
+package errors
+
+type ErrorDTO struct {
+	Message      string `json:"message"`
+	MessageError string `json:"message_error"`
+}
+
+type ValidationError struct {
+	Msg string
+}
+
+func (e *ValidationError) Error() string {
+	return e.Msg
+}
+
+type UnauthorizedError struct {
+	Msg string
+}
+
+func (e *UnauthorizedError) Error() string {
+	return e.Msg
+}
