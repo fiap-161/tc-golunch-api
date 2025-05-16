@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
@@ -58,7 +57,6 @@ func createToken(id string, isAnonymous bool) (string, error) {
 			"exp":          time.Now().Add(time.Hour * 24).Unix(),
 		})
 
-	fmt.Print()
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		return "", err
