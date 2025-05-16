@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/user/adapters/drivens/postgre"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/user/adapters/drivers/rest"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/user/core/model"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/user/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"log"
 	"os"
 
@@ -30,17 +30,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.Customer{})
 	if err != nil {
 		log.Fatalf("error to migrate: %v", err)
 	}
 
-	userRepository := postgre.NewRepository(db)
-	userService := service.New(userRepository)
-	userHandler := rest.NewUserHandler(userService)
+	customerRepository := postgre.NewRepository(db)
+	customerService := service.New(customerRepository)
+	customerHandler := rest.NewCustomerHandler(customerService)
 
 	// registering api routes
-	r.GET("/user/:id", userHandler.GetUserByID)
+	r.GET("/customer/:cpf", customerHandler.Identify)
+	r.POST("/customer/register", customerHandler.Create)
+
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
