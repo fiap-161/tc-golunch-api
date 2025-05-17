@@ -6,17 +6,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type repository struct {
+type Repository struct {
 	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *repository {
-	return &repository{
+func NewRepository(db *gorm.DB) *Repository {
+	return &Repository{
 		db: db,
 	}
 }
 
-func (p *repository) FindByCPF(_ context.Context, CPF string) (model.Customer, error) {
+func (p *Repository) FindByCPF(_ context.Context, CPF string) (model.Customer, error) {
 	var customer model.Customer
 
 	tx := p.db.Where("cpf = ?", CPF).First(&customer)
@@ -28,7 +28,7 @@ func (p *repository) FindByCPF(_ context.Context, CPF string) (model.Customer, e
 	return customer, nil
 }
 
-func (p *repository) Create(_ context.Context, customer model.Customer) (model.Customer, error) {
+func (p *Repository) Create(_ context.Context, customer model.Customer) (model.Customer, error) {
 	tx := p.db.Create(&customer)
 	if tx.Error != nil {
 		return model.Customer{}, tx.Error

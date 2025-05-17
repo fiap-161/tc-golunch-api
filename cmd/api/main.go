@@ -1,11 +1,15 @@
 package main
 
 import (
+	adminPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
+	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
+	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	adminService "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
+	customerPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
+	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
+	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	customerService "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"log"
 	"os"
 	"time"
@@ -32,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AutoMigrate(&model.Customer{})
+	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{})
 	if err != nil {
 		log.Fatalf("error to migrate: %v", err)
 	}
@@ -40,15 +44,26 @@ func main() {
 	// jwt service for generate and validate tokens
 	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 
-	customerRepository := postgre.NewRepository(db)
-	customerService := service.New(customerRepository, jwtService)
-	customerHandler := rest.NewCustomerHandler(customerService)
+	// customer
+	customerRepository := customerPostgre.NewRepository(db)
+	customerService := customerService.New(customerRepository, jwtService)
+	customerHandler := customerRest.NewCustomerHandler(customerService)
 
-	// registering api routes
+	//admin
+	adminRepository := adminPostgre.NewRepository(db)
+	adminService := adminService.New(adminRepository, jwtService)
+	adminHandler := adminRest.NewAdminHandler(adminService)
+
+	// customer routes
 	r.GET("/identify/:cpf", customerHandler.Identify)
 	r.GET("/anonymous", customerHandler.Anonymous)
 	r.POST("/customer/register", customerHandler.Create)
 
+	//admin routes
+	r.POST("/admin/register", adminHandler.Register)
+	r.POST("/admin/login", adminHandler.Login)
+
+	//api default routes
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
