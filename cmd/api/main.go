@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	adminPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
 	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
@@ -10,6 +11,7 @@ import (
 	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerService "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	"log"
 	"os"
 	"time"
@@ -62,6 +64,14 @@ func main() {
 	//admin routes
 	r.POST("/admin/register", adminHandler.Register)
 	r.POST("/admin/login", adminHandler.Login)
+
+	//products routes protected by admin middleware
+	protected := r.Group("/products")
+	protected.Use(middleware.AuthMiddleware(jwtService), middleware.AdminOnly())
+	protected.GET("/", func(context *gin.Context) {
+		fmt.Println("logado")
+		return
+	})
 
 	//api default routes
 	r.GET("/ping", ping)
