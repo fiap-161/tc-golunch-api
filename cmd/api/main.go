@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -20,6 +21,7 @@ import (
 // @BasePath        /
 func main() {
 	r := gin.Default()
+	loadYMLReader()
 
 	_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 	if err != nil {
@@ -31,6 +33,17 @@ func main() {
 	// use ginSwagger middleware to serve the API docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
+}
+
+func loadYMLReader() {
+	viper.SetConfigName("default")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("conf/environment")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("error reading yaml config: %v", err)
+	}
 }
 
 // Ping godoc
@@ -45,8 +58,4 @@ func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
-}
-
-type PongResponse struct {
-	Message string `json:"message" example:"pong"`
 }
