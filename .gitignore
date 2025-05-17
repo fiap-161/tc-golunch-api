@@ -17,3 +17,6 @@ pg-data/
 
 # Sensitive files
 .env
+
+# IDE files
+.idea/
