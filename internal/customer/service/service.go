@@ -55,7 +55,7 @@ func (s *Service) Identify(ctx context.Context, CPF string) (string, error) {
 }
 
 func (s *Service) createAnonymousToken() (string, error) {
-	anonymousID := uuid.New().String()
+	anonymousID := uuid.NewString()
 
 	token, err := s.createToken(anonymousID, true)
 	if err != nil {
