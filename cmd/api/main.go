@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -35,12 +37,16 @@ func main() {
 		log.Fatalf("error to migrate: %v", err)
 	}
 
+	// jwt service for generate and validate tokens
+	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+
 	customerRepository := postgre.NewRepository(db)
-	customerService := service.New(customerRepository)
+	customerService := service.New(customerRepository, jwtService)
 	customerHandler := rest.NewCustomerHandler(customerService)
 
 	// registering api routes
-	r.GET("/customer/:cpf", customerHandler.Identify)
+	r.GET("/identify/:cpf", customerHandler.Identify)
+	r.GET("/anonymous", customerHandler.Anonymous)
 	r.POST("/customer/register", customerHandler.Create)
 
 	r.GET("/ping", ping)
@@ -61,8 +67,4 @@ func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
-}
-
-type PongResponse struct {
-	Message string `json:"message" example:"pong"`
 }

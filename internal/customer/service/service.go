@@ -3,21 +3,24 @@ package service
 import (
 	"context"
 	"errors"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
-	"github.com/golang-jwt/jwt/v5"
-	"os"
-	"time"
+
+	"github.com/google/uuid"
 )
 
 type Service struct {
-	repo ports.CustomerRepository
+	repo       ports.CustomerRepository
+	jwtService *auth.JWTService
 }
 
-func New(repo ports.CustomerRepository) *Service {
+func New(repo ports.CustomerRepository, jwtService *auth.JWTService) *Service {
 	return &Service{
-		repo: repo,
+		repo:       repo,
+		jwtService: jwtService,
 	}
 }
 
@@ -34,33 +37,43 @@ func (s *Service) Create(ctx context.Context, customerDTO dto.CreateCustomerDTO)
 }
 
 func (s *Service) Identify(ctx context.Context, CPF string) (string, error) {
+	if CPF == "" {
+		return s.createAnonymousToken()
+	}
+
 	customer, err := s.repo.FindByCPF(ctx, CPF)
 	if err != nil {
 		return "", errors.New("customer not found")
 	}
 
-	token, err := createToken(customer.Entity.ID, false)
+	token, err := s.createToken(customer.ID, false)
 	if err != nil {
-		return "", errors.New("error creating token")
+		return "", err
 	}
 
 	return token, nil
 }
 
-var secretKey = []byte(os.Getenv("SECRET_KEY"))
+func (s *Service) createAnonymousToken() (string, error) {
+	anonymousID := uuid.New().String()
 
-func createToken(id string, isAnonymous bool) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"id":           id,
-			"is_anonymous": isAnonymous,
-			"exp":          time.Now().Add(time.Hour * 24).Unix(),
-		})
-
-	tokenString, err := token.SignedString(secretKey)
+	token, err := s.createToken(anonymousID, true)
 	if err != nil {
 		return "", err
 	}
 
-	return tokenString, nil
+	return token, nil
+}
+
+func (s *Service) createToken(id string, isAnonymous bool) (string, error) {
+	additionalClaims := map[string]any{
+		"is_anonymous": isAnonymous,
+	}
+
+	token, err := s.jwtService.GenerateToken(id, "customer", additionalClaims)
+	if err != nil {
+		return "", errors.New("error creating token")
+	}
+
+	return token, nil
 }

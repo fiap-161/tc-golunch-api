@@ -41,11 +41,19 @@ func (ch *CustomerHandler) Identify(c *gin.Context) {
 	ctx := context.Background()
 	CPF := c.Param("cpf")
 
-	if CPF == "" {
-
+	token, err := ch.service.Identify(ctx, CPF)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
 
-	token, err := ch.service.Identify(ctx, CPF)
+	c.JSON(http.StatusOK, token)
+}
+
+func (ch *CustomerHandler) Anonymous(c *gin.Context) {
+	ctx := context.Background()
+
+	token, err := ch.service.Identify(ctx, "")
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
