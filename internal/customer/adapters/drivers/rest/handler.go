@@ -2,10 +2,12 @@ package rest
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type CustomerHandler struct {
@@ -37,11 +39,11 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 	})
 }
 
-func (ch *CustomerHandler) Identify(c *gin.Context) {
+func (h *CustomerHandler) Identify(c *gin.Context) {
 	ctx := context.Background()
 	CPF := c.Param("cpf")
 
-	token, err := ch.service.Identify(ctx, CPF)
+	token, err := h.service.Identify(ctx, CPF)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -50,10 +52,10 @@ func (ch *CustomerHandler) Identify(c *gin.Context) {
 	c.JSON(http.StatusOK, token)
 }
 
-func (ch *CustomerHandler) Anonymous(c *gin.Context) {
+func (h *CustomerHandler) Anonymous(c *gin.Context) {
 	ctx := context.Background()
 
-	token, err := ch.service.Identify(ctx, "")
+	token, err := h.service.Identify(ctx, "")
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return

@@ -2,15 +2,23 @@ package postgre
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+
 	"gorm.io/gorm"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 )
 
-type Repository struct {
-	db *gorm.DB
+type DB interface {
+	Create(value any) *gorm.DB
+	Where(query any, args ...any) *gorm.DB
+	First(dest any, conds ...any) *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *Repository {
+type Repository struct {
+	db DB
+}
+
+func NewRepository(db DB) *Repository {
 	return &Repository{
 		db: db,
 	}

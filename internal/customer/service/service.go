@@ -33,7 +33,7 @@ func (s *Service) Create(ctx context.Context, customerDTO dto.CreateCustomerDTO)
 		return "", err
 	}
 
-	return createdCustomer.Entity.ID, nil
+	return createdCustomer.ID, nil
 }
 
 func (s *Service) Identify(ctx context.Context, CPF string) (string, error) {

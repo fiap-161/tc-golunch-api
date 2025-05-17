@@ -1,10 +1,12 @@
 package model
 
 import (
+	"time"
+
+	"github.com/google/uuid"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
-	"github.com/google/uuid"
-	"time"
 )
 
 type Customer struct {

@@ -2,10 +2,12 @@ package rest
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
-	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type AdminHandler struct {
