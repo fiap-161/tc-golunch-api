@@ -22,9 +22,8 @@ test:
 	$(GO) test -v ./...
 
 coverage:
-	$(GO) test -coverprofile=$(BUILD_DIR)/coverage.out ./...
+	$(GO) test -coverprofile=$(BUILD_DIR)/coverage.out $(shell go list ./... | grep -v ./cmd/api)
 	$(GO) tool cover -func=$(BUILD_DIR)/coverage.out | grep total | awk '{print "Total coverage: " $$3}'
-
 
 lint:
 	$(GOLANGCI_LINT) run ./...
