@@ -20,3 +20,19 @@ type UnauthorizedError struct {
 func (e *UnauthorizedError) Error() string {
 	return e.Msg
 }
+
+type InternalError struct {
+	Msg string
+}
+
+func (e *InternalError) Error() string {
+	return e.Msg
+}
+
+type NotFoundError struct {
+	Msg string
+}
+
+func (e *NotFoundError) Error() string {
+	return e.Msg
+}

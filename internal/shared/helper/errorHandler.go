@@ -18,10 +18,15 @@ func HandleError(c *gin.Context, err error) {
 	case *appError.UnauthorizedError:
 		status = http.StatusUnauthorized
 		message = "Unauthorized"
+	case *appError.NotFoundError:
+		status = http.StatusBadRequest
+		message = "Invalid resource"
 	}
 
 	c.JSON(status, appError.ErrorDTO{
 		Message:      message,
 		MessageError: err.Error(),
 	})
+
+	c.Abort()
 }

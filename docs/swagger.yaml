@@ -1,5 +1,82 @@
 basePath: /
 definitions:
+  dto.ProductListResponseDTO:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/dto.ProductResponseDTO'
+        type: array
+      total:
+        type: integer
+    type: object
+  dto.ProductRequestDTO:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    required:
+    - category_id
+    - description
+    - image_url
+    - name
+    - preparing_time
+    - price
+    type: object
+  dto.ProductRequestUpdateDTO:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    type: object
+  dto.ProductResponseDTO:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    type: object
+  enum.CategoryDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  errors.ErrorDTO:
+    properties:
+      message:
+        type: string
+      message_error:
+        type: string
+    type: object
   main.PongResponse:
     properties:
       message:
@@ -28,4 +105,134 @@ paths:
       summary: Responde com "Pong"
       tags:
       - Ping
+  /product:
+    get:
+      consumes:
+      - application/json
+      description: Returns all products. Optionally, filter by category using query
+        param. Categories must match those returned from [GET] /product/categories.
+      parameters:
+      - description: Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductListResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Get all products by category
+      tags:
+      - Product Domain
+  /product/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: Product to create. Note category is an integer number. See [GET]
+          /product/categories to get a valid category_id
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProductResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Create Product
+      tags:
+      - Product Domain
+  /product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Delete Product
+      tags:
+      - Product Domain
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product data to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductRequestUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Update Product
+      tags:
+      - Product Domain
+  /product/categories:
+    get:
+      consumes:
+      - application/json
+      description: List Categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/enum.CategoryDTO'
+            type: array
+      summary: List Categories
+      tags:
+      - Product Domain
 swagger: "2.0"
