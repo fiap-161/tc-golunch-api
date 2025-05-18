@@ -59,3 +59,31 @@ func (s *ProductService) Update(product model.Product, id uint) (model.Product, 
 
 	return product, nil
 }
+
+func (s *ProductService) FindById(id uint) (model.Product, error) {
+	product, err := s.productRepo.FindById(id)
+
+	if err != nil {
+		var notFoundErr *appErrors.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return model.Product{}, notFoundErr
+		}
+		return model.Product{}, &appErrors.InternalError{Msg: "Unexpected error"}
+	}
+
+	return product, nil
+}
+
+func (s *ProductService) Delete(id uint) error {
+	err := s.productRepo.Delete(id)
+
+	if err != nil {
+		var notFoundErr *appErrors.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return notFoundErr
+		}
+		return &appErrors.InternalError{Msg: "Unexpected error"}
+	}
+
+	return nil
+}

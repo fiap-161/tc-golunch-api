@@ -113,17 +113,20 @@ func (controller *ProductHandler) GetAll(c *gin.Context) {
 	})
 }
 
+// Update Product godoc
+// @Summary      Update Product
+// @Description  Update an existing product by ID
+// @Tags         Product Domain
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                         true  "Product ID"
+// @Param        request  body      dto.ProductRequestUpdateDTO true  "Product data to update"
+// @Success      200      {object}  dto.ProductResponseDTO
+// @Failure      400      {object}  errors.ErrorDTO
+// @Router       /product/{id} [put]
 func (controller *ProductHandler) Update(c *gin.Context) {
 	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
-			Message:      "Validation error",
-			MessageError: "ID must be a valid integer",
-		})
-		return
-	}
+	id, _ := strconv.Atoi(idParam)
 
 	var productUpdateDTO dto.ProductRequestUpdateDTO
 	decoder := json.NewDecoder(c.Request.Body)
@@ -147,4 +150,49 @@ func (controller *ProductHandler) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.FromModelToResponseDTO(productUpdated))
+}
+
+// Delete Product godoc
+// @Summary      Delete Product
+// @Description  Delete a product by ID
+// @Tags         Product Domain
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Product ID"
+// @Success      204  "No Content"
+// @Failure      400  {object}  errors.ErrorDTO
+// @Router       /product/{id} [delete]
+func (controller *ProductHandler) Delete(c *gin.Context) {
+	idParam := c.Param("id")
+	id, _ := strconv.Atoi(idParam)
+
+	err := controller.Service.Delete(uint(id))
+
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+func (controller *ProductHandler) ValidateIfProductExists(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+			Message:      "Validation error",
+			MessageError: "ID must be a valid integer",
+		})
+		return
+	}
+
+	_, err2 := controller.Service.FindById(uint(id))
+
+	if err2 != nil {
+		helper.HandleError(c, err2)
+		return
+	}
+	c.Next()
 }

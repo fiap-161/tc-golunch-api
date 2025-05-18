@@ -27,4 +27,6 @@ func HandleError(c *gin.Context, err error) {
 		Message:      message,
 		MessageError: err.Error(),
 	})
+
+	c.Abort()
 }

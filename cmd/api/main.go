@@ -46,7 +46,8 @@ func main() {
 	r.POST("/product", productHandler.Create)
 	r.GET("/product/categories", productHandler.ListCategories)
 	r.GET("/product", productHandler.GetAll)
-	r.PUT("/product/:id", productHandler.Update)
+	r.PUT("/product/:id", productHandler.ValidateIfProductExists, productHandler.Update)
+	r.DELETE("/product/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
