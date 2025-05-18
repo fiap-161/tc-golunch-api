@@ -1,16 +1,28 @@
 package main
 
 import (
+	"fmt"
+	adminPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
+	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
+	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	adminService "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
+	customerPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
+	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
+	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	customerService "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 // @title           GoLunch
@@ -21,15 +33,50 @@ import (
 func main() {
 	r := gin.Default()
 
-	_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r.GET("/ping", ping)
+	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{})
+	if err != nil {
+		log.Fatalf("error to migrate: %v", err)
+	}
 
-	// use ginSwagger middleware to serve the API docs
+	// jwt service for generate and validate tokens
+	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+
+	// customer
+	customerRepository := customerPostgre.NewRepository(db)
+	customerService := customerService.New(customerRepository, jwtService)
+	customerHandler := customerRest.NewCustomerHandler(customerService)
+
+	//admin
+	adminRepository := adminPostgre.NewRepository(db)
+	adminService := adminService.New(adminRepository, jwtService)
+	adminHandler := adminRest.NewAdminHandler(adminService)
+
+	// customer routes
+	r.GET("/identify/:cpf", customerHandler.Identify)
+	r.GET("/anonymous", customerHandler.Anonymous)
+	r.POST("/customer/register", customerHandler.Create)
+
+	//admin routes
+	r.POST("/admin/register", adminHandler.Register)
+	r.POST("/admin/login", adminHandler.Login)
+
+	//products routes protected by admin middleware
+	protected := r.Group("/products")
+	protected.Use(middleware.AuthMiddleware(jwtService), middleware.AdminOnly())
+	protected.GET("/", func(context *gin.Context) {
+		fmt.Println("logado")
+		return
+	})
+
+	//api default routes
+	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.Run(":8080")
 }
 
@@ -45,8 +92,4 @@ func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
-}
-
-type PongResponse struct {
-	Message string `json:"message" example:"pong"`
 }
