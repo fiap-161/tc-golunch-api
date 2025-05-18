@@ -8,4 +8,6 @@ import (
 type ProductService interface {
 	Create(model.Product) (model.Product, error)
 	ListCategories() []enum.CategoryDTO
+	GetAll(string) ([]model.Product, error)
+	Update(model.Product, uint) (model.Product, error)
 }

@@ -1,5 +1,14 @@
 basePath: /
 definitions:
+  dto.ProductListResponseDTO:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/dto.ProductResponseDTO'
+        type: array
+      total:
+        type: integer
+    type: object
   dto.ProductRequestDTO:
     properties:
       category_id:
@@ -81,6 +90,31 @@ paths:
       summary: Responde com "Pong"
       tags:
       - Ping
+  /product:
+    get:
+      consumes:
+      - application/json
+      description: Returns all products. Optionally, filter by category using query
+        param. Categories must match those returned from [GET] /product/categories.
+      parameters:
+      - description: Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductListResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Get all products by category
+      tags:
+      - Product Domain
   /product/:
     post:
       consumes:

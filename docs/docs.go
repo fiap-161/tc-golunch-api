@@ -38,6 +38,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/product": {
+            "get": {
+                "description": "Returns all products. Optionally, filter by category using query param. Categories must match those returned from [GET] /product/categories.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Domain"
+                ],
+                "summary": "Get all products by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')",
+                        "name": "category",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductListResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/product/": {
             "post": {
                 "description": "Create a new product",
@@ -106,6 +143,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.ProductListResponseDTO": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ProductResponseDTO"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.ProductRequestDTO": {
             "type": "object",
             "required": [

@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
@@ -32,4 +34,28 @@ func (s *ProductService) Create(product model.Product) (model.Product, error) {
 
 func (s *ProductService) ListCategories() []enum.CategoryDTO {
 	return enum.GetAllCategories()
+}
+
+func (s *ProductService) GetAll(category string) ([]model.Product, error) {
+	list, err := s.productRepo.GetAll(category)
+
+	if err != nil {
+		return nil, &appErrors.InternalError{Msg: "Error querying table"}
+	}
+
+	return list, nil
+}
+
+func (s *ProductService) Update(product model.Product, id uint) (model.Product, error) {
+	product, err := s.productRepo.Update(id, product)
+
+	if err != nil {
+		var notFoundErr *appErrors.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return model.Product{}, notFoundErr
+		}
+		return model.Product{}, &appErrors.InternalError{Msg: "Unexpected error"}
+	}
+
+	return product, nil
 }

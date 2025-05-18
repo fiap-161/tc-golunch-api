@@ -1,12 +1,20 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
 	restProduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
 	servicesProduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // @title           GoLunch
@@ -15,21 +23,30 @@ import (
 // @host            localhost:8080
 // @BasePath        /
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erro ao carregar o .env")
+	}
+
 	r := gin.Default()
 
-	/*
-		_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
+	DB, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	productService := servicesProduct.NewProductService()
+	productRepository := postgre.NewProductRepository(DB)
+	productService := servicesProduct.NewProductService(productRepository)
 	productHandler := restProduct.NewProductHandler(productService)
+
+	DB.AutoMigrate(&dto.ProductDAO{})
 
 	// registering api routes
 	r.POST("/product", productHandler.Create)
 	r.GET("/product/categories", productHandler.ListCategories)
+	r.GET("/product", productHandler.GetAll)
+	r.PUT("/product/:id", productHandler.Update)
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

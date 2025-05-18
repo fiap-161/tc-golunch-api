@@ -28,3 +28,11 @@ type InternalError struct {
 func (e *InternalError) Error() string {
 	return e.Msg
 }
+
+type NotFoundError struct {
+	Msg string
+}
+
+func (e *NotFoundError) Error() string {
+	return e.Msg
+}

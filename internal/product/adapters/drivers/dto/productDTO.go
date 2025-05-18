@@ -24,6 +24,20 @@ type ProductResponseDTO struct {
 	ImageURL      string  `json:"image_url"`
 }
 
+type ProductListResponseDTO struct {
+	Total uint                 `json:"total"`
+	List  []ProductResponseDTO `json:"list"`
+}
+
+type ProductRequestUpdateDTO struct {
+	Name          string  `json:"name"`
+	Price         float64 `json:"price"`
+	Description   string  `json:"description"`
+	PreparingTime uint    `json:"preparing_time"`
+	Category      *uint   `json:"category_id"`
+	ImageURL      string  `json:"image_url" binding:"url"`
+}
+
 func FromRequestDTOToModel(dto ProductRequestDTO) model.Product {
 	return model.Product{
 		Name:          dto.Name,
@@ -44,5 +58,16 @@ func FromModelToResponseDTO(model model.Product) ProductResponseDTO {
 		PreparingTime: model.PreparingTime,
 		Category:      model.Category.String(),
 		ImageURL:      model.ImageURL,
+	}
+}
+
+func FromRequestUpdateDTOToModel(dto ProductRequestUpdateDTO) model.Product {
+	return model.Product{
+		Name:          dto.Name,
+		Price:         dto.Price,
+		Description:   dto.Description,
+		PreparingTime: dto.PreparingTime,
+		Category:      enum.Category(*dto.Category),
+		ImageURL:      dto.ImageURL,
 	}
 }
