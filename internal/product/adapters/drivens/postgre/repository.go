@@ -5,6 +5,7 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
 	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"gorm.io/gorm"
 )
@@ -68,7 +69,7 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 	if updated.PreparingTime != 0 {
 		updates["preparing_time"] = updated.PreparingTime
 	}
-	if updated.Category.String() != "" {
+	if updated.Category != enum.Desconhecida {
 		updates["category"] = updated.Category.String()
 	}
 

@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
-	"errors"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
+	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type Service struct {
@@ -40,11 +41,11 @@ func (s *Service) Login(ctx context.Context, input dto.LoginDTO) (string, error)
 
 	saved, err := s.repo.FindByEmail(ctx, admin.Email)
 	if err != nil {
-		return "", errors.New("invalid email or password")
+		return "", &appErrors.UnauthorizedError{Msg: "Invalid email or password"}
 	}
 
 	if !utils.CheckPasswordHash(input.Password, saved.Password) {
-		return "", errors.New("invalid email or password")
+		return "", &appErrors.UnauthorizedError{Msg: "Invalid email or password"}
 	}
 
 	return s.jwtService.GenerateToken(saved.ID, "admin", nil)

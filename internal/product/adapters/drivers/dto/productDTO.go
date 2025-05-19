@@ -62,12 +62,17 @@ func FromModelToResponseDTO(model model.Product) ProductResponseDTO {
 }
 
 func FromRequestUpdateDTOToModel(dto ProductRequestUpdateDTO) model.Product {
+	category := enum.Desconhecida
+	if dto.Category != nil && enum.IsValidCategory(*dto.Category) {
+		category = enum.Category(*dto.Category)
+	}
+
 	return model.Product{
 		Name:          dto.Name,
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      enum.Category(*dto.Category),
+		Category:      category,
 		ImageURL:      dto.ImageURL,
 	}
 }

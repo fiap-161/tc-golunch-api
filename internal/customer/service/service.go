@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
+	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 
 	"github.com/google/uuid"
 )
@@ -43,7 +43,7 @@ func (s *Service) Identify(ctx context.Context, CPF string) (string, error) {
 
 	customer, err := s.repo.FindByCPF(ctx, CPF)
 	if err != nil {
-		return "", errors.New("customer not found")
+		return "", &appErrors.NotFoundError{Msg: "Customer not found"}
 	}
 
 	token, err := s.createToken(customer.ID, false)
@@ -72,7 +72,7 @@ func (s *Service) createToken(id string, isAnonymous bool) (string, error) {
 
 	token, err := s.jwtService.GenerateToken(id, "customer", additionalClaims)
 	if err != nil {
-		return "", errors.New("error creating token")
+		return "", &appErrors.InternalError{Msg: "Error creating token"}
 	}
 
 	return token, nil

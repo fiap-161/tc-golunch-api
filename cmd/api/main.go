@@ -33,6 +33,9 @@ import (
 // @description     Rest API para facilitar o gerenciamento de pedidos em uma lanchonete
 // @host            localhost:8080
 // @BasePath        /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 
 	// DESCOMENTAR PARA RODAR APENAS O BANCO NO DOCKER
@@ -101,14 +104,6 @@ func main() {
 	r.Run(":8080")
 }
 
-// Ping godoc
-// @Summary      Responde com "Pong"
-// @Description  Health Check
-// @Tags         Ping
-// @Accept       json
-// @Produce      json
-// @Success      200 {object}  PongResponse
-// @Router       /ping [get]
 func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",

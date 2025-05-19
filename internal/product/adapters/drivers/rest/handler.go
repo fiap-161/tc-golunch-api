@@ -26,6 +26,7 @@ func NewProductHandler(service ports.ProductService) *ProductHandler {
 // @Summary      Create Product
 // @Description  Create a new product
 // @Tags         Product Domain
+// @Security BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        request body dto.ProductRequestDTO true "Product to create. Note category is an integer number. See [GET] /product/categories to get a valid category_id"
@@ -34,16 +35,15 @@ func NewProductHandler(service ports.ProductService) *ProductHandler {
 // @Router       /product/ [post]
 func (controller *ProductHandler) Create(c *gin.Context) {
 	var productDTO dto.ProductRequestDTO
-	decoder := json.NewDecoder(c.Request.Body)
-	decoder.DisallowUnknownFields()
 
-	if err := decoder.Decode(&productDTO); err != nil {
+	if err := c.ShouldBindJSON(&productDTO); err != nil {
 		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
 		return
 	}
+
 	productModel := dto.FromRequestDTOToModel(productDTO)
 	product, err := controller.Service.Create(productModel)
 
@@ -60,6 +60,7 @@ func (controller *ProductHandler) Create(c *gin.Context) {
 // @Summary      List Categories
 // @Description  List Categories
 // @Tags         Product Domain
+// @Security BearerAuth
 // @Accept       json
 // @Produce      json
 // @Success      200   {array}   enum.CategoryDTO
@@ -73,6 +74,7 @@ func (controller *ProductHandler) ListCategories(c *gin.Context) {
 // @Summary      Get all products by category
 // @Description  Returns all products. Optionally, filter by category using query param. Categories must match those returned from [GET] /product/categories.
 // @Tags         Product Domain
+// @Security BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        category query string false "Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')"
@@ -117,6 +119,7 @@ func (controller *ProductHandler) GetAll(c *gin.Context) {
 // @Summary      Update Product
 // @Description  Update an existing product by ID
 // @Tags         Product Domain
+// @Security BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id       path      int                         true  "Product ID"
@@ -156,6 +159,7 @@ func (controller *ProductHandler) Update(c *gin.Context) {
 // @Summary      Delete Product
 // @Description  Delete a product by ID
 // @Tags         Product Domain
+// @Security BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Product ID"
