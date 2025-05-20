@@ -108,7 +108,7 @@ func TestCustomerHandler_Identify(t *testing.T) {
 				return "token123", nil
 			},
 			expectedCode: http.StatusOK,
-			expectedBody: `"token123"`,
+			expectedBody: `{"token":"token123"}`,
 		},
 		{
 			name:     "identify error",
@@ -167,7 +167,7 @@ func TestCustomerHandler_Anonymous(t *testing.T) {
 				return "tokenAnon", nil
 			},
 			expectedCode: http.StatusOK,
-			expectedBody: `"tokenAnon"`,
+			expectedBody: `{"token":"tokenAnon"}`,
 		},
 		{
 			name: "anonymous error",
