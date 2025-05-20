@@ -26,14 +26,13 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-pg}"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - db-network
     volumes:
-      - ./conf/postgres/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - pg-data:/var/lib/postgresql/data
 
 volumes:

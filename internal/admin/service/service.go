@@ -7,16 +7,16 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/ports"
 	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type Service struct {
 	repo       ports.AdminRepository
-	jwtService *auth.JWTService
+	jwtService auth.TokenService
 }
 
-func New(repo ports.AdminRepository, jwtService *auth.JWTService) *Service {
+func New(repo ports.AdminRepository, jwtService auth.TokenService) *Service {
 	return &Service{
 		repo:       repo,
 		jwtService: jwtService,
