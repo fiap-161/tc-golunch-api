@@ -60,8 +60,8 @@ func (s *ProductService) Update(product model.Product, id uint) (model.Product, 
 	return product, nil
 }
 
-func (s *ProductService) FindById(id uint) (model.Product, error) {
-	product, err := s.productRepo.FindById(id)
+func (s *ProductService) FindByID(id uint) (model.Product, error) {
+	product, err := s.productRepo.FindByID(id)
 
 	if err != nil {
 		var notFoundErr *appErrors.NotFoundError

@@ -52,7 +52,7 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 		return model.Product{}, err
 	}
 
-	updates := map[string]interface{}{}
+	updates := map[string]any{}
 	if updated.Name != "" {
 		updates["name"] = updated.Name
 	}
@@ -88,7 +88,7 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 	return dto.FromDAOToModel(updatedDAO), nil
 }
 
-func (r *ProductRepository) FindById(id uint) (model.Product, error) {
+func (r *ProductRepository) FindByID(id uint) (model.Product, error) {
 	var existing dto.ProductDAO
 	if err := r.DB.First(&existing, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

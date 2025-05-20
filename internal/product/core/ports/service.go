@@ -10,6 +10,6 @@ type ProductService interface {
 	ListCategories() []enum.CategoryDTO
 	GetAll(string) ([]model.Product, error)
 	Update(model.Product, uint) (model.Product, error)
-	FindById(uint) (model.Product, error)
+	FindByID(uint) (model.Product, error)
 	Delete(id uint) error
 }

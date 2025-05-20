@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	"github.com/gin-gonic/gin"
 )
 

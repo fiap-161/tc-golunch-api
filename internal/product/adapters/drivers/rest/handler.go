@@ -66,7 +66,6 @@ func (controller *ProductHandler) Create(c *gin.Context) {
 // @Router       /product/categories [get]
 func (controller *ProductHandler) ListCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, controller.Service.ListCategories())
-	return
 }
 
 // Get All Products by Category godoc
@@ -188,7 +187,7 @@ func (controller *ProductHandler) ValidateIfProductExists(c *gin.Context) {
 		return
 	}
 
-	_, err2 := controller.Service.FindById(uint(id))
+	_, err2 := controller.Service.FindByID(uint(id))
 
 	if err2 != nil {
 		helper.HandleError(c, err2)

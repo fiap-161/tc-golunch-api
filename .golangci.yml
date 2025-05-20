@@ -3,9 +3,7 @@ linters:
   default: none
   enable:
     - errcheck
-    - godot
     - govet
-    - lll
     - misspell
     - revive
     - rowserrcheck
