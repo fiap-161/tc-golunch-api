@@ -9,7 +9,7 @@ import (
 	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminService "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	customerPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"

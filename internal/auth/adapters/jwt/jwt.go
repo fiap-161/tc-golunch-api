@@ -1,17 +1,11 @@
 package auth
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/model"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
-
-type CustomClaims struct {
-	jwt.RegisteredClaims
-	UserID   string         `json:"user_id"`
-	UserType string         `json:"user_type"`
-	Custom   map[string]any `json:"custom"`
-}
 
 type JWTService struct {
 	secretKey      string
@@ -28,7 +22,7 @@ func NewJWTService(secretKey string, expiryDuration time.Duration) *JWTService {
 func (s *JWTService) GenerateToken(userID, userType string, additionalClaims map[string]any) (string, error) {
 	now := time.Now()
 
-	claims := CustomClaims{
+	claims := model.CustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(now.Add(s.expiryDuration)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -43,8 +37,8 @@ func (s *JWTService) GenerateToken(userID, userType string, additionalClaims map
 	return token.SignedString([]byte(s.secretKey))
 }
 
-func (s *JWTService) ValidateToken(tokenString string) (*CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (any, error) {
+func (s *JWTService) ValidateToken(tokenString string) (*model.CustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &model.CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(s.secretKey), nil
 	})
 
@@ -52,7 +46,7 @@ func (s *JWTService) ValidateToken(tokenString string) (*CustomClaims, error) {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*model.CustomClaims); ok && token.Valid {
 		return claims, nil
 	}
 
