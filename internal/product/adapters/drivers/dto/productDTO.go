@@ -38,6 +38,10 @@ type ProductRequestUpdateDTO struct {
 	ImageURL      string  `json:"image_url" binding:"url"`
 }
 
+type ImageURLDTO struct {
+	ImageURL string `json:"url"`
+}
+
 func FromRequestDTOToModel(dto ProductRequestDTO) model.Product {
 	return model.Product{
 		Name:          dto.Name,

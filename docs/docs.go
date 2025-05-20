@@ -352,6 +352,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/product/image/upload": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Uploads an image and returns its public URL",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Domain"
+                ],
+                "summary": "Uploads an image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ImageURLDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/product/{id}": {
             "put": {
                 "security": [
@@ -454,6 +497,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ImageURLDTO": {
+            "type": "object",
+            "properties": {
+                "url": {
                     "type": "string"
                 }
             }

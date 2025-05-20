@@ -2,9 +2,13 @@ package rest
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
@@ -177,6 +181,56 @@ func (controller *ProductHandler) Delete(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent, nil)
+}
+
+// UploadImage godoc
+// @Summary      Uploads an image
+// @Description  Uploads an image and returns its public URL
+// @Tags         Product Domain
+// @Security     BearerAuth
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        image  formData  file  true  "image"
+// @Success      201    {object}  dto.ImageURLDTO
+// @Failure      400    {object}  errors.ErrorDTO
+// @Router       /product/image/upload [post]
+func (controller *ProductHandler) UploadImage(c *gin.Context) {
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	publicURL := os.Getenv("PUBLIC_URL")
+
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+			MessageError: "Validation error",
+			Message:      "Image is required.",
+		})
+		return
+	}
+
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		err = os.MkdirAll(uploadDir, 0755)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+				MessageError: "Internal Error",
+				Message:      "Error creating directory",
+			})
+			return
+		}
+	}
+
+	filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(file.Filename))
+	fullPath := filepath.Join(uploadDir, filename)
+
+	if err := c.SaveUploadedFile(file, fullPath); err != nil {
+		c.JSON(http.StatusInternalServerError, appError.ErrorDTO{
+			MessageError: "Internal Error",
+			Message:      "Error saving image",
+		})
+		return
+	}
+
+	imageURL := fmt.Sprintf("%s/uploads/%s", publicURL, filename)
+	c.JSON(http.StatusCreated, dto.ImageURLDTO{ImageURL: imageURL})
 }
 
 func (controller *ProductHandler) ValidateIfProductExists(c *gin.Context) {

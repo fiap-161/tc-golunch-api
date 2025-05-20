@@ -9,6 +9,11 @@ definitions:
       name:
         type: string
     type: object
+  dto.ImageURLDTO:
+    properties:
+      url:
+        type: string
+    type: object
   dto.LoginDTO:
     properties:
       email:
@@ -397,6 +402,33 @@ paths:
       security:
       - BearerAuth: []
       summary: List Categories
+      tags:
+      - Product Domain
+  /product/image/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads an image and returns its public URL
+      parameters:
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ImageURLDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Uploads an image
       tags:
       - Product Domain
 securityDefinitions:

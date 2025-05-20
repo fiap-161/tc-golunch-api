@@ -56,6 +56,9 @@ func main() {
 		log.Fatalf("error to migrate: %v", err)
 	}
 
+	// servir arquivos estáticos - imagens
+	uploadDir := os.Getenv("UPLOAD_DIR")
+
 	// jwt service for generate and validate tokens
 	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 
@@ -77,6 +80,7 @@ func main() {
 	// Rotas default
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.Static("/uploads", uploadDir)
 
 	// Rotas públicas (login/register)
 	r.GET("/identify/:cpf", customerHandler.Identify)
@@ -97,6 +101,7 @@ func main() {
 	// Grupo para admins dentro do grupo autenticado
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
+	adminRoutes.POST("/image/upload", productHandler.UploadImage)
 	adminRoutes.POST("/", productHandler.Create)
 	adminRoutes.PUT("/:id", productHandler.ValidateIfProductExists, productHandler.Update)
 	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
