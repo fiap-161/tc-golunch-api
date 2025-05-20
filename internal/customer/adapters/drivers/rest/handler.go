@@ -49,7 +49,9 @@ func (h *CustomerHandler) Identify(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, token)
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
 }
 
 func (h *CustomerHandler) Anonymous(c *gin.Context) {
@@ -61,5 +63,7 @@ func (h *CustomerHandler) Anonymous(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, token)
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
 }

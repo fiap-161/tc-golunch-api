@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
@@ -14,10 +14,10 @@ import (
 
 type Service struct {
 	repo       ports.CustomerRepository
-	jwtService *auth.JWTService
+	jwtService auth.TokenService
 }
 
-func New(repo ports.CustomerRepository, jwtService *auth.JWTService) *Service {
+func New(repo ports.CustomerRepository, jwtService auth.TokenService) *Service {
 	return &Service{
 		repo:       repo,
 		jwtService: jwtService,
