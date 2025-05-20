@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductDAO struct {
+type Product struct {
 	gorm.Model
 	Name          string
 	Price         float64
@@ -16,7 +16,7 @@ type ProductDAO struct {
 	ImageURL      string
 }
 
-func FromDAOToModel(dao ProductDAO) model.Product {
+func FromDAOToModel(dao Product) model.Product {
 	cat, _ := enum.FromCategoryString(dao.Category)
 	return model.Product{
 		ID:            dao.ID,
@@ -29,8 +29,8 @@ func FromDAOToModel(dao ProductDAO) model.Product {
 	}
 }
 
-func FromModelToDAO(model model.Product) ProductDAO {
-	return ProductDAO{
+func FromModelToDAO(model model.Product) Product {
+	return Product{
 		Name:          model.Name,
 		Price:         model.Price,
 		Description:   model.Description,

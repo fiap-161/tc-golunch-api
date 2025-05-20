@@ -9,7 +9,7 @@ import (
 	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminService "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	customerPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
@@ -33,6 +33,9 @@ import (
 // @description     Rest API para facilitar o gerenciamento de pedidos em uma lanchonete
 // @host            localhost:8080
 // @BasePath        /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 
 	// DESCOMENTAR PARA RODAR APENAS O BANCO NO DOCKER
@@ -48,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.ProductDAO{})
+	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{})
 	if err != nil {
 		log.Fatalf("error to migrate: %v", err)
 	}
@@ -101,14 +104,6 @@ func main() {
 	r.Run(":8080")
 }
 
-// Ping godoc
-// @Summary      Responde com "Pong"
-// @Description  Health Check
-// @Tags         Ping
-// @Accept       json
-// @Produce      json
-// @Success      200 {object}  PongResponse
-// @Router       /ping [get]
 func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",

@@ -5,6 +5,7 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
 	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"gorm.io/gorm"
 )
@@ -27,7 +28,7 @@ func (r *ProductRepository) Create(product model.Product) (model.Product, error)
 }
 
 func (r *ProductRepository) GetAll(category string) ([]model.Product, error) {
-	var productDAOs []dto.ProductDAO
+	var productDAOs []dto.Product
 	query := r.DB
 
 	if category != "" {
@@ -47,7 +48,7 @@ func (r *ProductRepository) GetAll(category string) ([]model.Product, error) {
 }
 
 func (r *ProductRepository) Update(id uint, updated model.Product) (model.Product, error) {
-	var existing dto.ProductDAO
+	var existing dto.Product
 	if err := r.DB.First(&existing, id).Error; err != nil {
 		return model.Product{}, err
 	}
@@ -68,7 +69,7 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 	if updated.PreparingTime != 0 {
 		updates["preparing_time"] = updated.PreparingTime
 	}
-	if updated.Category.String() != "" {
+	if updated.Category != enum.Desconhecida {
 		updates["category"] = updated.Category.String()
 	}
 
@@ -76,11 +77,11 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 		return dto.FromDAOToModel(existing), nil
 	}
 
-	if err := r.DB.Model(&dto.ProductDAO{}).Where("id = ?", id).Updates(updates).Error; err != nil {
+	if err := r.DB.Model(&dto.Product{}).Where("id = ?", id).Updates(updates).Error; err != nil {
 		return model.Product{}, err
 	}
 
-	var updatedDAO dto.ProductDAO
+	var updatedDAO dto.Product
 	if err := r.DB.First(&updatedDAO, id).Error; err != nil {
 		return model.Product{}, err
 	}
@@ -89,7 +90,7 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 }
 
 func (r *ProductRepository) FindByID(id uint) (model.Product, error) {
-	var existing dto.ProductDAO
+	var existing dto.Product
 	if err := r.DB.First(&existing, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.Product{}, &appErrors.NotFoundError{Msg: "Product not found"}
@@ -101,7 +102,7 @@ func (r *ProductRepository) FindByID(id uint) (model.Product, error) {
 }
 
 func (r *ProductRepository) Delete(id uint) error {
-	var product dto.ProductDAO
+	var product dto.Product
 
 	if err := r.DB.First(&product, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
