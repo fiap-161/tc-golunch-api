@@ -404,13 +404,13 @@ paths:
       summary: List Categories
       tags:
       - Product Domain
-  /product/image/upload:
+  /products/image:
     post:
       consumes:
       - multipart/form-data
-      description: Uploads an image and returns its public URL
+      description: Uploads a JPEG or PNG image (max 5MB) and returns its public URL
       parameters:
-      - description: image
+      - description: Product image (JPEG or PNG, max 5MB)
         in: formData
         name: image
         required: true
@@ -423,12 +423,14 @@ paths:
           schema:
             $ref: '#/definitions/dto.ImageURLDTO'
         "400":
-          description: Bad Request
+          description: Image is missing, invalid, or too large
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
-      security:
-      - BearerAuth: []
-      summary: Uploads an image
+        "500":
+          description: Internal error while processing the image
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Upload product image
       tags:
       - Product Domain
 securityDefinitions:
