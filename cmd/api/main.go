@@ -3,35 +3,106 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	swaggerfiles "github.com/swaggo/files"
+	ginswagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	adminpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
+	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
+	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	adminservice "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
+	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
+	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
+	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
+	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
+	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 )
 
 // @title           GoLunch
 // @version         1.0
-// @description     Rest API para facilitar o gerenciamento de pedidos em uma lanchonete
+// @description     REST API to facilitate order management in a snack bar.
 // @host            localhost:8080
 // @BasePath        /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
+
+	// UNCOMMENT TO RUN ONLY THE DATABASE IN DOCKER
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Erro ao carregar o .env")
+	// }
+
 	r := gin.Default()
 	loadYAML()
 
-	_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r.GET("/ping", ping)
+	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{})
+	if err != nil {
+		log.Fatalf("error to migrate: %v", err)
+	}
 
-	// use ginSwagger middleware to serve the API docs
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// jwt service for generate and validate tokens
+	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+
+	// customer
+	customerRepository := customerpostgre.NewRepository(db)
+	customerSrv := customerservice.New(customerRepository, jwtService)
+	customerHandler := customerrest.NewCustomerHandler(customerSrv)
+
+	// admin
+	adminRepository := adminpostgre.NewRepository(db)
+	adminSrv := adminservice.New(adminRepository, jwtService)
+	adminHandler := adminrest.NewAdminHandler(adminSrv)
+
+	// product
+	productRepository := postgre.NewProductRepository(db)
+	productService := servicesproduct.NewProductService(productRepository)
+	productHandler := restproduct.NewProductHandler(productService)
+
+	// Default Routes
+	r.GET("/ping", ping)
+	r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
+
+	// Public Routes (login/register)
+	r.GET("/identify/:cpf", customerHandler.Identify)
+	r.GET("/anonymous", customerHandler.Anonymous)
+	r.POST("/customer/register", customerHandler.Create)
+	r.POST("/admin/register", adminHandler.Register)
+	r.POST("/admin/login", adminHandler.Login)
+
+	// Authenticated Group
+	authenticated := r.Group("/")
+	authenticated.Use(middleware.AuthMiddleware(jwtService))
+
+	// Routes for regular authenticated users
+	// Produto
+	authenticated.GET("/product/categories", productHandler.ListCategories)
+	authenticated.GET("/product", productHandler.GetAll)
+
+	// Group for admin users inside authenticated group
+	adminRoutes := authenticated.Group("/product")
+	adminRoutes.Use(middleware.AdminOnly())
+	adminRoutes.POST("/", productHandler.Create)
+	adminRoutes.PUT("/:id", productHandler.ValidateIfProductExists, productHandler.Update)
+	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
+
 	r.Run(":8080")
 }
 
@@ -47,7 +118,7 @@ func loadYAML() {
 }
 
 // Ping godoc
-// @Summary      Responde com "Pong"
+// @Summary      Answers with "pong"
 // @Description  Health Check
 // @Tags         Ping
 // @Accept       json

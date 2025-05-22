@@ -1,9 +1,119 @@
 basePath: /
 definitions:
-  main.PongResponse:
+  dto.CreateCustomerDTO:
+    properties:
+      cpf:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.LoginDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.ProductListResponseDTO:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/dto.ProductResponseDTO'
+        type: array
+      total:
+        type: integer
+    type: object
+  dto.ProductRequestDTO:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    required:
+    - category_id
+    - description
+    - image_url
+    - name
+    - preparing_time
+    - price
+    type: object
+  dto.ProductRequestUpdateDTO:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    type: object
+  dto.ProductResponseDTO:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      preparing_time:
+        type: integer
+      price:
+        type: number
+    type: object
+  dto.RegisterDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  enum.CategoryDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  errors.ErrorDTO:
     properties:
       message:
-        example: pong
+        type: string
+      message_error:
+        type: string
+    type: object
+  internal_admin_adapters_drivers_rest.TokenDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_customer_adapters_drivers_rest.TokenDTO:
+    properties:
+      token:
         type: string
     type: object
 host: localhost:8080
@@ -13,19 +123,285 @@ info:
   title: GoLunch
   version: "1.0"
 paths:
-  /ping:
-    get:
+  /admin/login:
+    post:
       consumes:
       - application/json
-      description: Health Check
+      description: Authenticates an admin user and returns a JWT token
+      parameters:
+      - description: Admin login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.PongResponse'
-      summary: Responde com "Pong"
+            $ref: '#/definitions/internal_admin_adapters_drivers_rest.TokenDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Admin Login
       tags:
-      - Ping
+      - Admin Domain
+  /admin/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new admin user
+      parameters:
+      - description: Admin registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Register Admin
+      tags:
+      - Admin Domain
+  /customers:
+    post:
+      consumes:
+      - application/json
+      description: Cria um cliente com base nas informações enviadas no corpo da requisição
+      parameters:
+      - description: Dados do cliente
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCustomerDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Cria um novo cliente
+      tags:
+      - Customer Domain
+  /customers/anonymous:
+    get:
+      consumes:
+      - application/json
+      description: Gera um token JWT para um cliente anônimo (sem CPF)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_customer_adapters_drivers_rest.TokenDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Gera cliente anônimo
+      tags:
+      - Customer Domain
+  /customers/identify/{cpf}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna um token JWT ao identificar o cliente pelo CPF
+      parameters:
+      - description: CPF do cliente
+        in: path
+        name: cpf
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_customer_adapters_drivers_rest.TokenDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Identifica cliente por CPF
+      tags:
+      - Customer Domain
+  /product:
+    get:
+      consumes:
+      - application/json
+      description: Returns all products. Optionally, filter by category using query
+        param. Categories must match those returned from [GET] /product/categories.
+      parameters:
+      - description: Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductListResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Get all products by category
+      tags:
+      - Product Domain
+  /product/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: Product to create. Note category is an integer number. See [GET]
+          /product/categories to get a valid category_id
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProductResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Create Product
+      tags:
+      - Product Domain
+  /product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Delete Product
+      tags:
+      - Product Domain
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product data to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductRequestUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Update Product
+      tags:
+      - Product Domain
+  /product/categories:
+    get:
+      consumes:
+      - application/json
+      description: List Categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/enum.CategoryDTO'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List Categories
+      tags:
+      - Product Domain
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

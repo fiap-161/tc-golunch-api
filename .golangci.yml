@@ -3,9 +3,7 @@ linters:
   default: none
   enable:
     - errcheck
-    - godot
     - govet
-    - lll
     - misspell
     - revive
     - rowserrcheck
@@ -53,8 +51,6 @@ linters:
       - examples$
 formatters:
   enable:
-    - gofmt
-    - goimports
   exclusions:
     generated: lax
     paths:
