@@ -21,7 +21,7 @@ import (
 // @BasePath        /
 func main() {
 	r := gin.Default()
-	loadYMLReader()
+	loadYAML()
 
 	_, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 	if err != nil {
@@ -35,10 +35,10 @@ func main() {
 	r.Run(":8080")
 }
 
-func loadYMLReader() {
+func loadYAML() {
 	viper.SetConfigName("default")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("conf/environment")
+	viper.AddConfigPath("./conf/environment")
 
 	err := viper.ReadInConfig()
 	if err != nil {

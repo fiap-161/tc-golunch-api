@@ -5,7 +5,7 @@ type GenerateQRCodeParams struct {
 	Items   []Product
 }
 
-// TODO remove it after integrate with payment
+// TODO refactor it after integrate with payment
 type Product struct {
 	ID            string
 	Name          string

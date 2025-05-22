@@ -6,6 +6,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN}
+      - MERCADO_PAGO_SELLER_APP_USER_ID=${MERCADO_PAGO_SELLER_APP_USER_ID}
+      - MERCADO_PAGO_EXTERNAL_POS_ID=${MERCADO_PAGO_EXTERNAL_POS_ID}
     ports:
       - "8080:8080"
     volumes:
