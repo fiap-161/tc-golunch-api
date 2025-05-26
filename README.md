@@ -85,7 +85,7 @@ docker-compose down -v --remove-orphans
 > ℹ️ O diagrama acima mostra as relações entre os usuários, pedidos, produtos e pagamentos dentro do sistema.
 
 ## 📂 Estrutura do Projeto
-
+```
 ├── cmd/                    # Arquivo principal de entrada da aplicação
 │   └── api/
 │       └── main.go
@@ -106,7 +106,7 @@ docker-compose down -v --remove-orphans
 ├── .env.example            # Exemplo de variáveis de ambiente
 ├── docker-compose.yml      # Orquestração com Docker
 └──  Dockerfile              # Docker build da aplicação
-
+```
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
