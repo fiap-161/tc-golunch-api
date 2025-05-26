@@ -1,6 +1,6 @@
 # 🍔 GoLunch API
 
-API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquitetura da aplicação segue princípios da arquitetura hexagonal, com foco na separação entre domínio e infraestrutura.
+API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquitetura da aplicação segue princípios da arquitetura hexagonal, com foco na separação entre os domínios.
 
 ## 🧰 Tecnologias Utilizadas
 
@@ -22,25 +22,44 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seu-usuario/lanchonete-api.git
-cd lanchonete-api
+git clone https://github.com/fiap-161/tech-challenge-fiap161.git
+cd tech-challenge-fiap161
 ```
 
-2. Copie o arquivo de variáveis de ambiente:
+2. Certifique-se que o docker está em execução:
+   
+```bash
+docker ps
+```
+
+3. Crie um arquivo com as variáveis de ambiente:
 
 ```bash
-cp .env.example .env
+DATABASE_URL=postgres://pg:pg@postgres-db:5432/pg?sslmode=disable
+POSTGRES_USER=pg
+POSTGRES_PASSWORD=pg
+POSTGRES_DB=pg
+SECRET_KEY=random_key
+UPLOAD_DIR=./uploads
+PUBLIC_URL=http://localhost:8080 
 ```
 
-3. Suba os containers com Docker Compose:
+4. Suba os containers com Docker Compose:
 
 ```bash
 docker-compose up --build
 ```
 
-4. Acesse a aplicação:
+5. Acesse a aplicação:
 
 A API estará disponível em `http://localhost:8080`.
+
+6. Troubleshoot:
+   - Em caso de falhas para subir a aplicação é válido tentar derrubar os containers e volumes criados previamente
+     
+```bash
+docker-compose down -v --remove-orphans
+```
 
 ## 📌 Endpoints
 
@@ -67,18 +86,26 @@ A API estará disponível em `http://localhost:8080`.
 
 ## 📂 Estrutura do Projeto
 
-```
-├── cmd/                # Arquivo principal de entrada da aplicação
-├── internal/           # Domínio e casos de uso
-│   ├── domain/         # Entidades e regras de negócio
-│   ├── usecase/        # Casos de uso
-│   └── infra/          # Adaptadores externos (DB, Web, etc)
-├── pkg/                # Pacotes utilitários
-├── api/                # Handlers HTTP
-├── configs/            # Configurações (ex: env)
-├── docs/               # Documentação e imagens
-└── Dockerfile / docker-compose.yml
-```
+├── cmd/                    # Arquivo principal de entrada da aplicação
+│   └── api/
+│       └── main.go
+├── internal/               # Domínio, regras de negócio e adaptadores
+│   ├── http/               # Camada HTTP (middlewares compartilhados)
+│   └── dominio/            # Um diretório para cada domínio
+│       ├── adapters/       # Adaptadores (drivers/drivens)
+│       │   ├── drivens/    # Infraestrutura externa (DB)
+│       │   └── drivers/    # Interface com frameworks (HTTP)
+│       ├── core/           # Núcleo do domínio do produto
+│       │   ├── model/      # Modelos e entidades do domínio
+│       │   └── ports/      # Interfaces (portas) para repository e services
+│       └── services/       # Lógica de aplicação (casos de uso)
+├── shared/                 # Componentes compartilhados entre domínios
+├── uploads/                # Diretório para salvar imagens
+├── docs/                   # Documentação swagger
+├── .env                    # Arquivo de variáveis de ambiente
+├── .env.example            # Exemplo de variáveis de ambiente
+├── docker-compose.yml      # Orquestração com Docker
+└──  Dockerfile              # Docker build da aplicação
 
 ## 📄 Licença
 
