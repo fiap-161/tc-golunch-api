@@ -9,6 +9,12 @@ import (
 	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminService "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
+
+	orderPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivens/postgre"
+	orderRest "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest"
+	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
+	orderService "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
+
 	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	customerPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
@@ -51,7 +57,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{})
+	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{}, &order.Order{})
 	if err != nil {
 		log.Fatalf("error to migrate: %v", err)
 	}
@@ -74,6 +80,11 @@ func main() {
 	productService := servicesProduct.NewProductService(productRepository)
 	productHandler := restProduct.NewProductHandler(productService)
 
+	//order
+	orderRepository := orderPostgre.NewRepository(db)
+	orderService := orderService.New(orderRepository, productRepository)
+	orderHandler := orderRest.NewOrderHandler(orderService)
+
 	// Rotas default
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -93,6 +104,10 @@ func main() {
 	// Produto
 	authenticated.GET("/product/categories", productHandler.ListCategories)
 	authenticated.GET("/product", productHandler.GetAll)
+
+	// order
+	authenticated.POST("/order", orderHandler.Create)
+	authenticated.GET("/order", orderHandler.GetAll)
 
 	// Grupo para admins dentro do grupo autenticado
 	adminRoutes := authenticated.Group("/product")

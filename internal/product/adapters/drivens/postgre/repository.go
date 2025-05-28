@@ -101,6 +101,27 @@ func (r *ProductRepository) FindByID(id uint) (model.Product, error) {
 	return dto.FromDAOToModel(existing), nil
 }
 
+func (r *ProductRepository) FindByIDs(ids []uint) ([]model.Product, error) {
+	var products []dto.Product
+
+	if err := r.DB.
+		Where("id IN ?", ids).
+		Find(&products).Error; err != nil {
+		return nil, err
+	}
+
+	if len(products) == 0 {
+		return nil, &appErrors.NotFoundError{Msg: "No products found"}
+	}
+
+	result := make([]model.Product, len(products))
+	for i, p := range products {
+		result[i] = dto.FromDAOToModel(p)
+	}
+
+	return result, nil
+}
+
 func (r *ProductRepository) Delete(id uint) error {
 	var product dto.Product
 

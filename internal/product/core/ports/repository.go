@@ -7,5 +7,6 @@ type ProductRepository interface {
 	GetAll(category string) ([]model.Product, error)
 	Update(id uint, updated model.Product) (model.Product, error)
 	FindByID(id uint) (model.Product, error)
+	FindByIDs(ids []uint) ([]model.Product, error)
 	Delete(id uint) error
 }
