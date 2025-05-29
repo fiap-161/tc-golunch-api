@@ -61,11 +61,8 @@ A API estará disponível em `http://localhost:8080`.
 docker-compose down -v --remove-orphans
 ```
 
-## 📌 Endpoints
-
-[//]: # (Adicionar aqui os endpoints conforme forem sendo desenvolvidos.)
-
-<!-- Placeholder para endpoints -->
+## 📌 Swagger
+O link para a documentação do swagger está aqui: http://localhost:8080/swagger/index.html
 
 ## 🧠 Modelagem do Sistema
 

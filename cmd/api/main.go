@@ -5,38 +5,37 @@ import (
 	"os"
 	"time"
 
-	adminPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
-	adminRest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
-	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
-	adminService "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
-
-	orderPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivens/postgre"
-	orderRest "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest"
-	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
-	orderService "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
-
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
-	customerPostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
-	customerRest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
-	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
-	customerService "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
-
-	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
-	restProduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
-	servicesProduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/spf13/viper"
+	swaggerfiles "github.com/swaggo/files"
+	ginswagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
+	adminpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
+	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
+	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	adminservice "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
+	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
+	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
+	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
+	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivens/postgre"
+	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest"
+	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
+	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
+	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
+	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
+	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 )
 
 // @title           GoLunch
 // @version         1.0
-// @description     Rest API para facilitar o gerenciamento de pedidos em uma lanchonete
+// @description     REST API to facilitate order management in a snack bar.
 // @host            localhost:8080
 // @BasePath        /
 // @securityDefinitions.apikey BearerAuth
@@ -44,13 +43,14 @@ import (
 // @name Authorization
 func main() {
 
-	// DESCOMENTAR PARA RODAR APENAS O BANCO NO DOCKER
+	// UNCOMMENT TO RUN ONLY THE DATABASE IN DOCKER
 	// err := godotenv.Load()
 	// if err != nil {
 	// 	log.Fatal("Erro ao carregar o .env")
 	// }
 
 	r := gin.Default()
+	loadYAML()
 
 	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
 	if err != nil {
@@ -62,54 +62,54 @@ func main() {
 		log.Fatalf("error to migrate: %v", err)
 	}
 
-	// jwt service for generate and validate tokens
+	// Jwt service for generate and validate tokens
 	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 
-	// customer
-	customerRepository := customerPostgre.NewRepository(db)
-	customerService := customerService.New(customerRepository, jwtService)
-	customerHandler := customerRest.NewCustomerHandler(customerService)
+	// Customer
+	customerRepository := customerpostgre.NewRepository(db)
+	customerSrv := customerservice.New(customerRepository, jwtService)
+	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
-	//admin
-	adminRepository := adminPostgre.NewRepository(db)
-	adminService := adminService.New(adminRepository, jwtService)
-	adminHandler := adminRest.NewAdminHandler(adminService)
+	// Admin
+	adminRepository := adminpostgre.NewRepository(db)
+	adminSrv := adminservice.New(adminRepository, jwtService)
+	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
-	//product
-	productRepository := postgre.NewProductRepository(db)
-	productService := servicesProduct.NewProductService(productRepository)
-	productHandler := restProduct.NewProductHandler(productService)
+	// Product
+	productRepository := productpostgre.NewProductRepository(db)
+	productService := servicesproduct.NewProductService(productRepository)
+	productHandler := restproduct.NewProductHandler(productService)
 
-	//order
-	orderRepository := orderPostgre.NewRepository(db)
-	orderService := orderService.New(orderRepository, productRepository)
-	orderHandler := orderRest.NewOrderHandler(orderService)
+	// Order
+	orderRepository := orderpostgre.NewRepository(db)
+	orderService := orderservice.New(orderRepository, productRepository)
+	orderHandler := orderrest.NewOrderHandler(orderService)
 
-	// Rotas default
+	// Default Routes
 	r.GET("/ping", ping)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 
-	// Rotas públicas (login/register)
+	// Public Routes (login/register)
 	r.GET("/identify/:cpf", customerHandler.Identify)
 	r.GET("/anonymous", customerHandler.Anonymous)
 	r.POST("/customer/register", customerHandler.Create)
 	r.POST("/admin/register", adminHandler.Register)
 	r.POST("/admin/login", adminHandler.Login)
 
-	// Grupo autenticado
+	// Authenticated Group
 	authenticated := r.Group("/")
 	authenticated.Use(middleware.AuthMiddleware(jwtService))
 
-	// Rotas acessíveis para qualquer usuário autenticado
-	// Produto
+	// Routes for regular authenticated users
+	// Product
 	authenticated.GET("/product/categories", productHandler.ListCategories)
 	authenticated.GET("/product", productHandler.GetAll)
 
-	// order
+	// Order
 	authenticated.POST("/order", orderHandler.Create)
 	authenticated.GET("/order", orderHandler.GetAll)
 
-	// Grupo para admins dentro do grupo autenticado
+	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
 	adminRoutes.POST("/", productHandler.Create)
@@ -119,6 +119,25 @@ func main() {
 	r.Run(":8080")
 }
 
+func loadYAML() {
+	viper.SetConfigName("default")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./conf/environment")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("error reading yaml config: %v", err)
+	}
+}
+
+// Ping godoc
+// @Summary      Answers with "pong"
+// @Description  Health Check
+// @Tags         Ping
+// @Accept       json
+// @Produce      json
+// @Success      200 {object}  PongResponse
+// @Router       /ping [get]
 func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
