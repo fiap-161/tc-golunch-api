@@ -1,10 +1,12 @@
 package model
 
 import (
+	"time"
+
+	"github.com/google/uuid"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
-	"github.com/google/uuid"
-	"time"
 )
 
 type OrderStatus string
@@ -22,7 +24,6 @@ type Order struct {
 	Status        OrderStatus `json:"status" gorm:"type:varchar(20)"`
 	Price         float64     `json:"price" gorm:"type:decimal(10,2)"`
 	PreparingTime uint        `json:"preparing_time"`
-	Products      []byte      `json:"products" gorm:"type:jsonb"`
 }
 
 func (o Order) Build(price float64, preparingTime uint, productsJSON []byte) Order {
@@ -36,7 +37,6 @@ func (o Order) Build(price float64, preparingTime uint, productsJSON []byte) Ord
 		Status:        OrderStatusReceived,
 		Price:         price,
 		PreparingTime: preparingTime,
-		Products:      productsJSON,
 	}
 }
 

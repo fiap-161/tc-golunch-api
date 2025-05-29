@@ -2,12 +2,13 @@ package rest
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
-	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )
 
 type OrderHandler struct {
@@ -25,7 +26,7 @@ func (o *OrderHandler) Create(c *gin.Context) {
 
 	var orderDTO dto.CreateOrderDTO
 	if err := c.ShouldBindJSON(&orderDTO); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
@@ -34,7 +35,7 @@ func (o *OrderHandler) Create(c *gin.Context) {
 
 	validateErr := orderDTO.Validate()
 	if validateErr != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Validation failed",
 			MessageError: validateErr.Error(),
 		})
@@ -43,7 +44,7 @@ func (o *OrderHandler) Create(c *gin.Context) {
 
 	customerIDRaw, exists := c.Get("user_id")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, appError.ErrorDTO{
+		c.JSON(http.StatusUnauthorized, apperror.ErrorDTO{
 			Message:      "Unauthorized",
 			MessageError: "User ID not found in context",
 		})
