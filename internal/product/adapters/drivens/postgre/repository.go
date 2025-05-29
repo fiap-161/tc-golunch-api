@@ -3,11 +3,12 @@ package postgre
 import (
 	"errors"
 
+	"gorm.io/gorm"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
-	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
-	"gorm.io/gorm"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type ProductRepository struct {
@@ -93,7 +94,7 @@ func (r *ProductRepository) FindByID(id uint) (model.Product, error) {
 	var existing dto.Product
 	if err := r.DB.First(&existing, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Product{}, &appErrors.NotFoundError{Msg: "Product not found"}
+			return model.Product{}, &apperror.NotFoundError{Msg: "Product not found"}
 		}
 		return model.Product{}, err
 	}
@@ -111,7 +112,7 @@ func (r *ProductRepository) FindByIDs(ids []uint) ([]model.Product, error) {
 	}
 
 	if len(products) == 0 {
-		return nil, &appErrors.NotFoundError{Msg: "No products found"}
+		return nil, &apperror.NotFoundError{Msg: "No products found"}
 	}
 
 	result := make([]model.Product, len(products))
@@ -127,7 +128,7 @@ func (r *ProductRepository) Delete(id uint) error {
 
 	if err := r.DB.First(&product, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return &appErrors.NotFoundError{Msg: "Product not found"}
+			return &apperror.NotFoundError{Msg: "Product not found"}
 		}
 		return err
 	}

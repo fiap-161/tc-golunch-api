@@ -8,7 +8,7 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
-	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )
 
@@ -36,7 +36,7 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 
 	var customerDTO dto.CreateCustomerDTO
 	if err := c.ShouldBindJSON(&customerDTO); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})

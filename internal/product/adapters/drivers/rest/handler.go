@@ -9,7 +9,7 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
-	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +37,7 @@ func (controller *ProductHandler) Create(c *gin.Context) {
 	var productDTO dto.ProductRequestDTO
 
 	if err := c.ShouldBindJSON(&productDTO); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
@@ -88,7 +88,7 @@ func (controller *ProductHandler) GetAll(c *gin.Context) {
 	_, ok := enum.FromCategoryString(query)
 
 	if !ok && query != "" {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Validation error",
 			MessageError: "Invalid category",
 		})
@@ -135,7 +135,7 @@ func (controller *ProductHandler) Update(c *gin.Context) {
 	decoder.DisallowUnknownFields()
 
 	if err := decoder.Decode(&productUpdateDTO); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
@@ -184,7 +184,7 @@ func (controller *ProductHandler) ValidateIfProductExists(c *gin.Context) {
 	id, err := strconv.Atoi(idParam)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Validation error",
 			MessageError: "ID must be a valid integer",
 		})

@@ -3,18 +3,19 @@ package service
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
-	orderPorts "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
-	productPorts "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
+	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
+	productport "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
 )
 
 type Service struct {
-	orderRepo   orderPorts.OrderRepository
-	productRepo productPorts.ProductRepository
+	orderRepo   orderport.OrderRepository
+	productRepo productport.ProductRepository
 }
 
-func New(orderRepo orderPorts.OrderRepository, productRepo productPorts.ProductRepository) *Service {
+func New(orderRepo orderport.OrderRepository, productRepo productport.ProductRepository) orderport.OrderServicePort {
 	return &Service{
 		orderRepo:   orderRepo,
 		productRepo: productRepo,

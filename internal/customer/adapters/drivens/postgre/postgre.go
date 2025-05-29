@@ -28,7 +28,6 @@ func (p *Repository) FindByCPF(_ context.Context, CPF string) (model.Customer, e
 	var customer model.Customer
 
 	tx := p.db.Where("cpf = ?", CPF).First(&customer)
-
 	if tx.Error != nil {
 		return model.Customer{}, tx.Error
 	}

@@ -32,6 +32,15 @@ func (o *OrderHandler) Create(c *gin.Context) {
 		return
 	}
 
+	validateErr := orderDTO.Validate()
+	if validateErr != nil {
+		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+			Message:      "Validation failed",
+			MessageError: validateErr.Error(),
+		})
+		return
+	}
+
 	customerIDRaw, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, appError.ErrorDTO{

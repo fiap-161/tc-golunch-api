@@ -3,8 +3,9 @@ package helper
 import (
 	"net/http"
 
-	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/gin-gonic/gin"
+
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 func HandleError(c *gin.Context, err error) {
@@ -12,18 +13,18 @@ func HandleError(c *gin.Context, err error) {
 	message := "Internal Server Error"
 
 	switch err.(type) {
-	case *appError.ValidationError:
+	case *apperror.ValidationError:
 		status = http.StatusBadRequest
 		message = "Validation failed"
-	case *appError.UnauthorizedError:
+	case *apperror.UnauthorizedError:
 		status = http.StatusUnauthorized
 		message = "Unauthorized"
-	case *appError.NotFoundError:
+	case *apperror.NotFoundError:
 		status = http.StatusBadRequest
 		message = "Invalid resource"
 	}
 
-	c.JSON(status, appError.ErrorDTO{
+	c.JSON(status, apperror.ErrorDTO{
 		Message:      message,
 		MessageError: err.Error(),
 	})
