@@ -31,8 +31,7 @@ func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (stri
 		productIds = append(productIds, item.ProductID)
 	}
 
-	//TODO implement productsIds with string
-	products, findErr := s.productRepo.FindByIDs([]uint{})
+	products, findErr := s.productRepo.FindByIDs(ctx, productIds)
 	if findErr != nil {
 		return "", findErr
 	}
