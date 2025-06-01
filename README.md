@@ -76,7 +76,7 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 
 ### Diagrama de Entidades
 
-![image](https://github.com/user-attachments/assets/435c5214-02d1-41eb-92eb-8443ed8b6abd)
+![image](https://github.com/user-attachments/assets/aac0e29d-3546-4cda-ac6b-a7c78a867dec)
 
 
 
