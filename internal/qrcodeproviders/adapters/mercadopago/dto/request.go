@@ -42,18 +42,18 @@ func FromParams(params providerdto.GenerateQRCodeParams) RequestGenerateQRCode {
 	}
 }
 
-func generateItems(product []providerdto.Product) ([]RequestGenerateQRCodeItem, float64) {
+func generateItems(product []providerdto.Item) ([]RequestGenerateQRCodeItem, float64) {
 	items := make([]RequestGenerateQRCodeItem, len(product))
 	var totalAmount float64
 
 	for i, item := range product {
-		totalAmount += item.TotalPrice
+		totalAmount += item.Amount
 		items[i] = RequestGenerateQRCodeItem{
 			Title:       item.Name,
 			UnitPrice:   utils.FormatDecimal(item.Price),
 			Quantity:    item.Quantity,
 			UnitMeasure: "unit",
-			TotalAmount: utils.FormatDecimal(item.TotalPrice),
+			TotalAmount: utils.FormatDecimal(item.Amount),
 			Description: item.Description,
 		}
 	}
