@@ -55,9 +55,9 @@ func (r *Repository) GetAll(_ context.Context, category string) ([]model.Product
 	return products, nil
 }
 
-func (r *Repository) Update(_ context.Context, id string, updated model.Product) (model.Product, error) {
-	var existing model.Product
-	if err := r.db.First(&existing, id).Error; err != nil {
+func (r *Repository) Update(ctx context.Context, id string, updated model.Product) (model.Product, error) {
+	existing, err := r.FindByID(ctx, id)
+	if err != nil {
 		return model.Product{}, err
 	}
 
@@ -78,19 +78,19 @@ func (r *Repository) Update(_ context.Context, id string, updated model.Product)
 		updates["preparing_time"] = updated.PreparingTime
 	}
 	if updated.Category != enum.Unknown {
-		updates["category"] = updated.Category.String()
+		updates["category"] = updated.Category
 	}
 
 	if len(updates) == 0 {
 		return existing, nil
 	}
 
-	if err := r.db.Model(&model.Product{}).Where("id = ?", id).Updates(updates).Error; err != nil {
+	if err := r.db.Model(&model.Product{}).Where("id = @id", map[string]any{"id": id}).Updates(updates).Error; err != nil {
 		return model.Product{}, err
 	}
 
 	var updatedProduct model.Product
-	if err := r.db.First(&updatedProduct, id).Error; err != nil {
+	if err := r.db.Where("id = @id", map[string]any{"id": id}).First(&updatedProduct).Error; err != nil {
 		return model.Product{}, err
 	}
 
@@ -99,7 +99,7 @@ func (r *Repository) Update(_ context.Context, id string, updated model.Product)
 
 func (r *Repository) FindByID(_ context.Context, id string) (model.Product, error) {
 	var product model.Product
-	if err := r.db.First(&product, id).Error; err != nil {
+	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return model.Product{}, &apperror.NotFoundError{Msg: "Product not found"}
 		}
