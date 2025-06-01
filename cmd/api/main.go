@@ -83,7 +83,7 @@ func main() {
 	// Order
 	orderRepository := orderpostgre.NewRepository(db)
 	orderService := orderservice.New(orderRepository, productRepository)
-	orderHandler := orderrest.NewOrderHandler(orderService)
+	orderHandler := orderrest.New(orderService)
 
 	// Default Routes
 	r.GET("/ping", ping)

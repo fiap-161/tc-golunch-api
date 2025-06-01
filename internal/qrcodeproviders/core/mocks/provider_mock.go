@@ -2,7 +2,7 @@ package mocks
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/core/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
 	"github.com/stretchr/testify/mock"
 )
 

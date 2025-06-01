@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/adapters/mercadopago/utils"
-	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/core/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago/utils"
+	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
 )
 
 type RequestGenerateQRCode struct {

@@ -11,17 +11,17 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )
 
-type OrderHandler struct {
+type handler struct {
 	service ports.OrderService
 }
 
-func NewOrderHandler(service ports.OrderService) *OrderHandler {
-	return &OrderHandler{
+func New(service ports.OrderService) *handler {
+	return &handler{
 		service: service,
 	}
 }
 
-func (o *OrderHandler) Create(c *gin.Context) {
+func (h *handler) Create(c *gin.Context) {
 	ctx := context.Background()
 
 	var orderDTO dto.CreateOrderDTO
@@ -53,7 +53,7 @@ func (o *OrderHandler) Create(c *gin.Context) {
 	customerID := customerIDRaw.(string)
 
 	orderDTO.CustomerID = customerID
-	id, err := o.service.Create(ctx, orderDTO)
+	id, err := h.service.Create(ctx, orderDTO)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
@@ -65,9 +65,9 @@ func (o *OrderHandler) Create(c *gin.Context) {
 	})
 }
 
-func (o *OrderHandler) GetAll(c *gin.Context) {
+func (h *handler) GetAll(c *gin.Context) {
 	ctx := context.Background()
-	products, err := o.service.GetAll(ctx)
+	products, err := h.service.GetAll(ctx)
 	if err != nil {
 		helper.HandleError(c, err)
 		return

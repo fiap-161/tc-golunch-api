@@ -3,14 +3,14 @@ package mercadopago
 import (
 	"context"
 	"errors"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago/dto"
+	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/ports"
 	"os"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/adapters/mercadopago/dto"
-	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/core/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared"
 )
 
