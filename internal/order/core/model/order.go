@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,7 +27,7 @@ type Order struct {
 	PreparingTime uint        `json:"preparing_time"`
 }
 
-func (o Order) Build(price float64, preparingTime uint, productsJSON []byte) Order {
+func (o Order) Build() Order {
 	return Order{
 		Entity: entity.Entity{
 			ID:        uuid.NewString(),
@@ -34,14 +35,31 @@ func (o Order) Build(price float64, preparingTime uint, productsJSON []byte) Ord
 			UpdatedAt: time.Now(),
 		},
 		CustomerID:    o.CustomerID,
-		Status:        OrderStatusReceived,
-		Price:         price,
-		PreparingTime: preparingTime,
+		Status:        o.Status,
+		Price:         o.Price,
+		PreparingTime: o.PreparingTime,
 	}
 }
 
-func (o Order) FromDTO(dto dto.CreateOrderDTO) Order {
+func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
+	totalPrice, preparingTime := o.getOrderInfoFromProducts(products)
+
 	return Order{
-		CustomerID: dto.CustomerID,
+		CustomerID:    dto.CustomerID,
+		Price:         totalPrice,
+		PreparingTime: preparingTime,
+		Status:        OrderStatusReceived,
 	}
+}
+
+func (o Order) getOrderInfoFromProducts(products []model.Product) (float64, uint) {
+	var totalPrice float64
+	var totalPreparingTime uint
+
+	for _, product := range products {
+		totalPrice += product.Price
+		totalPreparingTime += product.PreparingTime
+	}
+
+	return totalPrice, totalPreparingTime
 }

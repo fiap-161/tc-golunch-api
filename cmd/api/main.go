@@ -29,8 +29,8 @@ import (
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
-	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
-	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
+	productrest "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
+	productservice "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 )
 
 // @title           GoLunch
@@ -77,8 +77,8 @@ func main() {
 
 	// Product
 	productRepository := productpostgre.NewProductRepository(db)
-	productService := servicesproduct.NewProductService(productRepository)
-	productHandler := restproduct.NewProductHandler(productService)
+	productService := productservice.NewProductService(productRepository)
+	productHandler := productrest.New(productService)
 
 	// Order
 	orderRepository := orderpostgre.NewRepository(db)
