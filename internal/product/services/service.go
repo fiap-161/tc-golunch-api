@@ -37,7 +37,7 @@ func (s *Service) ListCategories(_ context.Context) []enum.CategoryDTO {
 	return enum.GetAllCategories()
 }
 
-func (s *Service) GetAll(ctx context.Context, category string) ([]model.Product, error) {
+func (s *Service) GetAll(ctx context.Context, category uint) ([]model.Product, error) {
 	list, err := s.repo.GetAll(ctx, category)
 
 	if err != nil {

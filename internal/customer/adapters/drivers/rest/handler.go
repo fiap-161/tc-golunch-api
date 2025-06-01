@@ -21,12 +21,12 @@ func NewCustomerHandler(service ports.CustomerService) *CustomerHandler {
 }
 
 // Create godoc
-// @Summary      Cria um novo cliente
-// @Description  Cria um cliente com base nas informações enviadas no corpo da requisição
+// @Summary      Creates a new customer
+// @Description  Creates a customer based on the information sent in the request body
 // @Tags         Customer Domain
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.CreateCustomerDTO  true  "Dados do cliente"
+// @Param        request  body      dto.CreateCustomerDTO  true  "Customer data"
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
@@ -56,12 +56,12 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 }
 
 // Identify godoc
-// @Summary      Identifica cliente por CPF
-// @Description  Retorna um token JWT ao identificar o cliente pelo CPF
+// @Summary      Identifies customer by CPF
+// @Description  Returns a JWT token when identifying the customer by CPF
 // @Tags         Customer Domain
 // @Accept       json
 // @Produce      json
-// @Param        cpf   path      string     true  "CPF do cliente"
+// @Param        cpf   path      string     true  "Customer CPF"
 // @Success      200   {object}  TokenDTO
 // @Failure      404   {object}  errors.ErrorDTO
 // @Failure      500   {object}  errors.ErrorDTO
@@ -82,8 +82,8 @@ func (h *CustomerHandler) Identify(c *gin.Context) {
 }
 
 // Anonymous godoc
-// @Summary      Gera cliente anônimo
-// @Description  Gera um token JWT para um cliente anônimo (sem CPF)
+// @Summary      Generates anonymous customer
+// @Description  Generates a JWT token for an anonymous customer (without CPF)
 // @Tags         Customer Domain
 // @Accept       json
 // @Produce      json

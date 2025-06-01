@@ -2,9 +2,7 @@ package rest
 
 import (
 	"context"
-	"net/http"
-	"strings"
-
+	"fmt"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
@@ -12,6 +10,8 @@ import (
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strings"
 )
 
 type Handler struct {
@@ -77,7 +77,7 @@ func (h *Handler) ListCategories(c *gin.Context) {
 // @Security BearerAuth
 // @Accept       json
 // @Produce      json
-// @Param        category query string false "Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')"
+// @Param        category query string false "Category name (e.g., 'drink', 'meal', 'side', 'dessert')"
 // @Success      200  {object}  dto.ProductListResponseDTO
 // @Failure      400  {object}  errors.ErrorDTO
 // @Router       /product [get]
@@ -86,8 +86,8 @@ func (h *Handler) GetAll(c *gin.Context) {
 	query = strings.ToLower(query)
 	query = strings.ReplaceAll(query, " ", "")
 
-	_, ok := enum.FromCategoryString(query)
-
+	category, ok := enum.FromCategoryString(query)
+	fmt.Println(category)
 	if !ok && query != "" {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Validation error",
@@ -96,7 +96,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 		return
 	}
 
-	list, err := h.Service.GetAll(context.Background(), query)
+	list, err := h.Service.GetAll(context.Background(), uint(category))
 	if err != nil {
 		helper.HandleError(c, err)
 		return
@@ -121,7 +121,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 // @Security BearerAuth
 // @Accept       json
 // @Produce      json
-// @Param        id       path      int                         true  "Product ID"
+// @Param        id       path      string                         true  "Product ID"
 // @Param        request  body      dto.ProductRequestUpdateDTO true  "Product data to update"
 // @Success      200      {object}  dto.ProductResponseDTO
 // @Failure      400      {object}  errors.ErrorDTO

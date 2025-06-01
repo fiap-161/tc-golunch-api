@@ -40,11 +40,11 @@ func (r *Repository) Create(_ context.Context, product model.Product) (model.Pro
 	return product, nil
 }
 
-func (r *Repository) GetAll(_ context.Context, category string) ([]model.Product, error) {
+func (r *Repository) GetAll(_ context.Context, category uint) ([]model.Product, error) {
 	var products []model.Product
 
 	query := r.db
-	if category != "" {
+	if category > 0 {
 		query = query.Where("category = ?", category)
 	}
 
