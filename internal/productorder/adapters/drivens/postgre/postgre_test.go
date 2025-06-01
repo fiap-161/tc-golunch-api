@@ -1,6 +1,7 @@
 package postgre_test
 
 import (
+	"context"
 	"errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"testing"
@@ -36,7 +37,8 @@ func (m *MockDB) First(dest any, conds ...any) *gorm.DB {
 
 func TestCreate(t *testing.T) {
 	type args struct {
-		orders []model.ProductOrder
+		context context.Context
+		orders  []model.ProductOrder
 	}
 
 	tests := []struct {
@@ -110,9 +112,9 @@ func TestCreate(t *testing.T) {
 				mockDB.On("Create", mock.Anything).Return(&gorm.DB{RowsAffected: int64(tt.want)})
 			}
 
-			repo := postgre.NewRepository(mockDB)
+			repo := postgre.New(mockDB)
 
-			got, err := repo.CreateBulk(tt.args.orders)
+			got, err := repo.CreateBulk(tt.args.context, tt.args.orders)
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
