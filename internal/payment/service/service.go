@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-
+	"fmt"
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
+
 	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
@@ -11,7 +12,6 @@ import (
 	productorderport "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/ports"
 	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
 	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/ports"
-	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type service struct {
@@ -94,22 +94,29 @@ func (s *service) CheckPayment(ctx context.Context, requestUrl string) (any, err
 		return nil, err
 	}
 
-	verifyResponse, ok := response.(qrcodedto.VerifyOrderResponse)
-	if !ok {
-		return nil, &apperror.InternalError{Msg: "invalid response type"}
-	}
+	fmt.Println(response)
 
-	payment, paymentErr := s.paymentRepo.FindByOrderID(ctx, verifyResponse.ExternalReference)
+	payment, paymentErr := s.paymentRepo.FindByOrderID(ctx, response.ExternalReference)
 	if paymentErr != nil {
 		return nil, paymentErr
 	}
-	if verifyResponse.OrderStatus == "paid" {
+	if response.OrderStatus == "paid" {
 		payment.Status = model.Approved
-	}
+		_, updateErr := s.paymentRepo.Update(ctx, payment)
+		if updateErr != nil {
+			return nil, updateErr
+		}
 
-	_, updateErr := s.paymentRepo.Update(ctx, payment)
-	if updateErr != nil {
-		return nil, updateErr
+		order, orderErr := s.orderRepo.FindByID(ctx, response.ExternalReference)
+		if orderErr != nil {
+			return nil, orderErr
+		}
+
+		order.Status = ordermodel.OrderStatusReceived
+		_, updateOrderErr := s.orderRepo.Update(ctx, order)
+		if updateOrderErr != nil {
+			return nil, updateOrderErr
+		}
 	}
 
 	// TODO verify possible statuses
@@ -117,16 +124,5 @@ func (s *service) CheckPayment(ctx context.Context, requestUrl string) (any, err
 	//	payment.Status = model.Rejected
 	//}
 
-	order, orderErr := s.orderRepo.FindByID(ctx, verifyResponse.ExternalReference)
-	if orderErr != nil {
-		return nil, orderErr
-	}
-
-	order.Status = ordermodel.OrderStatusReceived
-	_, updateOrderErr := s.orderRepo.Update(ctx, order)
-	if updateOrderErr != nil {
-		return nil, updateOrderErr
-	}
-
-	return verifyResponse, nil
+	return response, nil
 }

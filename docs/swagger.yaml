@@ -118,6 +118,13 @@ definitions:
     - email
     - password
     type: object
+  dto.UpdateOrderDTO:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
   enum.CategoryDTO:
     properties:
       id:
@@ -223,7 +230,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Gera um token JWT para um cliente anônimo (sem CPF)
+      description: Generates a JWT token for an anonymous customer (without CPF)
       produces:
       - application/json
       responses:
@@ -235,16 +242,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
-      summary: Gera cliente anônimo
+      summary: Generates anonymous customer
       tags:
       - Customer Domain
   /customer/identify/{cpf}:
     get:
       consumes:
       - application/json
-      description: Retorna um token JWT ao identificar o cliente pelo CPF
+      description: Returns a JWT token when identifying the customer by CPF
       parameters:
-      - description: CPF do cliente
+      - description: Customer CPF
         in: path
         name: cpf
         required: true
@@ -264,16 +271,17 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
-      summary: Identifica cliente por CPF
+      summary: Identifies customer by CPF
       tags:
       - Customer Domain
   /customer/register:
     post:
       consumes:
       - application/json
-      description: Cria um cliente com base nas informações enviadas no corpo da requisição
+      description: Creates a customer based on the information sent in the request
+        body
       parameters:
-      - description: Dados do cliente
+      - description: Customer data
         in: body
         name: request
         required: true
@@ -295,7 +303,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
-      summary: Cria um novo cliente
+      summary: Creates a new customer
       tags:
       - Customer Domain
   /order/:
@@ -357,6 +365,45 @@ paths:
       summary: Create Order
       tags:
       - Order Domain
+  /order/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing order status
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Order status update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateOrderDTO'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Update Order
+      tags:
+      - Order Domain
   /payment/check:
     post:
       consumes:
@@ -409,7 +456,7 @@ paths:
       description: Returns all products. Optionally, filter by category using query
         param. Categories must match those returned from [GET] /product/categories.
       parameters:
-      - description: Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')
+      - description: Category name (e.g., 'drink', 'meal', 'side', 'dessert')
         in: query
         name: category
         type: string
@@ -492,7 +539,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Product data to update
         in: body
         name: request

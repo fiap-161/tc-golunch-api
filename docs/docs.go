@@ -116,7 +116,7 @@ const docTemplate = `{
         },
         "/customer/anonymous": {
             "get": {
-                "description": "Gera um token JWT para um cliente anônimo (sem CPF)",
+                "description": "Generates a JWT token for an anonymous customer (without CPF)",
                 "consumes": [
                     "application/json"
                 ],
@@ -126,7 +126,7 @@ const docTemplate = `{
                 "tags": [
                     "Customer Domain"
                 ],
-                "summary": "Gera cliente anônimo",
+                "summary": "Generates anonymous customer",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -145,7 +145,7 @@ const docTemplate = `{
         },
         "/customer/identify/{cpf}": {
             "get": {
-                "description": "Retorna um token JWT ao identificar o cliente pelo CPF",
+                "description": "Returns a JWT token when identifying the customer by CPF",
                 "consumes": [
                     "application/json"
                 ],
@@ -155,11 +155,11 @@ const docTemplate = `{
                 "tags": [
                     "Customer Domain"
                 ],
-                "summary": "Identifica cliente por CPF",
+                "summary": "Identifies customer by CPF",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "CPF do cliente",
+                        "description": "Customer CPF",
                         "name": "cpf",
                         "in": "path",
                         "required": true
@@ -189,7 +189,7 @@ const docTemplate = `{
         },
         "/customer/register": {
             "post": {
-                "description": "Cria um cliente com base nas informações enviadas no corpo da requisição",
+                "description": "Creates a customer based on the information sent in the request body",
                 "consumes": [
                     "application/json"
                 ],
@@ -199,10 +199,10 @@ const docTemplate = `{
                 "tags": [
                     "Customer Domain"
                 ],
-                "summary": "Cria um novo cliente",
+                "summary": "Creates a new customer",
                 "parameters": [
                     {
-                        "description": "Dados do cliente",
+                        "description": "Customer data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -325,6 +325,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/order/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing order status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Domain"
+                ],
+                "summary": "Update Order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Order status update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateOrderDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/payment/check": {
             "post": {
                 "security": [
@@ -417,7 +478,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')",
+                        "description": "Category name (e.g., 'drink', 'meal', 'side', 'dessert')",
                         "name": "category",
                         "in": "query"
                     }
@@ -534,7 +595,7 @@ const docTemplate = `{
                 "summary": "Update Product",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Product ID",
                         "name": "id",
                         "in": "path",
@@ -780,6 +841,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateOrderDTO": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
                     "type": "string"
                 }
             }

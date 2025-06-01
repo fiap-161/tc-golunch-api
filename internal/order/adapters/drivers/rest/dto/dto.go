@@ -9,6 +9,10 @@ type CreateOrderDTO struct {
 	Products   []OrderProductInfo `json:"products"`
 }
 
+type UpdateOrderDTO struct {
+	Status string `json:"status" binding:"required"`
+}
+
 type OrderProductInfo struct {
 	ProductID string `json:"product_id"`
 	Quantity  int    `json:"quantity"`

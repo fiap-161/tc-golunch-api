@@ -66,19 +66,52 @@ func (h *handler) Create(c *gin.Context) {
 	customerID := customerIDRaw.(string)
 
 	orderDTO.CustomerID = customerID
-	id, err := h.service.Create(ctx, orderDTO)
+	qrCode, err := h.service.Create(ctx, orderDTO)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"id":      id,
+		"qr_code": qrCode,
 		"message": "Order created successfully",
 	})
 }
 
-// TODO Create Update Method for kitchen handler ready and completed orders
+// Update Order godoc
+// @Summary      Update Order
+// @Description  Update an existing order status
+// @Tags         Order Domain
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "Order ID"
+// @Param        request body dto.UpdateOrderDTO true "Order status update"
+// @Success      204  "No Content"
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
+// @Failure      404  {object}  errors.ErrorDTO
+// @Router       /order/{id} [put]
+func (h *handler) Update(c *gin.Context) {
+	id := c.Param("id")
+
+	var orderUpdate dto.UpdateOrderDTO
+	if err := c.ShouldBindJSON(&orderUpdate); err != nil {
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
+			Message:      "Invalid request body",
+			MessageError: err.Error(),
+		})
+		return
+	}
+
+	err := h.service.Update(context.Background(), id, orderUpdate.Status)
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
 
 // GetAll Get All Orders godoc
 // @Summary      Get all orders

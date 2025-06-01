@@ -101,7 +101,7 @@ func main() {
 	qrCodeClient := mercadopago.New()
 
 	// Order Repository
-	orderRepository := orderpostgre.NewRepository(db)
+	orderRepository := orderpostgre.New(db)
 
 	// Payment
 	paymentRepository := paymentpostgre.New(db)
@@ -149,6 +149,7 @@ func main() {
 	// Order
 	authenticated.POST("/order", orderHandler.Create)
 	authenticated.GET("/order", orderHandler.GetAll)
+	authenticated.PUT("/order/:id", middleware.AdminOnly(), orderHandler.Update)
 
 	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")

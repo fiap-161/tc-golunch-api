@@ -63,12 +63,26 @@ func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (stri
 		return "", createBulkErr
 	}
 
-	_, paymentErr := s.paymentService.CreateByOrderID(ctx, createdOrder.ID)
+	payment, paymentErr := s.paymentService.CreateByOrderID(ctx, createdOrder.ID)
 	if paymentErr != nil {
 		return "", paymentErr
 	}
 
-	return createdOrder.ID, nil
+	return payment.QrCode, nil
+}
+
+func (s *Service) Update(ctx context.Context, id, status string) error {
+	order, err := s.orderRepo.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if order.Status == model.OrderStatusAwaitingPayment {
+		return &apperror.ValidationError{Msg: "order status must be different from awaiting payment"}
+	}
+
+	_, err = s.orderRepo.Update(ctx, order.BuildUpdate(model.OrderStatus(status)))
+	return err
 }
 
 func (s *Service) GetAll(ctx context.Context) ([]model.Order, error) {

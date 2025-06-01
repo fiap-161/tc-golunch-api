@@ -9,4 +9,5 @@ import (
 type OrderService interface {
 	Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (string, error)
 	GetAll(ctx context.Context) ([]model.Order, error)
+	Update(ctx context.Context, id, status string) error
 }

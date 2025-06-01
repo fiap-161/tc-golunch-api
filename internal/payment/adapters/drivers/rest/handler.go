@@ -44,13 +44,6 @@ func (h *handler) CheckPayment(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&checkPaymentDTO); err != nil {
-		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
-			Message:      "invalid request body",
-			MessageError: err.Error(),
-		})
-	}
-
 	_, err := h.service.CheckPayment(ctx, checkPaymentDTO.Resource)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, apperror.ErrorDTO{

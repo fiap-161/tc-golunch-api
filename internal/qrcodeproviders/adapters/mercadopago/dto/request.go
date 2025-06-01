@@ -37,7 +37,7 @@ func FromParams(params providerdto.GenerateQRCodeParams) RequestGenerateQRCode {
 		Description:       "Order Description" + params.OrderID,
 		ExternalReference: params.OrderID,
 		Items:             items,
-		NotificationURL:   "https://webhook.site/7694cda3-01d9-4447-a22f-d654af0b9ee2", //TODO adjust this field
+		NotificationURL:   "https://webhook.site/668985be-6f49-4e21-a2c3-07f3194a7c60", //TODO adjust this field
 		TotalAmount:       utils.FormatDecimal(totalAmount),
 	}
 }

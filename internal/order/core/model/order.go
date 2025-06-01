@@ -42,6 +42,20 @@ func (o Order) Build() Order {
 	}
 }
 
+func (o Order) BuildUpdate(status OrderStatus) Order {
+	return Order{
+		Entity: entity.Entity{
+			ID:        o.ID,
+			CreatedAt: o.CreatedAt,
+			UpdatedAt: time.Now(),
+		},
+		CustomerID:    o.CustomerID,
+		Status:        status,
+		Price:         o.Price,
+		PreparingTime: o.PreparingTime,
+	}
+}
+
 func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
 	totalPrice, preparingTime := o.getOrderInfoFromProducts(products)
 
