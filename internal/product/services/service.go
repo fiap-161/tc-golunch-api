@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
@@ -9,45 +10,59 @@ import (
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
-type ProductService struct {
-	productRepo ports.ProductRepository
+type Service struct {
+	repo ports.ProductRepository
 }
 
-func NewProductService(productRepository ports.ProductRepository) *ProductService {
-	return &ProductService{productRepo: productRepository}
+func New(repo ports.ProductRepository) *Service {
+	return &Service{repo: repo}
 }
 
-func (s *ProductService) Create(product model.Product) (model.Product, error) {
+func (s *Service) Create(ctx context.Context, product model.Product) (model.Product, error) {
 	isValidCategory := enum.IsValidCategory(uint(product.Category))
 
 	if !isValidCategory {
 		return model.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
 	}
 
-	savedProduct, err := s.productRepo.Create(product)
+	saved, err := s.repo.Create(ctx, product)
 	if err != nil {
-		return model.Product{}, &apperror.InternalError{Msg: "Error saving product"}
+		return model.Product{}, &apperror.InternalError{Msg: err.Error()}
 	}
 
-	return savedProduct, nil
+	return saved, nil
 }
 
-func (s *ProductService) ListCategories() []enum.CategoryDTO {
+func (s *Service) ListCategories(_ context.Context) []enum.CategoryDTO {
 	return enum.GetAllCategories()
 }
 
-func (s *ProductService) GetAll(category string) ([]model.Product, error) {
-	list, err := s.productRepo.GetAll(category)
+func (s *Service) GetAll(ctx context.Context, category string) ([]model.Product, error) {
+	list, err := s.repo.GetAll(ctx, category)
 
 	if err != nil {
-		return nil, &apperror.InternalError{Msg: "Error querying table"}
+		return nil, &apperror.InternalError{Msg: err.Error()}
 	}
 
 	return list, nil
 }
 
-func (s *ProductService) Update(product model.Product, id uint) (model.Product, error) {
-	product, err := s.productRepo.Update(id, product)
+func (s *Service) Update(ctx context.Context, product model.Product, id string) (model.Product, error) {
+	updated, err := s.repo.Update(ctx, id, product)
+
+	if err != nil {
+		var notFoundErr *apperror.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return model.Product{}, notFoundErr
+		}
+		return model.Product{}, &apperror.InternalError{Msg: err.Error()}
+	}
+
+	return updated, nil
+}
+
+func (s *Service) FindByID(ctx context.Context, id string) (model.Product, error) {
+	product, err := s.repo.FindByID(ctx, id)
 
 	if err != nil {
 		var notFoundErr *apperror.NotFoundError
@@ -60,29 +75,15 @@ func (s *ProductService) Update(product model.Product, id uint) (model.Product, 
 	return product, nil
 }
 
-func (s *ProductService) FindByID(id uint) (model.Product, error) {
-	product, err := s.productRepo.FindByID(id)
-
-	if err != nil {
-		var notFoundErr *apperror.NotFoundError
-		if errors.As(err, &notFoundErr) {
-			return model.Product{}, notFoundErr
-		}
-		return model.Product{}, &apperror.InternalError{Msg: "Unexpected error"}
-	}
-
-	return product, nil
-}
-
-func (s *ProductService) Delete(id uint) error {
-	err := s.productRepo.Delete(id)
+func (s *Service) Delete(ctx context.Context, id string) error {
+	err := s.repo.Delete(ctx, id)
 
 	if err != nil {
 		var notFoundErr *apperror.NotFoundError
 		if errors.As(err, &notFoundErr) {
 			return notFoundErr
 		}
-		return &apperror.InternalError{Msg: "Unexpected error"}
+		return &apperror.InternalError{Msg: err.Error()}
 	}
 
 	return nil
