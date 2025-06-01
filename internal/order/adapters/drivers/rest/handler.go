@@ -2,8 +2,9 @@ package rest
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
@@ -21,6 +22,18 @@ func New(service ports.OrderService) *handler {
 	}
 }
 
+// Create Create Order godoc
+// @Summary      Create Order
+// @Description  Create a new order
+// @Tags         Order Domain
+// @Security BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.CreateOrderDTO true "Order to create. Note that the customer_id is automatically set from the authenticated user."
+// @Success      200  {object}  gin.H{"id": "string", "message": "Order created successfully"}
+// @Failure      400  {object}  apperror.ErrorDTO
+// @Failure      401  {object}  apperror.ErrorDTO
+// @Router       /order/ [post]
 func (h *handler) Create(c *gin.Context) {
 	ctx := context.Background()
 
@@ -65,6 +78,19 @@ func (h *handler) Create(c *gin.Context) {
 	})
 }
 
+// TODO Create Update Method for kitchen handler ready and completed orders
+
+// GetAll Get All Orders godoc
+// @Summary      Get all orders
+// @Description  Get all orders
+// @Tags         Order Domain
+// @Security BearerAuth
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  gin.H{"orders": []dto.OrderResponseDTO}
+// @Failure      400  {object}  apperror.ErrorDTO
+// @Failure      401  {object}  apperror.ErrorDTO
+// @Router       /order/ [get]
 func (h *handler) GetAll(c *gin.Context) {
 	ctx := context.Background()
 	products, err := h.service.GetAll(ctx)

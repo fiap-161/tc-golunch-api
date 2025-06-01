@@ -29,3 +29,14 @@ func (r *Repository) CreateBulk(orders []model.ProductOrder) (int, error) {
 
 	return len(orders), nil
 }
+
+func (r *Repository) FindByOrderID(orderID string) ([]model.ProductOrder, error) {
+	var orders []model.ProductOrder
+
+	tx := r.db.Where("order_id = ?", orderID).Find(&orders)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	return orders, nil
+}

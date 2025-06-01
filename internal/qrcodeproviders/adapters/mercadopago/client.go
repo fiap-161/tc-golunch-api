@@ -71,7 +71,7 @@ func (m *MPClient) GenerateQRCode(_ context.Context, params providerdto.Generate
 	return responseDTO.QRData, nil
 }
 
-func (m *MPClient) VerifyOrder(_ context.Context, requestUrl string) (any, error) {
+func (m *MPClient) CheckPayment(_ context.Context, requestUrl string) (any, error) {
 	var responseDTO dto.ResponseVerifyOrder
 	res, reqErr := m.client.R().
 		SetResult(&responseDTO).

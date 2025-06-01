@@ -2,6 +2,7 @@ package postgre
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
@@ -34,24 +35,4 @@ func (p *Repository) GetAll(ctx context.Context) ([]model.Order, error) {
 	}
 
 	return orders, nil
-}
-
-func (p *Repository) FindByID(ctx context.Context, id string) (model.Order, error) {
-	var order model.Order
-
-	tx := p.DB.First(&order, "id = ?", id)
-	if tx.Error != nil {
-		return model.Order{}, tx.Error
-	}
-
-	return order, nil
-}
-
-func (p *Repository) Update(ctx context.Context, order model.Order) (model.Order, error) {
-	tx := p.DB.Save(&order)
-	if tx.Error != nil {
-		return model.Order{}, tx.Error
-	}
-
-	return order, nil
 }
