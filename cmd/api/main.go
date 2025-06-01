@@ -78,7 +78,7 @@ func main() {
 	// Product
 	productRepository := productpostgre.NewProductRepository(db)
 	productService := productservice.NewProductService(productRepository)
-	productHandler := productrest.New(productService)
+	productHandler := productrest.NewProductHandler(productService)
 
 	// Order
 	orderRepository := orderpostgre.NewRepository(db)

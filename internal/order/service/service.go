@@ -32,9 +32,9 @@ func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (stri
 	}
 
 	//TODO implement productsIds with string
-	products, err := s.productRepo.FindByIDs([]uint{})
-	if err != nil {
-		return "", err
+	products, findErr := s.productRepo.FindByIDs([]uint{})
+	if findErr != nil {
+		return "", findErr
 	}
 	if len(products) != len(orderDTO.Products) {
 		return "", &apperror.NotFoundError{
@@ -44,17 +44,16 @@ func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (stri
 
 	var order model.Order
 	order = order.FromDTO(orderDTO, products)
-
-	createdOrder, err := s.orderRepo.Create(nil, order.Build())
-	if err != nil {
-		return "", err
+	createdOrder, createErr := s.orderRepo.Create(ctx, order.Build())
+	if createErr != nil {
+		return "", createErr
 	}
 
 	productOrders := productordermodel.BuildBulkFromOrderAndProducts(createdOrder.ID, orderDTO.Products, products)
 
-	_, err = s.productOrderRepo.CreateBulk(ctx, productOrders)
-	if err != nil {
-		return "", err
+	_, createBulkErr := s.productOrderRepo.CreateBulk(ctx, productOrders)
+	if createBulkErr != nil {
+		return "", createBulkErr
 	}
 
 	return createdOrder.ID, nil

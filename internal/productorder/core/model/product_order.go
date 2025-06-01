@@ -1,10 +1,13 @@
 package model
 
 import (
+	"time"
+
+	"github.com/google/uuid"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
-	"github.com/google/uuid"
 )
 
 type ProductOrder struct {
@@ -23,7 +26,9 @@ func BuildBulkFromOrderAndProducts(orderID string, orderProductInfo []dto.OrderP
 			if string(product.ID) == item.ProductID { //TODO remove this cast
 				productOrders = append(productOrders, ProductOrder{
 					Entity: entity.Entity{
-						ID: uuid.NewString(),
+						ID:        uuid.NewString(),
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
 					},
 					OrderID:   orderID,
 					ProductID: string(product.ID), // TODO remove this cast
