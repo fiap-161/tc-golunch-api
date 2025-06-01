@@ -27,7 +27,7 @@ func (o *OrderHandler) Create(c *gin.Context) {
 	var orderDTO dto.CreateOrderDTO
 	if err := c.ShouldBindJSON(&orderDTO); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
-			Message:      "Invalid request body",
+			Message:      "invalid request body",
 			MessageError: err.Error(),
 		})
 		return
@@ -36,7 +36,7 @@ func (o *OrderHandler) Create(c *gin.Context) {
 	validateErr := orderDTO.Validate()
 	if validateErr != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
-			Message:      "Validation failed",
+			Message:      "validation failed",
 			MessageError: validateErr.Error(),
 		})
 		return
@@ -45,8 +45,8 @@ func (o *OrderHandler) Create(c *gin.Context) {
 	customerIDRaw, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, apperror.ErrorDTO{
-			Message:      "Unauthorized",
-			MessageError: "User ID not found in context",
+			Message:      "unauthorized",
+			MessageError: "user id not found in context",
 		})
 		return
 	}

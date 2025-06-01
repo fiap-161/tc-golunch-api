@@ -25,47 +25,35 @@ func New(orderRepo orderport.OrderRepository, productRepo productport.ProductRep
 	}
 }
 
-func (s *Service) Create(_ context.Context, orderDTO dto.CreateOrderDTO) (string, error) {
+func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (string, error) {
 	var productIds []string
 	for _, item := range orderDTO.Products {
 		productIds = append(productIds, item.ProductID)
 	}
 
 	//TODO implement productsIds with string
-	products, err := s.productRepo.FindByIDs([]uint{})
-	if err != nil {
-		return "", err
+	products, findErr := s.productRepo.FindByIDs([]uint{})
+	if findErr != nil {
+		return "", findErr
 	}
 	if len(products) != len(orderDTO.Products) {
 		return "", &apperror.NotFoundError{
-			Msg: "Some products not found",
+			Msg: "some products not found",
 		}
-	}
-
-	var productOrders = make([]productordermodel.ProductOrder, 0, len(products))
-	for _, product := range products {
-		for _, item := range orderDTO.Products {
-			if string(product.ID) == item.ProductID { //TODO remove this cast
-				productOrders = append(productOrders, productordermodel.ProductOrder{
-					ProductID: string(product.ID), // TODO remove this cast
-					Quantity:  item.Quantity,
-					UnitPrice: product.Price,
-				})
-			}
-		}
-	}
-
-	_, err = s.productOrderRepo.CreateBulk(context.Background(), productOrders)
-	if err != nil {
-		return "", err
 	}
 
 	var order model.Order
-	order = order.FromDTO(orderDTO)
+	order = order.FromDTO(orderDTO, products)
+	createdOrder, createErr := s.orderRepo.Create(ctx, order.Build())
+	if createErr != nil {
+		return "", createErr
+	}
 
-	createdOrder, err := s.orderRepo.Create(nil, order)
-	if err != nil {
-		return "", err
+	productOrders := productordermodel.BuildBulkFromOrderAndProducts(createdOrder.ID, orderDTO.Products, products)
+
+	_, createBulkErr := s.productOrderRepo.CreateBulk(ctx, productOrders)
+	if createBulkErr != nil {
+		return "", createBulkErr
 	}
 
 	return createdOrder.ID, nil
