@@ -122,7 +122,7 @@ func (s *service) CheckPayment(ctx context.Context, requestUrl string) (any, err
 		return nil, orderErr
 	}
 
-	order.Status = ordermodel.OrderStatusInPreparation
+	order.Status = ordermodel.OrderStatusReceived
 	_, updateOrderErr := s.orderRepo.Update(ctx, order)
 	if updateOrderErr != nil {
 		return nil, updateOrderErr

@@ -23,7 +23,7 @@ func BuildBulkFromOrderAndProducts(orderID string, orderProductInfo []dto.OrderP
 	var productOrders = make([]ProductOrder, 0, len(products))
 	for _, product := range products {
 		for _, item := range orderProductInfo {
-			if string(product.ID) == item.ProductID { //TODO remove this cast
+			if product.ID == item.ProductID {
 				productOrders = append(productOrders, ProductOrder{
 					Entity: entity.Entity{
 						ID:        uuid.NewString(),
@@ -31,7 +31,7 @@ func BuildBulkFromOrderAndProducts(orderID string, orderProductInfo []dto.OrderP
 						UpdatedAt: time.Now(),
 					},
 					OrderID:   orderID,
-					ProductID: string(product.ID), // TODO remove this cast
+					ProductID: product.ID,
 					Quantity:  item.Quantity,
 					UnitPrice: product.Price,
 				})

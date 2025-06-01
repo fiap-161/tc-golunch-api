@@ -30,7 +30,7 @@ func NewCustomerHandler(service ports.CustomerService) *CustomerHandler {
 // @Success      200      {object}  map[string]interface{}
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
-// @Router       /customers [post]
+// @Router       /customer/register [post]
 func (h *CustomerHandler) Create(c *gin.Context) {
 	ctx := context.Background()
 
@@ -65,7 +65,7 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 // @Success      200   {object}  TokenDTO
 // @Failure      404   {object}  errors.ErrorDTO
 // @Failure      500   {object}  errors.ErrorDTO
-// @Router       /customers/identify/{cpf} [get]
+// @Router       /customer/identify/{cpf} [get]
 func (h *CustomerHandler) Identify(c *gin.Context) {
 	ctx := context.Background()
 	CPF := c.Param("cpf")
@@ -89,7 +89,7 @@ func (h *CustomerHandler) Identify(c *gin.Context) {
 // @Produce      json
 // @Success      200  {object}  TokenDTO
 // @Failure      500  {object}  errors.ErrorDTO
-// @Router       /customers/anonymous [get]
+// @Router       /customer/anonymous [get]
 func (h *CustomerHandler) Anonymous(c *gin.Context) {
 	ctx := context.Background()
 

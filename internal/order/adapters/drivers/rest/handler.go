@@ -30,9 +30,9 @@ func New(service ports.OrderService) *handler {
 // @Accept       json
 // @Produce      json
 // @Param        request body dto.CreateOrderDTO true "Order to create. Note that the customer_id is automatically set from the authenticated user."
-// @Success      200  {object}  gin.H{"id": "string", "message": "Order created successfully"}
-// @Failure      400  {object}  apperror.ErrorDTO
-// @Failure      401  {object}  apperror.ErrorDTO
+// @Success      200  {object}  map[string]any
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/ [post]
 func (h *handler) Create(c *gin.Context) {
 	ctx := context.Background()
@@ -84,12 +84,12 @@ func (h *handler) Create(c *gin.Context) {
 // @Summary      Get all orders
 // @Description  Get all orders
 // @Tags         Order Domain
-// @Security BearerAuth
+// @Security 	 BearerAuth
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  gin.H{"orders": []dto.OrderResponseDTO}
-// @Failure      400  {object}  apperror.ErrorDTO
-// @Failure      401  {object}  apperror.ErrorDTO
+// @Success      200  {object}  map[string]any
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/ [get]
 func (h *handler) GetAll(c *gin.Context) {
 	ctx := context.Background()

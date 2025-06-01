@@ -29,8 +29,8 @@ func New(service ports.PaymentService) *handler {
 // @Produce      json
 // @Param        request body dto.CheckPaymentDTO true "Resource URL to check payment status"
 // @Success      200
-// @Failure      400  {object}  apperror.ErrorDTO
-// @Failure      500  {object}  apperror.ErrorDTO
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      500  {object}  errors.ErrorDTO
 // @Router       /payment/check [post]
 func (h *handler) CheckPayment(c *gin.Context) {
 	ctx := c.Request.Context()

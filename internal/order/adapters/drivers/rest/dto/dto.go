@@ -15,9 +15,6 @@ type OrderProductInfo struct {
 }
 
 func (c *CreateOrderDTO) Validate() error {
-	if c.CustomerID == "" {
-		return errors.New("customer_id is required")
-	}
 	if len(c.Products) == 0 {
 		return errors.New("at least one product is required")
 	}

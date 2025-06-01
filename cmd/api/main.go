@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/core/dto"
 	"log"
 	"os"
 	"time"
@@ -16,22 +15,29 @@ import (
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	adminpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
 	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
-	admin "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminservice "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
 	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
-	customer "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivens/postgre"
 	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest"
 	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
+	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
+	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
+	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
+	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
 	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
 	product "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
+	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
+	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
 )
 
 // @title           GoLunch
@@ -58,7 +64,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{}, &order.Order{}, &product.Product{})
+	err = db.AutoMigrate(
+		&customermodel.Customer{},
+		&adminmodel.Admin{},
+		&product.Product{},
+		&order.Order{},
+		&productordermodel.ProductOrder{},
+		&paymentmodel.Payment{},
+	)
 	if err != nil {
 		log.Fatalf("error to migrate: %v", err)
 	}
@@ -81,9 +94,33 @@ func main() {
 	productService := servicesproduct.New(productRepository)
 	productHandler := restproduct.New(productService)
 
-	// Order
+	// ProductOrder
+	productOrderRepository := productorderrepository.New(db)
+
+	// QR Code Client
+	qrCodeClient := mercadopago.New()
+
+	// Order Repository
 	orderRepository := orderpostgre.NewRepository(db)
-	orderService := orderservice.New(orderRepository, productRepository)
+
+	// Payment
+	paymentRepository := paymentpostgre.New(db)
+	paymentService := paymentservice.New(
+		qrCodeClient,
+		orderRepository,
+		paymentRepository,
+		productOrderRepository,
+		productRepository,
+	)
+	paymentHandler := paymenthandler.New(paymentService)
+
+	// Order Service
+	orderService := orderservice.New(
+		orderRepository,
+		productRepository,
+		productOrderRepository,
+		paymentService,
+	)
 	orderHandler := orderrest.New(orderService)
 
 	// Default Routes
@@ -91,11 +128,14 @@ func main() {
 	r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
 
 	// Public Routes (login/register)
-	r.GET("/identify/:cpf", customerHandler.Identify)
-	r.GET("/anonymous", customerHandler.Anonymous)
+	r.GET("/customer/identify/:cpf", customerHandler.Identify)
+	r.GET("/customer/anonymous", customerHandler.Anonymous)
 	r.POST("/customer/register", customerHandler.Create)
 	r.POST("/admin/register", adminHandler.Register)
 	r.POST("/admin/login", adminHandler.Login)
+
+	// Webhook for Mercado Pago
+	r.POST("/webhook/payment/check", paymentHandler.CheckPayment)
 
 	// Authenticated Group
 	authenticated := r.Group("/")
@@ -143,4 +183,8 @@ func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
+}
+
+type PongResponse struct {
+	Message string `json:"message"`
 }

@@ -13,10 +13,11 @@ import (
 type OrderStatus string
 
 const (
-	OrderStatusReceived      OrderStatus = "received"
-	OrderStatusInPreparation OrderStatus = "in_preparation"
-	OrderStatusReady         OrderStatus = "ready"
-	OrderStatusCompleted     OrderStatus = "completed"
+	OrderStatusAwaitingPayment OrderStatus = "awaiting_payment"
+	OrderStatusReceived        OrderStatus = "received"
+	OrderStatusInPreparation   OrderStatus = "in_preparation"
+	OrderStatusReady           OrderStatus = "ready"
+	OrderStatusCompleted       OrderStatus = "completed"
 )
 
 type Order struct {
@@ -48,7 +49,7 @@ func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
 		CustomerID:    dto.CustomerID,
 		Price:         totalPrice,
 		PreparingTime: preparingTime,
-		Status:        OrderStatusReceived,
+		Status:        OrderStatusAwaitingPayment,
 	}
 }
 

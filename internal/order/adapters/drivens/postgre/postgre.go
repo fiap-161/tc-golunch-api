@@ -2,16 +2,18 @@ package postgre
 
 import (
 	"context"
+
 	"gorm.io/gorm"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
+	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 )
 
 type Repository struct {
 	DB *gorm.DB
 }
 
-func NewRepository(DB *gorm.DB) *Repository {
+func NewRepository(DB *gorm.DB) orderport.OrderRepository {
 	return &Repository{
 		DB: DB,
 	}

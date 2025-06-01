@@ -1,5 +1,15 @@
 basePath: /
 definitions:
+  dto.CheckPaymentDTO:
+    properties:
+      resource:
+        type: string
+      topic:
+        type: string
+    required:
+    - resource
+    - topic
+    type: object
   dto.CreateCustomerDTO:
     properties:
       cpf:
@@ -8,6 +18,15 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  dto.CreateOrderDTO:
+    properties:
+      customer_id:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/dto.OrderProductInfo'
+        type: array
     type: object
   dto.LoginDTO:
     properties:
@@ -18,6 +37,13 @@ definitions:
     required:
     - email
     - password
+    type: object
+  dto.OrderProductInfo:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
     type: object
   dto.ProductListResponseDTO:
     properties:
@@ -72,7 +98,7 @@ definitions:
       description:
         type: string
       id:
-        type: integer
+        type: string
       image_url:
         type: string
       name:
@@ -116,10 +142,15 @@ definitions:
       token:
         type: string
     type: object
+  main.PongResponse:
+    properties:
+      message:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
-  description: Rest API para facilitar o gerenciamento de pedidos em uma lanchonete
+  description: REST API to facilitate order management in a snack bar.
   title: GoLunch
   version: "1.0"
 paths:
@@ -188,7 +219,55 @@ paths:
       summary: Register Admin
       tags:
       - Admin Domain
-  /customers:
+  /customer/anonymous:
+    get:
+      consumes:
+      - application/json
+      description: Gera um token JWT para um cliente anônimo (sem CPF)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_customer_adapters_drivers_rest.TokenDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Gera cliente anônimo
+      tags:
+      - Customer Domain
+  /customer/identify/{cpf}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna um token JWT ao identificar o cliente pelo CPF
+      parameters:
+      - description: CPF do cliente
+        in: path
+        name: cpf
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_customer_adapters_drivers_rest.TokenDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Identifica cliente por CPF
+      tags:
+      - Customer Domain
+  /customer/register:
     post:
       consumes:
       - application/json
@@ -219,54 +298,110 @@ paths:
       summary: Cria um novo cliente
       tags:
       - Customer Domain
-  /customers/anonymous:
+  /order/:
     get:
       consumes:
       - application/json
-      description: Gera um token JWT para um cliente anônimo (sem CPF)
+      description: Get all orders
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_customer_adapters_drivers_rest.TokenDTO'
-        "500":
-          description: Internal Server Error
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
-      summary: Gera cliente anônimo
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Get all orders
       tags:
-      - Customer Domain
-  /customers/identify/{cpf}:
-    get:
+      - Order Domain
+    post:
       consumes:
       - application/json
-      description: Retorna um token JWT ao identificar o cliente pelo CPF
+      description: Create a new order
       parameters:
-      - description: CPF do cliente
-        in: path
-        name: cpf
+      - description: Order to create. Note that the customer_id is automatically set
+          from the authenticated user.
+        in: body
+        name: request
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/dto.CreateOrderDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_customer_adapters_drivers_rest.TokenDTO'
-        "404":
-          description: Not Found
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Create Order
+      tags:
+      - Order Domain
+  /payment/check:
+    post:
+      consumes:
+      - application/json
+      description: Check the status of a payment by its resource URL
+      parameters:
+      - description: Resource URL to check payment status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPaymentDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
-      summary: Identifica cliente por CPF
+      security:
+      - BearerAuth: []
+      summary: Check Payment [Mercado Pago Integration]
       tags:
-      - Customer Domain
+      - Payment Domain
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: Health Check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.PongResponse'
+      summary: Answers with "pong"
+      tags:
+      - Ping
   /product:
     get:
       consumes:

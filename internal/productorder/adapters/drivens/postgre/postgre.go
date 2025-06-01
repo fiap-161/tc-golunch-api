@@ -1,8 +1,12 @@
 package postgre
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
+	"context"
+
 	"gorm.io/gorm"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/ports"
 )
 
 type DB interface {
@@ -15,13 +19,13 @@ type Repository struct {
 	db DB
 }
 
-func NewRepository(db DB) *Repository {
+func New(db DB) ports.ProductOrderRepository {
 	return &Repository{
 		db: db,
 	}
 }
 
-func (r *Repository) CreateBulk(orders []model.ProductOrder) (int, error) {
+func (r *Repository) CreateBulk(ctx context.Context, orders []model.ProductOrder) (int, error) {
 	tx := r.db.Create(&orders)
 	if tx.Error != nil {
 		return 0, tx.Error
@@ -30,7 +34,7 @@ func (r *Repository) CreateBulk(orders []model.ProductOrder) (int, error) {
 	return len(orders), nil
 }
 
-func (r *Repository) FindByOrderID(orderID string) ([]model.ProductOrder, error) {
+func (r *Repository) FindByOrderID(ctx context.Context, orderID string) ([]model.ProductOrder, error) {
 	var orders []model.ProductOrder
 
 	tx := r.db.Where("order_id = ?", orderID).Find(&orders)

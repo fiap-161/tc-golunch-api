@@ -2,6 +2,7 @@ package postgre
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
 
 	"gorm.io/gorm"
 
@@ -18,7 +19,7 @@ type Repository struct {
 	db DB
 }
 
-func NewRepository(db DB) *Repository {
+func NewRepository(db DB) ports.CustomerRepository {
 	return &Repository{
 		db: db,
 	}
