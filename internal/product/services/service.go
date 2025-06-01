@@ -25,7 +25,7 @@ func (s *Service) Create(ctx context.Context, product model.Product) (model.Prod
 		return model.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
 	}
 
-	saved, err := s.repo.Create(ctx, product)
+	saved, err := s.repo.Create(ctx, product.Build())
 	if err != nil {
 		return model.Product{}, &apperror.InternalError{Msg: err.Error()}
 	}
