@@ -76,7 +76,8 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 
 ### Diagrama de Entidades
 
-![lanchonete-fase01drawio drawio](https://github.com/user-attachments/assets/7d68f06b-056a-4252-9608-f2bea084c8cc)
+![image](https://github.com/user-attachments/assets/435c5214-02d1-41eb-92eb-8443ed8b6abd)
+
 
 
 > ℹ️ O diagrama acima mostra as relações entre os usuários, pedidos, produtos e pagamentos dentro do sistema.
