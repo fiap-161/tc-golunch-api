@@ -8,27 +8,27 @@ type CategoryDTO struct {
 type Category uint
 
 const (
-	Desconhecida Category = iota
-	Lanche
-	Acompanhamento
-	Bebida
-	Sobremesa
+	Unknown Category = iota
+	Meal
+	Side
+	Drink
+	Dessert
 )
 
 var categoryToString = map[Category]string{
-	Desconhecida:   "desconhecida",
-	Lanche:         "lanche",
-	Acompanhamento: "acompanhamento",
-	Bebida:         "bebida",
-	Sobremesa:      "sobremesa",
+	Unknown: "unknown",
+	Meal:    "meal",
+	Side:    "side",
+	Drink:   "drink",
+	Dessert: "dessert",
 }
 
 var stringToCategory = map[string]Category{
-	"desconhecida":   Desconhecida,
-	"lanche":         Lanche,
-	"acompanhamento": Acompanhamento,
-	"bebida":         Bebida,
-	"sobremesa":      Sobremesa,
+	"unknown": Unknown,
+	"meal":    Meal,
+	"side":    Side,
+	"drink":   Drink,
+	"dessert": Dessert,
 }
 
 func (c Category) String() string {
@@ -41,7 +41,7 @@ func (c Category) String() string {
 func IsValidCategory(value uint) bool {
 	cat := Category(value)
 	_, ok := categoryToString[cat]
-	return ok && cat != Desconhecida
+	return ok && cat != Unknown
 }
 
 func FromCategoryString(name string) (Category, bool) {
@@ -52,7 +52,7 @@ func FromCategoryString(name string) (Category, bool) {
 func GetAllCategories() []CategoryDTO {
 	categories := make([]CategoryDTO, 0, len(categoryToString))
 	for cat, name := range categoryToString {
-		if cat == Desconhecida {
+		if cat == Unknown {
 			continue
 		}
 		categories = append(categories, CategoryDTO{

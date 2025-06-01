@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/client/qrcodeproviders/core/dto"
 	"log"
 	"os"
 	"time"
@@ -27,9 +28,9 @@ import (
 	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest"
 	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
 	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
+	product "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
 )
 
@@ -57,7 +58,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{}, &order.Order{})
+	err = db.AutoMigrate(&customer.Customer{}, &admin.Admin{}, &dto.Product{}, &order.Order{}, &product.Product{})
 	if err != nil {
 		log.Fatalf("error to migrate: %v", err)
 	}
@@ -76,9 +77,9 @@ func main() {
 	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
 	// Product
-	productRepository := productpostgre.NewProductRepository(db)
-	productService := servicesproduct.NewProductService(productRepository)
-	productHandler := restproduct.NewProductHandler(productService)
+	productRepository := productpostgre.New(db)
+	productService := servicesproduct.New(productRepository)
+	productHandler := restproduct.New(productService)
 
 	// Order
 	orderRepository := orderpostgre.NewRepository(db)
