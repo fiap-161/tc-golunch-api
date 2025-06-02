@@ -34,7 +34,7 @@ import (
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
 	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
 	product "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
-	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/services"
+	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/service"
 	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
@@ -150,6 +150,7 @@ func main() {
 	authenticated.POST("/order", orderHandler.Create)
 	authenticated.GET("/order", orderHandler.GetAll)
 	authenticated.PUT("/order/:id", middleware.AdminOnly(), orderHandler.Update)
+	authenticated.GET("/order/panel", middleware.AdminOnly(), orderHandler.GetPanel)
 
 	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")

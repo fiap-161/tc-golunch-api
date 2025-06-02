@@ -137,6 +137,17 @@ func (h *handler) GetAll(c *gin.Context) {
 	})
 }
 
+// GetPanel Get Order Panel godoc
+// @Summary      Get Order Panel
+// @Description  Get the order panel with all orders that are in the panel status
+// @Tags         Order Domain
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dto.OrderPanelDTO
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
+// @Router       /order/panel [get]
 func (h *handler) GetPanel(c *gin.Context) {
 	ctx := context.Background()
 	orders, err := h.service.GetPanel(ctx)
@@ -145,7 +156,13 @@ func (h *handler) GetPanel(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"panel": orders,
+	var panel []dto.OrderPanelItemDTO
+	for _, order := range orders {
+		panelDTO := order.ToPanelItemDTO()
+		panel = append(panel, panelDTO)
+	}
+
+	c.JSON(http.StatusOK, dto.OrderPanelDTO{
+		Orders: panel,
 	})
 }

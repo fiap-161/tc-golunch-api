@@ -18,6 +18,15 @@ type OrderProductInfo struct {
 	Quantity  int    `json:"quantity"`
 }
 
+type OrderPanelDTO struct {
+	Orders []OrderPanelItemDTO `json:"orders"`
+}
+
+type OrderPanelItemDTO struct {
+	OrderNumber string `json:"order_number"`
+	Status      string `json:"status"`
+}
+
 func (c *CreateOrderDTO) Validate() error {
 	if len(c.Products) == 0 {
 		return errors.New("at least one product is required")
