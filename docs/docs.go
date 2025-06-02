@@ -114,9 +114,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/customers": {
-            "post": {
-                "description": "Cria um cliente com base nas informações enviadas no corpo da requisição",
+        "/customer/anonymous": {
+            "get": {
+                "description": "Generates a JWT token for an anonymous customer (without CPF)",
                 "consumes": [
                     "application/json"
                 ],
@@ -126,10 +126,83 @@ const docTemplate = `{
                 "tags": [
                     "Customer Domain"
                 ],
-                "summary": "Cria um novo cliente",
+                "summary": "Generates anonymous customer",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_customer_adapters_drivers_rest.TokenDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/identify/{cpf}": {
+            "get": {
+                "description": "Returns a JWT token when identifying the customer by CPF",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer Domain"
+                ],
+                "summary": "Identifies customer by CPF",
                 "parameters": [
                     {
-                        "description": "Dados do cliente",
+                        "type": "string",
+                        "description": "Customer CPF",
+                        "name": "cpf",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_customer_adapters_drivers_rest.TokenDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/register": {
+            "post": {
+                "description": "Creates a customer based on the information sent in the request body",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer Domain"
+                ],
+                "summary": "Creates a new customer",
+                "parameters": [
+                    {
+                        "description": "Customer data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -161,9 +234,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/customers/anonymous": {
+        "/order/": {
             "get": {
-                "description": "Gera um token JWT para um cliente anônimo (sem CPF)",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all orders",
                 "consumes": [
                     "application/json"
                 ],
@@ -171,14 +249,220 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Customer Domain"
+                    "Order Domain"
                 ],
-                "summary": "Gera cliente anônimo",
+                "summary": "Get all orders",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_customer_adapters_drivers_rest.TokenDTO"
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Domain"
+                ],
+                "summary": "Create Order",
+                "parameters": [
+                    {
+                        "description": "Order to create. Note that the customer_id is automatically set from the authenticated user.",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateOrderDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/panel": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get the order panel with all orders that are in the panel status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Domain"
+                ],
+                "summary": "Get Order Panel",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderPanelDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing order status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Domain"
+                ],
+                "summary": "Update Order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Order status update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateOrderDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/payment/check": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Check the status of a payment by its resource URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment Domain"
+                ],
+                "summary": "Check Payment [Mercado Pago Integration]",
+                "parameters": [
+                    {
+                        "description": "Resource URL to check payment status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPaymentDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
                         }
                     },
                     "500": {
@@ -190,9 +474,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/customers/identify/{cpf}": {
+        "/ping": {
             "get": {
-                "description": "Retorna um token JWT ao identificar o cliente pelo CPF",
+                "description": "Health Check",
                 "consumes": [
                     "application/json"
                 ],
@@ -200,35 +484,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Customer Domain"
+                    "Ping"
                 ],
-                "summary": "Identifica cliente por CPF",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "CPF do cliente",
-                        "name": "cpf",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Answers with \"pong\"",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_customer_adapters_drivers_rest.TokenDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorDTO"
+                            "$ref": "#/definitions/main.PongResponse"
                         }
                     }
                 }
@@ -255,7 +518,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')",
+                        "description": "Category name (e.g., 'drink', 'meal', 'side', 'dessert')",
                         "name": "category",
                         "in": "query"
                     }
@@ -372,7 +635,7 @@ const docTemplate = `{
                 "summary": "Update Product",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Product ID",
                         "name": "id",
                         "in": "path",
@@ -444,6 +707,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CheckPaymentDTO": {
+            "type": "object",
+            "required": [
+                "resource",
+                "topic"
+            ],
+            "properties": {
+                "resource": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateCustomerDTO": {
             "type": "object",
             "properties": {
@@ -455,6 +733,20 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CreateOrderDTO": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderProductInfo"
+                    }
                 }
             }
         },
@@ -470,6 +762,39 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.OrderPanelDTO": {
+            "type": "object",
+            "properties": {
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderPanelItemDTO"
+                    }
+                }
+            }
+        },
+        "dto.OrderPanelItemDTO": {
+            "type": "object",
+            "properties": {
+                "order_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderProductInfo": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },
@@ -551,7 +876,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "image_url": {
                     "type": "string"
@@ -578,6 +903,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateOrderDTO": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
                     "type": "string"
                 }
             }
@@ -619,6 +955,14 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "main.PongResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
@@ -637,7 +981,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "GoLunch",
-	Description:      "Rest API para facilitar o gerenciamento de pedidos em uma lanchonete",
+	Description:      "REST API to facilitate order management in a snack bar.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

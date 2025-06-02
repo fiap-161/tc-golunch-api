@@ -1,10 +1,12 @@
 package middleware
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 )
 
 func AuthMiddleware(jwtService *auth.JWTService) gin.HandlerFunc {

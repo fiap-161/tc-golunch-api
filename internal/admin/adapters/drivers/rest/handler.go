@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	dto "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
-	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )
 
@@ -36,7 +36,7 @@ func (a *AdminHandler) Register(c *gin.Context) {
 
 	var input dto.RegisterDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
@@ -70,7 +70,7 @@ func (a *AdminHandler) Login(c *gin.Context) {
 
 	var input dto.LoginDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})

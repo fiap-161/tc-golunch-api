@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/model"
 	"time"
-
+	
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/model"
 )
 
 type JWTService struct {

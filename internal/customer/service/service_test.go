@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"testing"
 	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 
 type mockRepo struct {

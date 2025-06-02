@@ -1,25 +1,25 @@
 package rest
 
 import (
-	"encoding/json"
-	"net/http"
-	"strconv"
-	"strings"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/dto"
+	"context"
+	"fmt"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
-	appError "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"strings"
 )
 
-type ProductHandler struct {
+type Handler struct {
 	Service ports.ProductService
 }
 
-func NewProductHandler(service ports.ProductService) *ProductHandler {
-	return &ProductHandler{Service: service}
+func New(service ports.ProductService) *Handler {
+	return &Handler{Service: service}
 }
 
 // Create Product godoc
@@ -33,30 +33,30 @@ func NewProductHandler(service ports.ProductService) *ProductHandler {
 // @Success      201  {object}  dto.ProductResponseDTO
 // @Failure      400  {object}  errors.ErrorDTO
 // @Router       /product/ [post]
-func (controller *ProductHandler) Create(c *gin.Context) {
+func (h *Handler) Create(c *gin.Context) {
 	var productDTO dto.ProductRequestDTO
 
 	if err := c.ShouldBindJSON(&productDTO); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
 		return
 	}
 
-	productModel := dto.FromRequestDTOToModel(productDTO)
-	product, err := controller.Service.Create(productModel)
+	var product model.Product
+	product = product.FromRequestDTO(productDTO)
+	created, err := h.Service.Create(context.Background(), product)
 
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
-	productRespDTO := dto.FromModelToResponseDTO(product)
-	c.JSON(http.StatusCreated, productRespDTO)
+	c.JSON(http.StatusCreated, created)
 }
 
-// List Categories godoc
+// ListCategories List Categories godoc
 // @Summary      List Categories
 // @Description  List Categories
 // @Tags         Product Domain
@@ -65,38 +65,38 @@ func (controller *ProductHandler) Create(c *gin.Context) {
 // @Produce      json
 // @Success      200   {array}   enum.CategoryDTO
 // @Router       /product/categories [get]
-func (controller *ProductHandler) ListCategories(c *gin.Context) {
-	c.JSON(http.StatusOK, controller.Service.ListCategories())
+func (h *Handler) ListCategories(c *gin.Context) {
+	ctx := context.Background()
+	c.JSON(http.StatusOK, h.Service.ListCategories(ctx))
 }
 
-// Get All Products by Category godoc
+// GetAll Get All Products by Category godoc
 // @Summary      Get all products by category
 // @Description  Returns all products. Optionally, filter by category using query param. Categories must match those returned from [GET] /product/categories.
 // @Tags         Product Domain
 // @Security BearerAuth
 // @Accept       json
 // @Produce      json
-// @Param        category query string false "Category name (e.g., 'bebida', 'lanche', 'acompanhamento', 'sobremesa')"
+// @Param        category query string false "Category name (e.g., 'drink', 'meal', 'side', 'dessert')"
 // @Success      200  {object}  dto.ProductListResponseDTO
 // @Failure      400  {object}  errors.ErrorDTO
 // @Router       /product [get]
-func (controller *ProductHandler) GetAll(c *gin.Context) {
+func (h *Handler) GetAll(c *gin.Context) {
 	query := c.Query("category")
 	query = strings.ToLower(query)
 	query = strings.ReplaceAll(query, " ", "")
 
-	_, ok := enum.FromCategoryString(query)
-
+	category, ok := enum.FromCategoryString(query)
+	fmt.Println(category)
 	if !ok && query != "" {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Validation error",
 			MessageError: "Invalid category",
 		})
 		return
 	}
 
-	list, err := controller.Service.GetAll(query)
-
+	list, err := h.Service.GetAll(context.Background(), uint(category))
 	if err != nil {
 		helper.HandleError(c, err)
 		return
@@ -104,8 +104,8 @@ func (controller *ProductHandler) GetAll(c *gin.Context) {
 
 	var products []dto.ProductResponseDTO
 	for _, product := range list {
-		productRespDTO := dto.FromModelToResponseDTO(product)
-		products = append(products, productRespDTO)
+		productDTO := product.FromEntityToResponseDTO()
+		products = append(products, productDTO)
 	}
 
 	c.JSON(http.StatusOK, dto.ProductListResponseDTO{
@@ -121,37 +121,33 @@ func (controller *ProductHandler) GetAll(c *gin.Context) {
 // @Security BearerAuth
 // @Accept       json
 // @Produce      json
-// @Param        id       path      int                         true  "Product ID"
+// @Param        id       path      string                         true  "Product ID"
 // @Param        request  body      dto.ProductRequestUpdateDTO true  "Product data to update"
 // @Success      200      {object}  dto.ProductResponseDTO
 // @Failure      400      {object}  errors.ErrorDTO
 // @Router       /product/{id} [put]
-func (controller *ProductHandler) Update(c *gin.Context) {
-	idParam := c.Param("id")
-	id, _ := strconv.Atoi(idParam)
+func (h *Handler) Update(c *gin.Context) {
+	id := c.Param("id")
 
 	var productUpdateDTO dto.ProductRequestUpdateDTO
-	decoder := json.NewDecoder(c.Request.Body)
-	decoder.DisallowUnknownFields()
 
-	if err := decoder.Decode(&productUpdateDTO); err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
+	if err := c.ShouldBindJSON(&productUpdateDTO); err != nil {
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
 		})
 		return
 	}
 
-	product := dto.FromRequestUpdateDTOToModel(productUpdateDTO)
-
-	productUpdated, err := controller.Service.Update(product, uint(id))
-
+	var product model.Product
+	product = product.FromUpdateDTO(productUpdateDTO)
+	updated, err := h.Service.Update(context.Background(), product, id)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.FromModelToResponseDTO(productUpdated))
+	c.JSON(http.StatusOK, updated)
 }
 
 // Delete Product godoc
@@ -165,11 +161,10 @@ func (controller *ProductHandler) Update(c *gin.Context) {
 // @Success      204  "No Content"
 // @Failure      400  {object}  errors.ErrorDTO
 // @Router       /product/{id} [delete]
-func (controller *ProductHandler) Delete(c *gin.Context) {
-	idParam := c.Param("id")
-	id, _ := strconv.Atoi(idParam)
+func (h *Handler) Delete(c *gin.Context) {
+	id := c.Param("id")
 
-	err := controller.Service.Delete(uint(id))
+	err := h.Service.Delete(context.Background(), id)
 
 	if err != nil {
 		helper.HandleError(c, err)
@@ -179,23 +174,14 @@ func (controller *ProductHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-func (controller *ProductHandler) ValidateIfProductExists(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
+func (h *Handler) ValidateIfProductExists(c *gin.Context) {
+	id := c.Param("id")
 
+	_, err := h.Service.FindByID(context.Background(), id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, appError.ErrorDTO{
-			Message:      "Validation error",
-			MessageError: "ID must be a valid integer",
-		})
+		helper.HandleError(c, err)
 		return
 	}
 
-	_, err2 := controller.Service.FindByID(uint(id))
-
-	if err2 != nil {
-		helper.HandleError(c, err2)
-		return
-	}
 	c.Next()
 }

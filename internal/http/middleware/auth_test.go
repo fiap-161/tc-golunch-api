@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	"github.com/gin-gonic/gin"
+	
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 )
 
 func TestAuthMiddleware(t *testing.T) {

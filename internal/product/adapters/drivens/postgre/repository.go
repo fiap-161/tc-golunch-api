@@ -1,55 +1,63 @@
 package postgre
 
 import (
+	"context"
 	"errors"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/dto"
+	"gorm.io/gorm"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
-	appErrors "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
-	"gorm.io/gorm"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
-type ProductRepository struct {
-	DB *gorm.DB
+type DB interface {
+	Create(value any) *gorm.DB
+	Where(query any, args ...any) *gorm.DB
+	First(dest any, conds ...any) *gorm.DB
+	Find(dest any, conds ...any) *gorm.DB
+	Delete(value any, conds ...any) *gorm.DB
+	Model(value any) *gorm.DB
+	Updates(values any) *gorm.DB
 }
 
-func NewProductRepository(db *gorm.DB) *ProductRepository {
-	return &ProductRepository{DB: db}
+type Repository struct {
+	db DB
 }
 
-func (r *ProductRepository) Create(product model.Product) (model.Product, error) {
-	productDAO := dto.FromModelToDAO(product)
-	result := r.DB.Create(&productDAO)
-	if result.Error != nil {
-		return model.Product{}, result.Error
+func New(db DB) *Repository {
+	return &Repository{
+		db: db,
 	}
-	return dto.FromDAOToModel(productDAO), nil
 }
 
-func (r *ProductRepository) GetAll(category string) ([]model.Product, error) {
-	var productDAOs []dto.Product
-	query := r.DB
+func (r *Repository) Create(_ context.Context, product model.Product) (model.Product, error) {
+	tx := r.db.Create(&product)
+	if tx.Error != nil {
+		return model.Product{}, tx.Error
+	}
 
-	if category != "" {
+	return product, nil
+}
+
+func (r *Repository) GetAll(_ context.Context, category uint) ([]model.Product, error) {
+	var products []model.Product
+
+	query := r.db
+	if category > 0 {
 		query = query.Where("category = ?", category)
 	}
 
-	if err := query.Find(&productDAOs).Error; err != nil {
+	if err := query.Find(&products).Error; err != nil {
 		return nil, err
-	}
-
-	var products []model.Product
-	for _, dao := range productDAOs {
-		products = append(products, dto.FromDAOToModel(dao))
 	}
 
 	return products, nil
 }
 
-func (r *ProductRepository) Update(id uint, updated model.Product) (model.Product, error) {
-	var existing dto.Product
-	if err := r.DB.First(&existing, id).Error; err != nil {
+func (r *Repository) Update(ctx context.Context, id string, updated model.Product) (model.Product, error) {
+	existing, err := r.FindByID(ctx, id)
+	if err != nil {
 		return model.Product{}, err
 	}
 
@@ -69,52 +77,65 @@ func (r *ProductRepository) Update(id uint, updated model.Product) (model.Produc
 	if updated.PreparingTime != 0 {
 		updates["preparing_time"] = updated.PreparingTime
 	}
-	if updated.Category != enum.Desconhecida {
-		updates["category"] = updated.Category.String()
+	if updated.Category != enum.Unknown {
+		updates["category"] = updated.Category
 	}
 
 	if len(updates) == 0 {
-		return dto.FromDAOToModel(existing), nil
+		return existing, nil
 	}
 
-	if err := r.DB.Model(&dto.Product{}).Where("id = ?", id).Updates(updates).Error; err != nil {
+	if err := r.db.Model(&model.Product{}).Where("id = @id", map[string]any{"id": id}).Updates(updates).Error; err != nil {
 		return model.Product{}, err
 	}
 
-	var updatedDAO dto.Product
-	if err := r.DB.First(&updatedDAO, id).Error; err != nil {
+	var updatedProduct model.Product
+	if err := r.db.Where("id = @id", map[string]any{"id": id}).First(&updatedProduct).Error; err != nil {
 		return model.Product{}, err
 	}
 
-	return dto.FromDAOToModel(updatedDAO), nil
+	return updatedProduct, nil
 }
 
-func (r *ProductRepository) FindByID(id uint) (model.Product, error) {
-	var existing dto.Product
-	if err := r.DB.First(&existing, id).Error; err != nil {
+func (r *Repository) FindByID(_ context.Context, id string) (model.Product, error) {
+	var product model.Product
+	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.Product{}, &appErrors.NotFoundError{Msg: "Product not found"}
+			return model.Product{}, &apperror.NotFoundError{Msg: "Product not found"}
 		}
 		return model.Product{}, err
 	}
 
-	return dto.FromDAOToModel(existing), nil
+	return product, nil
 }
 
-func (r *ProductRepository) Delete(id uint) error {
-	var product dto.Product
+func (r *Repository) FindByIDs(_ context.Context, ids []string) ([]model.Product, error) {
+	var products []model.Product
 
-	if err := r.DB.First(&product, id).Error; err != nil {
+	if err := r.db.Where("id IN ?", ids).Find(&products).Error; err != nil {
+		return nil, err
+	}
+
+	if len(products) == 0 {
+		return nil, &apperror.NotFoundError{Msg: "No products found"}
+	}
+
+	return products, nil
+}
+
+func (r *Repository) Delete(_ context.Context, id string) error {
+	var product model.Product
+
+	if err := r.db.First(&product, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return &appErrors.NotFoundError{Msg: "Product not found"}
+			return &apperror.NotFoundError{Msg: "Product not found"}
 		}
 		return err
 	}
 
-	if err := r.DB.Delete(&product).Error; err != nil {
+	if err := r.db.Delete(&product).Error; err != nil {
 		return err
 	}
 
 	return nil
-
 }

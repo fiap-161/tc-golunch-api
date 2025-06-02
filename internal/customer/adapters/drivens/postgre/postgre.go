@@ -2,6 +2,7 @@ package postgre
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
 
 	"gorm.io/gorm"
 
@@ -18,7 +19,7 @@ type Repository struct {
 	db DB
 }
 
-func NewRepository(db DB) *Repository {
+func NewRepository(db DB) ports.CustomerRepository {
 	return &Repository{
 		db: db,
 	}
@@ -28,7 +29,6 @@ func (p *Repository) FindByCPF(_ context.Context, CPF string) (model.Customer, e
 	var customer model.Customer
 
 	tx := p.db.Where("cpf = ?", CPF).First(&customer)
-
 	if tx.Error != nil {
 		return model.Customer{}, tx.Error
 	}
