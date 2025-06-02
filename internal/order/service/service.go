@@ -93,3 +93,12 @@ func (s *Service) GetAll(ctx context.Context) ([]model.Order, error) {
 
 	return order, nil
 }
+
+func (s *Service) GetPanel(ctx context.Context) ([]model.Order, error) {
+	orders, err := s.orderRepo.GetPanel(ctx, model.OrderPanelStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	return orders, nil
+}

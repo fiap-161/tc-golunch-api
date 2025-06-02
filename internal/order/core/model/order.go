@@ -20,6 +20,16 @@ const (
 	OrderStatusCompleted       OrderStatus = "completed"
 )
 
+var OrderPanelStatus = []string{
+	OrderStatusReceived.String(),
+	OrderStatusInPreparation.String(),
+	OrderStatusReady.String(),
+}
+
+func (o OrderStatus) String() string {
+	return string(o)
+}
+
 type Order struct {
 	entity.Entity
 	CustomerID    string      `json:"customer_id" gorm:"index"`

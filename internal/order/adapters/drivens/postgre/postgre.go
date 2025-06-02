@@ -19,7 +19,7 @@ func New(DB *gorm.DB) orderport.OrderRepository {
 	}
 }
 
-func (p *Repository) Create(_ context.Context, order model.Order) (model.Order, error) {
+func (p *Repository) Create(ctx context.Context, order model.Order) (model.Order, error) {
 	tx := p.DB.Create(&order)
 	if tx.Error != nil {
 		return model.Order{}, tx.Error
@@ -28,7 +28,7 @@ func (p *Repository) Create(_ context.Context, order model.Order) (model.Order, 
 	return order, nil
 }
 
-func (p *Repository) GetAll(_ context.Context) ([]model.Order, error) {
+func (p *Repository) GetAll(ctx context.Context) ([]model.Order, error) {
 	var orders []model.Order
 
 	if err := p.DB.Find(&orders).Error; err != nil {
@@ -38,7 +38,7 @@ func (p *Repository) GetAll(_ context.Context) ([]model.Order, error) {
 	return orders, nil
 }
 
-func (p *Repository) FindByID(_ context.Context, id string) (model.Order, error) {
+func (p *Repository) FindByID(ctx context.Context, id string) (model.Order, error) {
 	var order model.Order
 
 	tx := p.DB.First(&order, "id = ?", id)
@@ -49,7 +49,17 @@ func (p *Repository) FindByID(_ context.Context, id string) (model.Order, error)
 	return order, nil
 }
 
-func (p *Repository) Update(_ context.Context, order model.Order) (model.Order, error) {
+func (p *Repository) GetPanel(ctx context.Context, status []string) ([]model.Order, error) {
+	var orders []model.Order
+
+	if err := p.DB.Where("status IN ?", status).Find(&orders).Error; err != nil {
+		return nil, err
+	}
+
+	return orders, nil
+}
+
+func (p *Repository) Update(ctx context.Context, order model.Order) (model.Order, error) {
 	tx := p.DB.Save(&order)
 	if tx.Error != nil {
 		return model.Order{}, tx.Error

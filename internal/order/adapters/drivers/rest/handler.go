@@ -126,13 +126,26 @@ func (h *handler) Update(c *gin.Context) {
 // @Router       /order/ [get]
 func (h *handler) GetAll(c *gin.Context) {
 	ctx := context.Background()
-	products, err := h.service.GetAll(ctx)
+	orders, err := h.service.GetAll(ctx)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"products": products,
+		"orders": orders,
+	})
+}
+
+func (h *handler) GetPanel(c *gin.Context) {
+	ctx := context.Background()
+	orders, err := h.service.GetPanel(ctx)
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"panel": orders,
 	})
 }

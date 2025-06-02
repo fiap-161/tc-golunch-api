@@ -8,6 +8,7 @@ import (
 type OrderRepository interface {
 	Create(ctx context.Context, order model.Order) (model.Order, error)
 	GetAll(ctx context.Context) ([]model.Order, error)
+	GetPanel(ctx context.Context, status []string) ([]model.Order, error)
 	FindByID(ctx context.Context, id string) (model.Order, error)
 	Update(ctx context.Context, order model.Order) (model.Order, error)
 }
