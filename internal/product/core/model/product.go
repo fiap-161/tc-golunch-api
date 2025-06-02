@@ -15,7 +15,7 @@ type Product struct {
 	Price         float64       `json:"price" gorm:"type:decimal(10,2)"`
 	Description   string        `json:"description" gorm:"type:text"`
 	PreparingTime uint          `json:"preparing_time" gorm:"type:integer"`
-	Category      enum.Category `json:"category" gorm:"type:varchar(20)"`
+	Category      enum.Category `json:"category"`
 	ImageURL      string        `json:"image_url" gorm:"type:varchar(255)"`
 }
 
