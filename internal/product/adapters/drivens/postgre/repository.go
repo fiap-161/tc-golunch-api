@@ -3,6 +3,7 @@ package postgre
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 
@@ -42,7 +43,8 @@ func (r *Repository) Create(_ context.Context, product model.Product) (model.Pro
 
 func (r *Repository) GetAll(_ context.Context, category uint) ([]model.Product, error) {
 	var products []model.Product
-
+	fmt.Println("CATEGORY")
+	fmt.Println(category)
 	query := r.db
 	if category > 0 {
 		query = query.Where("category = ?", category)

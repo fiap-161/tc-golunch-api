@@ -32,3 +32,7 @@ type ProductRequestUpdateDTO struct {
 	Category      uint    `json:"category_id"`
 	ImageURL      string  `json:"image_url" binding:"url"`
 }
+
+type ImageURLDTO struct {
+	ImageURL string `json:"url"`
+}
