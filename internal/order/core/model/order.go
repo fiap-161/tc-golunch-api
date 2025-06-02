@@ -67,7 +67,7 @@ func (o Order) BuildUpdate(status OrderStatus) Order {
 }
 
 func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
-	totalPrice, preparingTime := o.getOrderInfoFromProducts(products)
+	totalPrice, preparingTime := o.getOrderInfoFromProducts(products, dto)
 
 	return Order{
 		CustomerID:    dto.CustomerID,
@@ -77,13 +77,17 @@ func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
 	}
 }
 
-func (o Order) getOrderInfoFromProducts(products []model.Product) (float64, uint) {
+func (o Order) getOrderInfoFromProducts(products []model.Product, dto dto.CreateOrderDTO) (float64, uint) {
 	var totalPrice float64
 	var totalPreparingTime uint
 
-	for _, product := range products {
-		totalPrice += product.Price
-		totalPreparingTime += product.PreparingTime
+	for _, item := range dto.Products {
+		for _, product := range products {
+			if product.ID == item.ProductID {
+				totalPrice += product.Price * float64(item.Quantity)
+				totalPreparingTime += product.PreparingTime * uint(item.Quantity)
+			}
+		}
 	}
 
 	return totalPrice, totalPreparingTime
