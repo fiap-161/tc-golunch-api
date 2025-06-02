@@ -1,12 +1,13 @@
 package model
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 
@@ -95,7 +96,7 @@ func (o Order) getOrderInfoFromProducts(products []model.Product, dto dto.Create
 
 func (o Order) ToPanelItemDTO() dto.OrderPanelItemDTO {
 	return dto.OrderPanelItemDTO{
-		OrderNumber: o.ID[len(o.ID)-4:],
+		OrderNumber: strings.ToUpper(o.ID[len(o.ID)-4:]),
 		Status:      o.Status.String(),
 	}
 }

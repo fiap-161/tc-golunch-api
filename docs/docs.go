@@ -325,6 +325,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/order/panel": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get the order panel with all orders that are in the panel status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order Domain"
+                ],
+                "summary": "Get Order Panel",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderPanelDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/order/{id}": {
             "put": {
                 "security": [
@@ -721,6 +761,28 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.OrderPanelDTO": {
+            "type": "object",
+            "properties": {
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderPanelItemDTO"
+                    }
+                }
+            }
+        },
+        "dto.OrderPanelItemDTO": {
+            "type": "object",
+            "properties": {
+                "order_number": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }

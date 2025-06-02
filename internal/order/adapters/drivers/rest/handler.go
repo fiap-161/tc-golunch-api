@@ -162,6 +162,13 @@ func (h *handler) GetPanel(c *gin.Context) {
 		panel = append(panel, panelDTO)
 	}
 
+	if len(panel) == 0 {
+		c.JSON(http.StatusOK, dto.OrderPanelDTO{
+			Orders: []dto.OrderPanelItemDTO{},
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, dto.OrderPanelDTO{
 		Orders: panel,
 	})
