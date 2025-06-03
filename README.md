@@ -40,7 +40,7 @@ docker ps
 ```bash
 cp .env.example .env
 ```
-IMPORTANETE
+IMPORTANTE
 - Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
 - Também altere as variáveis do Mercado Pago para as descritas no documento PDF que foi enviado na entrega.
 - Para gerar o QRCode (explicado no vídeo) pode-se utilizar esse site: https://www.qr-code-generator.com/
