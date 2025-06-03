@@ -99,6 +99,13 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 ├── docker-compose.yml      # Orquestração com Docker
 └──  Dockerfile              # Docker build da aplicação
 ```
+
+# Coleção Postman
+### Pode ser encontrada no arquivo:
+
+```FIAP TC1.json```
+
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
