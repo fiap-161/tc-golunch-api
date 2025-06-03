@@ -42,7 +42,6 @@ func (r *Repository) Create(_ context.Context, product model.Product) (model.Pro
 
 func (r *Repository) GetAll(_ context.Context, category uint) ([]model.Product, error) {
 	var products []model.Product
-
 	query := r.db
 	if category > 0 {
 		query = query.Where("category = ?", category)

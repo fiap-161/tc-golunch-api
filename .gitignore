@@ -21,3 +21,6 @@ postgres-data/
 
 # IDE files
 .idea/
+
+# Images
+/uploads

@@ -3,6 +3,12 @@ package rest
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
@@ -10,9 +16,14 @@ import (
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
 )
+
+const MaxFileSize = 5 << 20
+
+var allowedTypes = map[string]bool{
+	"image/jpeg": true,
+	"image/png":  true,
+}
 
 type Handler struct {
 	Service ports.ProductService
@@ -184,4 +195,85 @@ func (h *Handler) ValidateIfProductExists(c *gin.Context) {
 	}
 
 	c.Next()
+}
+
+// UploadImage godoc
+// @Summary      Upload product image
+// @Description  Uploads a JPEG or PNG image (max 5MB) and returns its public URL
+// @Tags         Product Domain
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        image  formData  file  true  "Product image (JPEG or PNG, max 5MB)"
+// @Success      201    {object}  dto.ImageURLDTO
+// @Failure      400    {object}  errors.ErrorDTO  "Image is missing, invalid, or too large"
+// @Failure      500    {object}  errors.ErrorDTO  "Internal error while processing the image"
+// @Router       /products/image [post]
+func (h *Handler) UploadImage(c *gin.Context) {
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	publicURL := os.Getenv("PUBLIC_URL")
+
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, MaxFileSize)
+
+	fileHeader, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
+			MessageError: "Validation error",
+			Message:      "Image is required or too large (max 5MB).",
+		})
+		return
+	}
+
+	file, err := fileHeader.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, apperror.ErrorDTO{
+			MessageError: "Internal Error",
+			Message:      "Error opening file.",
+		})
+		return
+	}
+	defer file.Close()
+
+	buffer := make([]byte, 512)
+	if _, err := file.Read(buffer); err != nil {
+		c.JSON(http.StatusInternalServerError, apperror.ErrorDTO{
+			MessageError: "Internal Error",
+			Message:      "Error reading file.",
+		})
+		return
+	}
+	contentType := http.DetectContentType(buffer)
+
+	if !allowedTypes[contentType] {
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
+			MessageError: "Validation error",
+			Message:      "Only JPEG and PNG images are allowed.",
+		})
+		return
+	}
+
+	file.Seek(0, 0)
+
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		if err = os.MkdirAll(uploadDir, 0755); err != nil {
+			c.JSON(http.StatusInternalServerError, apperror.ErrorDTO{
+				MessageError: "Internal Error",
+				Message:      "Error creating directory.",
+			})
+			return
+		}
+	}
+
+	filename := fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(fileHeader.Filename))
+	fullPath := filepath.Join(uploadDir, filename)
+
+	if err := c.SaveUploadedFile(fileHeader, fullPath); err != nil {
+		c.JSON(http.StatusInternalServerError, apperror.ErrorDTO{
+			MessageError: "Internal Error",
+			Message:      "Error saving image.",
+		})
+		return
+	}
+
+	imageURL := fmt.Sprintf("%s/uploads/%s", publicURL, filename)
+	c.JSON(http.StatusCreated, dto.ImageURLDTO{ImageURL: imageURL})
 }

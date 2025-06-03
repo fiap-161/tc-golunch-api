@@ -12,10 +12,13 @@ services:
       - MERCADO_PAGO_ACCESS_TOKEN=${MERCADO_PAGO_ACCESS_TOKEN}
       - MERCADO_PAGO_SELLER_APP_USER_ID=${MERCADO_PAGO_SELLER_APP_USER_ID}
       - MERCADO_PAGO_EXTERNAL_POS_ID=${MERCADO_PAGO_EXTERNAL_POS_ID}
+      - UPLOAD_DIR=/app/uploads
+      - PUBLIC_URL=${PUBLIC_URL}
     ports:
       - "8080:8080"
     volumes:
       - ./:/app
+      - uploads-data:/app/uploads
     networks:
       - db-network
     depends_on:
@@ -42,6 +45,7 @@ services:
 
 volumes:
   pg-data:
+  uploads-data:
 
 networks:
   db-network:
