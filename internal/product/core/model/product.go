@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"errors"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
@@ -67,4 +69,17 @@ func (p Product) FromEntityToResponseDTO() dto.ProductResponseDTO {
 		Category:      p.Category.String(),
 		ImageURL:      p.ImageURL,
 	}
+}
+
+func (p Product) Validate() error {
+	if p.Name == "" {
+		return errors.New("name is required")
+	}
+	if p.Price < 0 {
+		return errors.New("price must be positive")
+	}
+	if p.Category == 0 {
+		return errors.New("category is required")
+	}
+	return nil
 }
