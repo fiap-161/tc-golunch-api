@@ -18,7 +18,7 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 
 - Go 1.20+
 - Docker e Docker Compose
-- Ter uma conta de testes no Mercado Pago
+- Ter uma conta de testes no Mercado Pago (serão enviadas credenciais de teste no arquivo da entrega, utilize-as para logar no app do Mercado Pago)
 
 ### Passos
 
@@ -40,8 +40,12 @@ docker ps
 ```bash
 cp .env.example .env
 ```
-PS: Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
-Também altere as variáveis do Mercado Pago para as suas próprias.
+IMPORTANETE
+-  Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
+- Também altere as variáveis do Mercado Pago para as suas próprias.
+- No arquivo da entrega constam as variáveis utilizadas no desenvolvimento
+- Para gerar o QRCode (explicado no vídeo) pode-se utilizar esse site: https://www.qr-code-generator.com/
+
 
 4. Suba os containers com Docker Compose:
 

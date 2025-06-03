@@ -1,7 +1,6 @@
 {
   "info": {
     "name": "FIAP TC1",
-    "description": "",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -10,26 +9,14 @@
       "item": [
         {
           "name": "Login",
-          "event": [],
           "request": {
             "method": "POST",
             "header": [],
-            "auth": {
-              "type": "noauth"
-            },
-            "description": "",
             "url": {
               "raw": "{{url}}/admin/login",
-              "protocol": "",
               "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "login"
-              ],
-              "query": [],
-              "variable": []
+                "{{url}}/admin/login"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -39,31 +26,22 @@
                   "language": "json"
                 }
               }
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
           "name": "Register",
-          "event": [],
           "request": {
             "method": "POST",
             "header": [],
-            "auth": {
-              "type": "noauth"
-            },
-            "description": "",
             "url": {
               "raw": "{{url}}/admin/register",
-              "protocol": "",
               "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "admin",
-                "register"
-              ],
-              "query": [],
-              "variable": []
+                "{{url}}/admin/register"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -73,6 +51,9 @@
                   "language": "json"
                 }
               }
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
@@ -83,76 +64,39 @@
       "item": [
         {
           "name": "Anonymous identify",
-          "event": [],
           "request": {
             "method": "GET",
             "header": [],
+            "url": {
+              "raw": "{{url}}/customer/anonymous",
+              "host": [
+                "{{url}}/customer/anonymous"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "noauth"
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/anonymous",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "anonymous"
-              ],
-              "query": [],
-              "variable": []
-            }
-          }
-        },
-        {
-          "name": "Identify by CPF",
-          "event": [],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "auth": {
-              "type": "noauth"
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/customer/identify/123",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "customer",
-                "identify",
-                "123"
-              ],
-              "query": [],
-              "variable": []
             }
           }
         },
         {
           "name": "Register with Name, Email and CPF",
-          "event": [],
           "request": {
             "method": "POST",
             "header": [],
-            "auth": {
-              "type": "noauth"
-            },
-            "description": "",
             "url": {
               "raw": "{{url}}/customer/register",
-              "protocol": "",
               "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "customer",
-                "register"
-              ],
-              "query": [],
-              "variable": []
+                "{{url}}/customer/register"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -162,182 +106,34 @@
                   "language": "json"
                 }
               }
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Order",
-      "item": [
-        {
-          "name": "Kitchen - Update Order",
-          "event": [],
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{admin_token}}",
-                "type": "string"
-              }
             },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/order/544050d7-9fab-48be-8588-91192e5579f5",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "544050d7-9fab-48be-8588-91192e5579f5"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"in_preparation\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Webhook payment check",
-          "event": [],
-          "request": {
-            "method": "POST",
-            "header": [],
             "auth": {
               "type": "noauth"
-            },
-            "description": "",
+            }
+          }
+        },
+        {
+          "name": "Identify by CPF",
+          "request": {
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{url}}/webhook/payment/check",
-              "protocol": "",
+              "raw": "{{url}}/customer/identify/123",
               "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "webhook",
-                "payment",
-                "check"
-              ],
-              "query": [],
-              "variable": []
+                "{{url}}/customer/identify/123"
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"resource\": \"https://api.mercadolibre.com/merchant_orders/31436233271\",\n  \"topic\": \"merchant_order\"\n}",
+              "raw": "",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
-            }
-          }
-        },
-        {
-          "name": "Create order",
-          "event": [],
-          "request": {
-            "method": "POST",
-            "header": [],
+            },
             "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{customer_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/order",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"products\": [\n    {\n      \"product_id\": \"1707af62-ccd0-4c22-ab41-4dce4cdef0df\",\n      \"quantity\": 1\n    },\n    {\n      \"product_id\": \"8cb93043-aa99-4e18-a5cf-df75596451f4\",\n      \"quantity\": 1\n    }\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Get All Orders",
-          "event": [],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{admin_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/order",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order"
-              ],
-              "query": [],
-              "variable": []
-            }
-          }
-        },
-        {
-          "name": "Order Panel",
-          "event": [],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{admin_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/order/panel",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "order",
-                "panel"
-              ],
-              "query": [],
-              "variable": []
+              "type": "noauth"
             }
           }
         }
@@ -347,186 +143,353 @@
       "name": "Products",
       "item": [
         {
-          "name": "Update product",
-          "event": [],
+          "name": "Delete a product",
           "request": {
-            "method": "PUT",
-            "header": [],
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "insomnia/2023.5.8"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/product/d30fb723-5bf6-4ea0-b84d-bbfdd53a8c1d",
+              "host": [
+                "{{url}}/product/d30fb723-5bf6-4ea0-b84d-bbfdd53a8c1d"
+              ]
+            },
+            "body": {},
             "auth": {
               "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{admin_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/product/{{id}}",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "{{id}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"X-Burger\",\n  \"price\": 12.99,\n  \"description\": \"Hamburguer with cheese\",\n  \"preparing_time\": 12,\n  \"category_id\": 1,\n  \"image_url\": \"https://example.com/images/cheeseburger.png\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
                 }
-              }
-            }
-          }
-        },
-        {
-          "name": "Create products",
-          "event": [],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{admin_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/product",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"x burger\",\n  \"price\": 10.99,\n  \"description\": \"x burger\",\n  \"preparing_time\": 7,\n  \"category_id\": 1,\n  \"image_url\": \"https://example.com/images/coca-cola.png\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          }
-        },
-        {
-          "name": "Get all products with filter",
-          "event": [],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{customer_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
-            "url": {
-              "raw": "{{url}}/product",
-              "protocol": "",
-              "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product"
-              ],
-              "query": [],
-              "variable": []
+              ]
             }
           }
         },
         {
           "name": "Get categories",
-          "event": [],
           "request": {
             "method": "GET",
             "header": [],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{customer_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
             "url": {
               "raw": "{{url}}/product/categories",
-              "protocol": "",
               "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "product",
-                "categories"
-              ],
-              "query": [],
-              "variable": []
+                "{{url}}/product/categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get all products with filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/product",
+              "host": [
+                "{{url}}/product"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create products",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/product",
+              "host": [
+                "{{url}}/product"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"coca\",\n  \"price\": 5.50,\n  \"description\": \"coca\",\n  \"preparing_time\": 1,\n  \"category_id\": 2,\n  \"image_url\": \"https://example.com/images/coca-cola.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update product",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/product/d30fb723-5bf6-4ea0-b84d-bbfdd53a8c1d",
+              "host": [
+                "{{url}}/product/d30fb723-5bf6-4ea0-b84d-bbfdd53a8c1d"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"X-Burger\",\n  \"price\": 12.99,\n  \"description\": \"Hamburguer with cheese\",\n  \"preparing_time\": 5,\n  \"category_id\": 1,\n  \"image_url\": \"https://example.com/images/cheeseburger.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
             }
           }
         },
         {
           "name": "Upload image",
-          "event": [],
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
-                "key": "",
-                "value": "",
-                "disabled": false,
-                "type": "default"
+                "key": "Content-Type",
+                "value": "multipart/form-data"
               }
             ],
-            "auth": {
-              "type": "bearer",
-              "bearer": {
-                "key": "token",
-                "value": "{{admin_token}}",
-                "type": "string"
-              }
-            },
-            "description": "",
             "url": {
-              "raw": "{{url}}/image/upload",
-              "protocol": "",
+              "raw": "{{url}}/product/image/upload",
               "host": [
-                "{{url}}"
-              ],
-              "path": [
-                "image",
-                "upload"
-              ],
-              "query": [],
-              "variable": []
+                "{{url}}/product/image/upload"
+              ]
             },
             "body": {
               "mode": "formdata",
               "formdata": [
                 {
-                  "key": "",
-                  "value": [
-                    "/Users/ianarnold/Documents/Screenshot 2025-06-02 at 21.15.57.png"
-                  ],
-                  "disabled": false,
-                  "type": "default"
+                  "key": "image",
+                  "value": "",
+                  "type": "file"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Webhook payment check",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/webhook/payment/check",
+              "host": [
+                "{{url}}/webhook/payment/check"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"https://api.mercadolibre.com/merchant_orders/31445486889\",\n  \"topic\": \"merchant_order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Create order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/order",
+              "host": [
+                "{{url}}/order"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\n    {\n      \"product_id\": \"d00c1f3e-62d2-4e65-aa64-6473afc71470\",\n      \"quantity\": 1\n    },\n    {\n      \"product_id\": \"8afd2f26-2bd0-409f-aa30-91efa2fb4451\",\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTE5MzgsIm5iZiI6MTc0ODk2NTUzOCwiaWF0IjoxNzQ4OTY1NTM4LCJ1c2VyX2lkIjoiM2NmMDQ2MmEtNGZiOS00YjcyLTg5NTQtN2YxMmQzZTVjN2ZkIiwidXNlcl90eXBlIjoiY3VzdG9tZXIiLCJjdXN0b20iOnsiaXNfYW5vbnltb3VzIjp0cnVlfX0.zrvH5LgWbvQPVeRDfi3sliabPkLOVFFqOZIwc_IMKf8",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/order",
+              "host": [
+                "{{url}}/order"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Kitchen - Update Order",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/order/564e954e-6274-4c71-b5ae-4143d2a5aa13",
+              "host": [
+                "{{url}}/order/564e954e-6274-4c71-b5ae-4143d2a5aa13"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_preparation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Order Panel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/order/panel",
+              "host": [
+                "{{url}}/order/panel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDkwNTEzMjgsIm5iZiI6MTc0ODk2NDkyOCwiaWF0IjoxNzQ4OTY0OTI4LCJ1c2VyX2lkIjoiZjlkNzI2NTYtOTlmMC00MzBhLWI3ODctYWZlOWRjMGM3ODU2IiwidXNlcl90eXBlIjoiYWRtaW4iLCJjdXN0b20iOm51bGx9.bAV-u7hcQNpVObKceJ46O9QPHhlT2u995lXzbmujqbQ",
+                  "type": "string"
                 }
               ]
             }
@@ -538,23 +501,7 @@
   "variable": [
     {
       "key": "url",
-      "value": "",
-      "type": "default"
-    },
-    {
-      "key": "admin_token",
-      "value": "",
-      "type": "default"
-    },
-    {
-      "key": "customer_token",
-      "value": "",
-      "type": "default"
-    },
-    {
-      "key": "id",
-      "value": "",
-      "type": "default"
+      "value": "http://localhost:8080"
     }
   ]
 }
