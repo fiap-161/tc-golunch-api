@@ -2,6 +2,8 @@
 
 API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquitetura da aplicação segue princípios da arquitetura hexagonal, com foco na separação entre os domínios.
 
+### Link para o vídeo detalhando o projeto: https://www.youtube.com/watch?v=hjpMo917tPM
+
 ## 🧰 Tecnologias Utilizadas
 
 - [Go](https://golang.org/)
@@ -16,6 +18,7 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 
 - Go 1.20+
 - Docker e Docker Compose
+- Ter uma conta de testes no Mercado Pago
 
 ### Passos
 
@@ -37,6 +40,8 @@ docker ps
 ```bash
 cp .env.example .env
 ```
+PS: Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
+Também altere as variáveis do Mercado Pago para as suas próprias.
 
 4. Suba os containers com Docker Compose:
 
