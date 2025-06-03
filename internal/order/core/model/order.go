@@ -96,7 +96,8 @@ func (o Order) getOrderInfoFromProducts(products []model.Product, dto dto.Create
 
 func (o Order) ToPanelItemDTO() dto.OrderPanelItemDTO {
 	return dto.OrderPanelItemDTO{
-		OrderNumber: strings.ToUpper(o.ID[len(o.ID)-4:]),
-		Status:      o.Status.String(),
+		OrderNumber:   strings.ToUpper(o.ID[len(o.ID)-4:]),
+		Status:        o.Status.String(),
+		PreparingTime: o.PreparingTime,
 	}
 }

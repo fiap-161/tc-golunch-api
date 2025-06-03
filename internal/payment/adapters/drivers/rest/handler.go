@@ -31,7 +31,7 @@ func New(service ports.PaymentService) *handler {
 // @Success      200
 // @Failure      400  {object}  errors.ErrorDTO
 // @Failure      500  {object}  errors.ErrorDTO
-// @Router       /payment/check [post]
+// @Router       /webhook/payment/check [post]
 func (h *handler) CheckPayment(c *gin.Context) {
 	ctx := c.Request.Context()
 

@@ -23,8 +23,9 @@ type OrderPanelDTO struct {
 }
 
 type OrderPanelItemDTO struct {
-	OrderNumber string `json:"order_number"`
-	Status      string `json:"status"`
+	OrderNumber   string `json:"order_number"`
+	Status        string `json:"status"`
+	PreparingTime uint   `json:"preparing_time"`
 }
 
 func (c *CreateOrderDTO) Validate() error {
