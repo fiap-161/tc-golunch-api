@@ -30,7 +30,7 @@ func New(db DB) ports.PaymentRepository {
 	}
 }
 
-func (p *Repository) Create(ctx context.Context, payment model.Payment) (model.Payment, error) {
+func (p *Repository) Create(_ context.Context, payment model.Payment) (model.Payment, error) {
 	tx := p.db.Create(&payment)
 	if tx.Error != nil {
 		return model.Payment{}, tx.Error
@@ -39,7 +39,7 @@ func (p *Repository) Create(ctx context.Context, payment model.Payment) (model.P
 	return payment, nil
 }
 
-func (p *Repository) GetAll(ctx context.Context) ([]model.Payment, error) {
+func (p *Repository) GetAll(_ context.Context) ([]model.Payment, error) {
 	var payments []model.Payment
 
 	if err := p.db.Find(&payments).Error; err != nil {
@@ -49,7 +49,7 @@ func (p *Repository) GetAll(ctx context.Context) ([]model.Payment, error) {
 	return payments, nil
 }
 
-func (p *Repository) FindByOrderID(ctx context.Context, orderID string) (model.Payment, error) {
+func (p *Repository) FindByOrderID(_ context.Context, orderID string) (model.Payment, error) {
 	var payment model.Payment
 
 	tx := p.db.First(&payment, "order_id = ?", orderID)
@@ -60,7 +60,7 @@ func (p *Repository) FindByOrderID(ctx context.Context, orderID string) (model.P
 	return payment, nil
 }
 
-func (p *Repository) Update(ctx context.Context, payment model.Payment) (model.Payment, error) {
+func (p *Repository) Update(_ context.Context, payment model.Payment) (model.Payment, error) {
 	tx := p.db.Save(&payment)
 	if tx.Error != nil {
 		return model.Payment{}, tx.Error
