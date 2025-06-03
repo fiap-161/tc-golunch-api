@@ -43,6 +43,7 @@ func New(service ports.ProductService) *Handler {
 // @Param        request body dto.ProductRequestDTO true "Product to create. Note category is an integer number. See [GET] /product/categories to get a valid category_id"
 // @Success      201  {object}  dto.ProductResponseDTO
 // @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /product/ [post]
 func (h *Handler) Create(c *gin.Context) {
 	var productDTO dto.ProductRequestDTO
@@ -75,6 +76,7 @@ func (h *Handler) Create(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Success      200   {array}   enum.CategoryDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /product/categories [get]
 func (h *Handler) ListCategories(c *gin.Context) {
 	ctx := context.Background()
@@ -91,6 +93,7 @@ func (h *Handler) ListCategories(c *gin.Context) {
 // @Param        category query string false "Category name (e.g., 'drink', 'meal', 'side', 'dessert')"
 // @Success      200  {object}  dto.ProductListResponseDTO
 // @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /product [get]
 func (h *Handler) GetAll(c *gin.Context) {
 	query := c.Query("category")
@@ -136,6 +139,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 // @Param        request  body      dto.ProductRequestUpdateDTO true  "Product data to update"
 // @Success      200      {object}  dto.ProductResponseDTO
 // @Failure      400      {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /product/{id} [put]
 func (h *Handler) Update(c *gin.Context) {
 	id := c.Param("id")
@@ -171,6 +175,7 @@ func (h *Handler) Update(c *gin.Context) {
 // @Param        id   path      int  true  "Product ID"
 // @Success      204  "No Content"
 // @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Router       /product/{id} [delete]
 func (h *Handler) Delete(c *gin.Context) {
 	id := c.Param("id")
@@ -205,6 +210,7 @@ func (h *Handler) ValidateIfProductExists(c *gin.Context) {
 // @Produce      json
 // @Param        image  formData  file  true  "Product image (JPEG or PNG, max 5MB)"
 // @Success      201    {object}  dto.ImageURLDTO
+// @Failure      401  {object}  errors.ErrorDTO
 // @Failure      400    {object}  errors.ErrorDTO  "Image is missing, invalid, or too large"
 // @Failure      500    {object}  errors.ErrorDTO  "Internal error while processing the image"
 // @Router       /products/image [post]
