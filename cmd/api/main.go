@@ -152,7 +152,7 @@ func main() {
 
 	// Order
 	authenticated.POST("/order", orderHandler.Create)
-	authenticated.GET("/order", orderHandler.GetAll)
+	authenticated.GET("/order", middleware.AdminOnly(), orderHandler.GetAll)
 	authenticated.PUT("/order/:id", middleware.AdminOnly(), orderHandler.Update)
 	authenticated.GET("/order/panel", middleware.AdminOnly(), orderHandler.GetPanel)
 
