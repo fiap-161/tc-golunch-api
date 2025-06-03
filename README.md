@@ -2,7 +2,7 @@
 
 API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquitetura da aplicação segue princípios da arquitetura hexagonal, com foco na separação entre os domínios.
 
-### Link para o vídeo detalhando o projeto: https://www.youtube.com/watch?v=hjpMo917tPM
+### Link para o vídeo detalhando o projeto: https://www.youtube.com/watch?v=Il2WhYLpHsw
 
 ## 🧰 Tecnologias Utilizadas
 
@@ -41,11 +41,9 @@ docker ps
 cp .env.example .env
 ```
 IMPORTANETE
--  Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
-- Também altere as variáveis do Mercado Pago para as suas próprias.
-- No arquivo da entrega constam as variáveis utilizadas no desenvolvimento
+- Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
+- Também altere as variáveis do Mercado Pago para as descritas no documento PDF que foi enviado na entrega.
 - Para gerar o QRCode (explicado no vídeo) pode-se utilizar esse site: https://www.qr-code-generator.com/
-
 
 4. Suba os containers com Docker Compose:
 
