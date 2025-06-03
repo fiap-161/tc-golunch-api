@@ -28,6 +28,11 @@ definitions:
           $ref: '#/definitions/dto.OrderProductInfo'
         type: array
     type: object
+  dto.ImageURLDTO:
+    properties:
+      url:
+        type: string
+    type: object
   dto.LoginDTO:
     properties:
       email:
@@ -510,6 +515,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
       security:
       - BearerAuth: []
       summary: Get all products by category
@@ -539,6 +548,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
       security:
       - BearerAuth: []
       summary: Create Product
@@ -562,6 +575,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
       security:
@@ -596,6 +613,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
       security:
       - BearerAuth: []
       summary: Update Product
@@ -615,9 +636,46 @@ paths:
             items:
               $ref: '#/definitions/enum.CategoryDTO'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
       security:
       - BearerAuth: []
       summary: List Categories
+      tags:
+      - Product Domain
+  /products/image:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a JPEG or PNG image (max 5MB) and returns its public URL
+      parameters:
+      - description: Product image (JPEG or PNG, max 5MB)
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ImageURLDTO'
+        "400":
+          description: Image is missing, invalid, or too large
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal error while processing the image
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      summary: Upload product image
       tags:
       - Product Domain
 securityDefinitions:

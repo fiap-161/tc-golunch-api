@@ -535,6 +535,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorDTO"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
                     }
                 }
             }
@@ -580,6 +586,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorDTO"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
                     }
                 }
             }
@@ -610,6 +622,12 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/enum.CategoryDTO"
                             }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
                         }
                     }
                 }
@@ -663,6 +681,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorDTO"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
                     }
                 }
             },
@@ -698,6 +722,62 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/image": {
+            "post": {
+                "description": "Uploads a JPEG or PNG image (max 5MB) and returns its public URL",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Domain"
+                ],
+                "summary": "Upload product image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Product image (JPEG or PNG, max 5MB)",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ImageURLDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Image is missing, invalid, or too large",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal error while processing the image",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorDTO"
                         }
@@ -747,6 +827,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.OrderProductInfo"
                     }
+                }
+            }
+        },
+        "dto.ImageURLDTO": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
                 }
             }
         },
