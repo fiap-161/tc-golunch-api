@@ -32,6 +32,10 @@ func New(db DB) *Repository {
 }
 
 func (r *Repository) Create(_ context.Context, product model.Product) (model.Product, error) {
+	if err := product.Validate(); err != nil {
+		return model.Product{}, err
+	}
+
 	tx := r.db.Create(&product)
 	if tx.Error != nil {
 		return model.Product{}, tx.Error
@@ -125,7 +129,7 @@ func (r *Repository) FindByIDs(_ context.Context, ids []string) ([]model.Product
 func (r *Repository) Delete(_ context.Context, id string) error {
 	var product model.Product
 
-	if err := r.db.First(&product, id).Error; err != nil {
+	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &apperror.NotFoundError{Msg: "Product not found"}
 		}
