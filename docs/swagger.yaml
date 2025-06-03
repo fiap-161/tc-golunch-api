@@ -448,36 +448,6 @@ paths:
       summary: Get Order Panel
       tags:
       - Order Domain
-  /payment/check:
-    post:
-      consumes:
-      - application/json
-      description: Check the status of a payment by its resource URL
-      parameters:
-      - description: Resource URL to check payment status
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CheckPaymentDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.ErrorDTO'
-      security:
-      - BearerAuth: []
-      summary: Check Payment [Mercado Pago Integration]
-      tags:
-      - Payment Domain
   /ping:
     get:
       consumes:
@@ -678,6 +648,36 @@ paths:
       summary: Upload product image
       tags:
       - Product Domain
+  /webhook/payment/check:
+    post:
+      consumes:
+      - application/json
+      description: Check the status of a payment by its resource URL
+      parameters:
+      - description: Resource URL to check payment status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPaymentDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Check Payment [Mercado Pago Integration]
+      tags:
+      - Payment Domain
 securityDefinitions:
   BearerAuth:
     in: header

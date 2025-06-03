@@ -420,54 +420,6 @@
                 }
             }
         },
-        "/payment/check": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Check the status of a payment by its resource URL",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Payment Domain"
-                ],
-                "summary": "Check Payment [Mercado Pago Integration]",
-                "parameters": [
-                    {
-                        "description": "Resource URL to check payment status",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CheckPaymentDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
         "/ping": {
             "get": {
                 "description": "Health Check",
@@ -772,6 +724,54 @@
                     },
                     "500": {
                         "description": "Internal error while processing the image",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/webhook/payment/check": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Check the status of a payment by its resource URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment Domain"
+                ],
+                "summary": "Check Payment [Mercado Pago Integration]",
+                "parameters": [
+                    {
+                        "description": "Resource URL to check payment status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPaymentDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorDTO"
                         }

@@ -3,6 +3,7 @@ package dto
 import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago/utils"
 	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
+	"os"
 )
 
 type RequestGenerateQRCode struct {
@@ -37,7 +38,7 @@ func FromParams(params providerdto.GenerateQRCodeParams) RequestGenerateQRCode {
 		Description:       "Order Description" + params.OrderID,
 		ExternalReference: params.OrderID,
 		Items:             items,
-		NotificationURL:   "https://webhook.site/668985be-6f49-4e21-a2c3-07f3194a7c60", //TODO adjust this field
+		NotificationURL:   os.Getenv("WEBHOOK_URL"), //TODO adjust this field
 		TotalAmount:       utils.FormatDecimal(totalAmount),
 	}
 }
