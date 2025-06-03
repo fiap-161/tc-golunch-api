@@ -35,13 +35,7 @@ docker ps
 3. Crie um arquivo com as variáveis de ambiente:
 
 ```bash
-DATABASE_URL=postgres://pg:pg@postgres-db:5432/pg?sslmode=disable
-POSTGRES_USER=pg
-POSTGRES_PASSWORD=pg
-POSTGRES_DB=pg
-SECRET_KEY=random_key
-UPLOAD_DIR=./uploads
-PUBLIC_URL=http://localhost:8080 
+cp .env.example .env
 ```
 
 4. Suba os containers com Docker Compose:
@@ -89,6 +83,7 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 │       └── main.go
 ├── internal/               # Domínio, regras de negócio e adaptadores
 │   ├── http/               # Camada HTTP (middlewares compartilhados)
+│   ├── shared/             # Componentes compartilhados entre domínios
 │   └── dominio/            # Um diretório para cada domínio
 │       ├── adapters/       # Adaptadores (drivers/drivens)
 │       │   ├── drivens/    # Infraestrutura externa (DB)
@@ -97,7 +92,6 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 │       │   ├── model/      # Modelos e entidades do domínio
 │       │   └── ports/      # Interfaces (portas) para repository e services
 │       └── services/       # Lógica de aplicação (casos de uso)
-├── shared/                 # Componentes compartilhados entre domínios
 ├── uploads/                # Diretório para salvar imagens
 ├── docs/                   # Documentação swagger
 ├── .env                    # Arquivo de variáveis de ambiente
