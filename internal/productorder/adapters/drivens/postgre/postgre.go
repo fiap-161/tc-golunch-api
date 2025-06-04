@@ -25,7 +25,7 @@ func New(db DB) ports.ProductOrderRepository {
 	}
 }
 
-func (r *Repository) CreateBulk(ctx context.Context, orders []model.ProductOrder) (int, error) {
+func (r *Repository) CreateBulk(_ context.Context, orders []model.ProductOrder) (int, error) {
 	tx := r.db.Create(&orders)
 	if tx.Error != nil {
 		return 0, tx.Error
@@ -34,7 +34,7 @@ func (r *Repository) CreateBulk(ctx context.Context, orders []model.ProductOrder
 	return len(orders), nil
 }
 
-func (r *Repository) FindByOrderID(ctx context.Context, orderID string) ([]model.ProductOrder, error) {
+func (r *Repository) FindByOrderID(_ context.Context, orderID string) ([]model.ProductOrder, error) {
 	var orders []model.ProductOrder
 
 	tx := r.db.Where("order_id = ?", orderID).Find(&orders)

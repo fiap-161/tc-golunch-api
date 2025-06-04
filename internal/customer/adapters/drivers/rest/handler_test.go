@@ -49,7 +49,7 @@ func TestCustomerHandler_Create(t *testing.T) {
 				return "", nil
 			},
 			expectedCode: http.StatusBadRequest,
-			expectedBody: `{"error":"invalid character '}' looking for beginning of object key string"}`,
+			expectedBody: `{"message":"Invalid request body","message_error":"invalid character '}' looking for beginning of object key string"}`,
 		},
 		{
 			name:        "service create error",
@@ -57,8 +57,8 @@ func TestCustomerHandler_Create(t *testing.T) {
 			mockCreateFunc: func(ctx context.Context, dto dto.CreateCustomerDTO) (string, error) {
 				return "", errors.New("fail")
 			},
-			expectedCode: http.StatusNotFound,
-			expectedBody: `{"error":"customer not found"}`,
+			expectedCode: http.StatusInternalServerError,
+			expectedBody: `{"message":"Internal Server Error","message_error":"fail"}`,
 		},
 	}
 
@@ -116,8 +116,8 @@ func TestCustomerHandler_Identify(t *testing.T) {
 			mockIdentifyFunc: func(ctx context.Context, CPF string) (string, error) {
 				return "", errors.New("not found")
 			},
-			expectedCode: http.StatusNotFound,
-			expectedBody: `{"error":"not found"}`,
+			expectedCode: http.StatusInternalServerError,
+			expectedBody: `{"message":"Internal Server Error","message_error":"not found"}`,
 		},
 	}
 
@@ -174,8 +174,8 @@ func TestCustomerHandler_Anonymous(t *testing.T) {
 			mockIdentifyFunc: func(ctx context.Context, CPF string) (string, error) {
 				return "", errors.New("not found")
 			},
-			expectedCode: http.StatusNotFound,
-			expectedBody: `{"error":"not found"}`,
+			expectedCode: http.StatusInternalServerError,
+			expectedBody: `{"message":"Internal Server Error","message_error":"not found"}`,
 		},
 	}
 
