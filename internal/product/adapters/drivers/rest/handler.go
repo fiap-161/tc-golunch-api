@@ -97,11 +97,10 @@ func (h *Handler) ListCategories(c *gin.Context) {
 // @Router       /product [get]
 func (h *Handler) GetAll(c *gin.Context) {
 	query := c.Query("category")
-	query = strings.ToLower(query)
+	query = strings.ToUpper(query)
 	query = strings.ReplaceAll(query, " ", "")
 
-	category, ok := enum.FromCategoryString(query)
-	fmt.Println(category)
+	ok := enum.IsValidCategory(query)
 	if !ok && query != "" {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Validation error",
@@ -110,7 +109,8 @@ func (h *Handler) GetAll(c *gin.Context) {
 		return
 	}
 
-	list, err := h.Service.GetAll(context.Background(), uint(category))
+	category := enum.Category(query)
+	list, err := h.Service.GetAll(context.Background(), category)
 	if err != nil {
 		helper.HandleError(c, err)
 		return

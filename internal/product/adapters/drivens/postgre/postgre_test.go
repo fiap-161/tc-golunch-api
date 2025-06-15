@@ -82,7 +82,7 @@ func TestGetAll(t *testing.T) {
 	tests := []struct {
 		name        string
 		products    []model.Product
-		filterCat   uint
+		filterCat   enum.Category
 		expectCount int
 	}{
 		{
@@ -91,7 +91,7 @@ func TestGetAll(t *testing.T) {
 				{Name: "Cheeseburger", Category: enum.Meal},
 				{Name: "Coca-Cola", Category: enum.Drink},
 			},
-			filterCat:   uint(enum.Meal),
+			filterCat:   enum.Meal,
 			expectCount: 1,
 		},
 		{
@@ -101,7 +101,7 @@ func TestGetAll(t *testing.T) {
 				{Name: "Coca-Cola", Category: enum.Drink},
 				{Name: "Brownie", Category: enum.Dessert},
 			},
-			filterCat:   0,
+			filterCat:   enum.Meal,
 			expectCount: 3,
 		},
 		{
@@ -110,7 +110,7 @@ func TestGetAll(t *testing.T) {
 				{Name: "Coca-Cola", Category: enum.Drink},
 				{Name: "Pepsi", Category: enum.Drink},
 			},
-			filterCat:   uint(enum.Meal),
+			filterCat:   enum.Meal,
 			expectCount: 0,
 		},
 	}

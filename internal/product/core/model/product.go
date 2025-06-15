@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 
 	"errors"
@@ -22,6 +23,7 @@ type Product struct {
 }
 
 func (p Product) Build() Product {
+	category := strings.ToUpper(string(p.Category))
 	return Product{
 		Entity: entity.Entity{
 			ID:        uuid.NewString(),
@@ -32,7 +34,7 @@ func (p Product) Build() Product {
 		Price:         p.Price,
 		Description:   p.Description,
 		PreparingTime: p.PreparingTime,
-		Category:      p.Category,
+		Category:      enum.Category(category),
 		ImageURL:      p.ImageURL,
 	}
 }
@@ -43,7 +45,7 @@ func (p Product) FromRequestDTO(dto dto.ProductRequestDTO) Product {
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      enum.Category(dto.Category),
+		Category:      dto.Category,
 		ImageURL:      dto.ImageURL,
 	}
 }
@@ -54,7 +56,7 @@ func (p Product) FromUpdateDTO(dto dto.ProductRequestUpdateDTO) Product {
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      enum.Category(dto.Category),
+		Category:      dto.Category,
 		ImageURL:      dto.ImageURL,
 	}
 }
@@ -66,7 +68,7 @@ func (p Product) FromEntityToResponseDTO() dto.ProductResponseDTO {
 		Price:         p.Price,
 		Description:   p.Description,
 		PreparingTime: p.PreparingTime,
-		Category:      p.Category.String(),
+		Category:      p.Category,
 		ImageURL:      p.ImageURL,
 	}
 }
@@ -78,7 +80,7 @@ func (p Product) Validate() error {
 	if p.Price < 0 {
 		return errors.New("price must be positive")
 	}
-	if p.Category == 0 {
+	if p.Category == "" {
 		return errors.New("category is required")
 	}
 	return nil
