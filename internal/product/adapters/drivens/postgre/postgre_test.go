@@ -102,7 +102,7 @@ func TestGetAll(t *testing.T) {
 				{Name: "Brownie", Category: enum.Dessert},
 			},
 			filterCat:   enum.Meal,
-			expectCount: 3,
+			expectCount: 1,
 		},
 		{
 			name: "success - when has no products match the filter then should return an empty list",

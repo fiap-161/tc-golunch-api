@@ -23,7 +23,6 @@ type Product struct {
 }
 
 func (p Product) Build() Product {
-	category := strings.ToUpper(string(p.Category))
 	return Product{
 		Entity: entity.Entity{
 			ID:        uuid.NewString(),
@@ -34,29 +33,31 @@ func (p Product) Build() Product {
 		Price:         p.Price,
 		Description:   p.Description,
 		PreparingTime: p.PreparingTime,
-		Category:      enum.Category(category),
+		Category:      p.Category,
 		ImageURL:      p.ImageURL,
 	}
 }
 
 func (p Product) FromRequestDTO(dto dto.ProductRequestDTO) Product {
+	category := strings.ToUpper(string(dto.Category))
 	return Product{
 		Name:          dto.Name,
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      dto.Category,
+		Category:      enum.Category(category),
 		ImageURL:      dto.ImageURL,
 	}
 }
 
 func (p Product) FromUpdateDTO(dto dto.ProductRequestUpdateDTO) Product {
+	category := strings.ToUpper(string(dto.Category))
 	return Product{
 		Name:          dto.Name,
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      dto.Category,
+		Category:      enum.Category(category),
 		ImageURL:      dto.ImageURL,
 	}
 }
