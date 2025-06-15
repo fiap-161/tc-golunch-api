@@ -566,7 +566,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/enum.CategoryDTO"
+                                "type": "string"
                             }
                         }
                     },
@@ -864,6 +864,9 @@
                 "order_number": {
                     "type": "string"
                 },
+                "preparing_time": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -897,7 +900,7 @@
         "dto.ProductRequestDTO": {
             "type": "object",
             "required": [
-                "category_id",
+                "category",
                 "description",
                 "image_url",
                 "name",
@@ -905,8 +908,8 @@
                 "price"
             ],
             "properties": {
-                "category_id": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/enum.Category"
                 },
                 "description": {
                     "type": "string"
@@ -928,8 +931,8 @@
         "dto.ProductRequestUpdateDTO": {
             "type": "object",
             "properties": {
-                "category_id": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/enum.Category"
                 },
                 "description": {
                     "type": "string"
@@ -952,7 +955,7 @@
             "type": "object",
             "properties": {
                 "category": {
-                    "type": "string"
+                    "$ref": "#/definitions/enum.Category"
                 },
                 "description": {
                     "type": "string"
@@ -1000,16 +1003,20 @@
                 }
             }
         },
-        "enum.CategoryDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
+        "enum.Category": {
+            "type": "string",
+            "enum": [
+                "MEAL",
+                "SIDE",
+                "DRINK",
+                "DESSERT"
+            ],
+            "x-enum-varnames": [
+                "Meal",
+                "Side",
+                "Drink",
+                "Dessert"
+            ]
         },
         "errors.ErrorDTO": {
             "type": "object",

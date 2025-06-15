@@ -572,7 +572,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/enum.CategoryDTO"
+                                "type": "string"
                             }
                         }
                     },
@@ -870,6 +870,9 @@ const docTemplate = `{
                 "order_number": {
                     "type": "string"
                 },
+                "preparing_time": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -903,7 +906,7 @@ const docTemplate = `{
         "dto.ProductRequestDTO": {
             "type": "object",
             "required": [
-                "category_id",
+                "category",
                 "description",
                 "image_url",
                 "name",
@@ -911,8 +914,8 @@ const docTemplate = `{
                 "price"
             ],
             "properties": {
-                "category_id": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/enum.Category"
                 },
                 "description": {
                     "type": "string"
@@ -934,8 +937,8 @@ const docTemplate = `{
         "dto.ProductRequestUpdateDTO": {
             "type": "object",
             "properties": {
-                "category_id": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/enum.Category"
                 },
                 "description": {
                     "type": "string"
@@ -958,7 +961,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "category": {
-                    "type": "string"
+                    "$ref": "#/definitions/enum.Category"
                 },
                 "description": {
                     "type": "string"
@@ -1006,16 +1009,20 @@ const docTemplate = `{
                 }
             }
         },
-        "enum.CategoryDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
+        "enum.Category": {
+            "type": "string",
+            "enum": [
+                "MEAL",
+                "SIDE",
+                "DRINK",
+                "DESSERT"
+            ],
+            "x-enum-varnames": [
+                "Meal",
+                "Side",
+                "Drink",
+                "Dessert"
+            ]
         },
         "errors.ErrorDTO": {
             "type": "object",

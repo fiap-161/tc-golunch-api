@@ -75,7 +75,7 @@ func (h *Handler) Create(c *gin.Context) {
 // @Security BearerAuth
 // @Accept       json
 // @Produce      json
-// @Success      200   {array}   enum.CategoryDTO
+// @Success      200   {array}   string
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /product/categories [get]
 func (h *Handler) ListCategories(c *gin.Context) {
