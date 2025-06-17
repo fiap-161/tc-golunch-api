@@ -6,8 +6,8 @@ import (
 
 	"errors"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/model/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 )

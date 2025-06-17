@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 

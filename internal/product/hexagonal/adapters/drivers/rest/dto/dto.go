@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model/enum"
+import "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/model/enum"
 
 type ProductRequestDTO struct {
 	Name          string        `json:"name" binding:"required"`
