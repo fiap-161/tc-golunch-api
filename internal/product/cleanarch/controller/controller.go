@@ -10,6 +10,7 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 )
 
+// INFO: controllers Criam gateways e requisitam usecases
 type Controller struct {
 	ProductDatasource datasource.DataSource
 	Presenter         presenter.Presenter

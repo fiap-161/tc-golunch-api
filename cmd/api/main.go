@@ -30,6 +30,10 @@ import (
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/presenter"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivens/postgre"
 	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivers/rest"
 	product "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/model"
@@ -121,6 +125,12 @@ func main() {
 	)
 	orderHandler := orderrest.New(orderService)
 
+	// CLEAN ARCH - Product
+	productDataSource := datasource.New(db)
+	productPresenter := presenter.Build()
+	productController := controller.Build(productDataSource, *productPresenter)
+	productHandlerCleanArch := handler.New(productController)
+
 	// Default Routes
 	r.GET("/ping", ping)
 	r.GET("/swagger/*any", ginswagger.WrapHandler(swaggerfiles.Handler))
@@ -155,7 +165,7 @@ func main() {
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
 	adminRoutes.POST("/image/upload", productHandler.UploadImage)
-	adminRoutes.POST("/", productHandler.Create)
+	adminRoutes.POST("/", productHandlerCleanArch.Create)
 	adminRoutes.PUT("/:id", productHandler.ValidateIfProductExists, productHandler.Update)
 	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
 
