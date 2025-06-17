@@ -32,7 +32,7 @@ type ProductRequestUpdateDTO struct {
 	Description   string        `json:"description"`
 	PreparingTime uint          `json:"preparing_time"`
 	Category      enum.Category `json:"category"`
-	ImageURL      string        `json:"image_url" binding:"url"`
+	ImageURL      string        `json:"image_url"`
 }
 
 type ImageURLDTO struct {
