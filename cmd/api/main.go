@@ -167,7 +167,7 @@ func main() {
 	adminRoutes.Use(middleware.AdminOnly())
 	adminRoutes.POST("/image/upload", productHandlerCleanArch.UploadImage)
 	adminRoutes.POST("/", productHandlerCleanArch.Create)
-	adminRoutes.PUT("/:id", productHandler.ValidateIfProductExists, productHandler.Update)
+	adminRoutes.PUT("/:id", productHandlerCleanArch.Update)
 	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
 
 	r.Run(":8080")

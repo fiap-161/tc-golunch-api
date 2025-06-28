@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -14,6 +15,7 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
+	"github.com/google/uuid"
 )
 
 type UseCases struct {
@@ -124,4 +126,40 @@ func (u *UseCases) GetAllByCategory(ctx context.Context, category string) ([]ent
 	}
 
 	return result, nil
+}
+
+func (u *UseCases) Update(ctx context.Context, productId string, product entity.Product) (entity.Product, error) {
+
+	_, err := u.FindByID(ctx, productId)
+
+	if err != nil {
+		return entity.Product{}, err
+	}
+
+	updated, err := u.ProductGateway.Update(ctx, productId, product)
+
+	if err != nil {
+		return entity.Product{}, &apperror.InternalError{Msg: err.Error()}
+	}
+
+	return updated, nil
+}
+
+func (u *UseCases) FindByID(ctx context.Context, productId string) (entity.Product, error) {
+
+	if _, err := uuid.Parse(productId); err != nil {
+		return entity.Product{}, &apperror.ValidationError{Msg: "Invalid UUID format for product ID"}
+	}
+
+	found, err := u.ProductGateway.FindByID(ctx, productId)
+
+	if err != nil {
+		var notFoundErr *apperror.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return entity.Product{}, notFoundErr
+		}
+		return entity.Product{}, &apperror.InternalError{Msg: "Unexpected error"}
+	}
+
+	return found, nil
 }

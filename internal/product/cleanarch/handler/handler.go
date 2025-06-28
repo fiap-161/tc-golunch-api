@@ -124,3 +124,50 @@ func (h *Handler) GetAllByCategory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, list)
 }
+
+// Update Product godoc
+// @Summary      Update Product
+// @Description  Update an existing product by ID
+// @Tags         Product Domain
+// @Security BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id       path      string                         true  "Product ID"
+// @Param        request  body      dto.ProductRequestUpdateDTO true  "Product data to update"
+// @Success      200      {object}  dto.ProductResponseDTO
+// @Failure      400      {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
+// @Router       /product/{id} [put]
+func (h *Handler) Update(c *gin.Context) {
+	id := c.Param("id")
+
+	var productUpdateDTO dto.ProductRequestUpdateDTO
+
+	if err := c.ShouldBindJSON(&productUpdateDTO); err != nil {
+		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
+			Message:      "Invalid request body",
+			MessageError: err.Error(),
+		})
+		return
+	}
+
+	updated, err := h.controller.Update(context.Background(), id, productUpdateDTO)
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, updated)
+}
+
+func (h *Handler) ValidateIfProductExists(c *gin.Context) {
+	id := c.Param("id")
+
+	_, err := h.controller.FindByID(context.Background(), id)
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.Next()
+}

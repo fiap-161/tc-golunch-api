@@ -65,3 +65,30 @@ func (c *Controller) GetAllByCategory(ctx context.Context, category string) (dto
 
 	return c.Presenter.FromEntityListToProductListResponseDTO(result), nil
 }
+
+func (c *Controller) Update(ctx context.Context, productId string, productDTO dto.ProductRequestUpdateDTO) (dto.ProductResponseDTO, error) {
+	productGateway := gateway.Build(c.ProductDatasource)
+	useCase := usecases.Build(*productGateway)
+
+	product := entity.FromUpdateDTO(productDTO)
+	result, err := useCase.Update(ctx, productId, product)
+
+	if err != nil {
+		return dto.ProductResponseDTO{}, err
+	}
+
+	return c.Presenter.FromEntityToResponseDTO(result), nil
+}
+
+func (c *Controller) FindByID(ctx context.Context, productId string) (dto.ProductResponseDTO, error) {
+	productGateway := gateway.Build(c.ProductDatasource)
+	useCase := usecases.Build(*productGateway)
+
+	result, err := useCase.FindByID(ctx, productId)
+
+	if err != nil {
+		return dto.ProductResponseDTO{}, err
+	}
+
+	return c.Presenter.FromEntityToResponseDTO(result), nil
+}

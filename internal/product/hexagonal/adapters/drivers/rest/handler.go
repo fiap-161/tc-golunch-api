@@ -61,18 +61,6 @@ func (h *Handler) ListCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, h.Service.ListCategories(ctx))
 }
 
-// GetAll Get All Products by Category godoc
-// @Summary      Get all products by category
-// @Description  Returns all products. Optionally, filter by category using query param. Categories must match those returned from [GET] /product/categories.
-// @Tags         Product Domain
-// @Security BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        category query string false "Category name (e.g., 'drink', 'meal', 'side', 'dessert')"
-// @Success      200  {object}  dto.ProductListResponseDTO
-// @Failure      400  {object}  errors.ErrorDTO
-// @Failure      401  {object}  errors.ErrorDTO
-// @Router       /product [get]
 func (h *Handler) GetAll(c *gin.Context) {
 	query := c.Query("category")
 	query = strings.ToUpper(query)

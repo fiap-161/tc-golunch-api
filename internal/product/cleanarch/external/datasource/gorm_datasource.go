@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"gorm.io/gorm"
 )
@@ -53,10 +52,10 @@ func (r *GormDataSource) GetAllByCategory(_ context.Context, category string) ([
 	return products, nil
 }
 
-func (r *GormDataSource) Update(ctx context.Context, id string, updated entity.Product) (entity.Product, error) {
+func (r *GormDataSource) Update(ctx context.Context, id string, updated dto.ProductDAO) (dto.ProductDAO, error) {
 	existing, err := r.FindByID(ctx, id)
 	if err != nil {
-		return entity.Product{}, err
+		return dto.ProductDAO{}, err
 	}
 
 	updates := map[string]any{}
@@ -83,32 +82,32 @@ func (r *GormDataSource) Update(ctx context.Context, id string, updated entity.P
 		return existing, nil
 	}
 
-	if err := r.db.Model(&entity.Product{}).Where("id = @id", map[string]any{"id": id}).Updates(updates).Error; err != nil {
-		return entity.Product{}, err
+	if err := r.db.Model(&dto.ProductDAO{}).Where("id = @id", map[string]any{"id": id}).Updates(updates).Error; err != nil {
+		return dto.ProductDAO{}, err
 	}
 
-	var updatedProduct entity.Product
+	var updatedProduct dto.ProductDAO
 	if err := r.db.Where("id = @id", map[string]any{"id": id}).First(&updatedProduct).Error; err != nil {
-		return entity.Product{}, err
+		return dto.ProductDAO{}, err
 	}
 
 	return updatedProduct, nil
 }
 
-func (r *GormDataSource) FindByID(_ context.Context, id string) (entity.Product, error) {
-	var product entity.Product
+func (r *GormDataSource) FindByID(_ context.Context, id string) (dto.ProductDAO, error) {
+	var product dto.ProductDAO
 	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return entity.Product{}, &apperror.NotFoundError{Msg: "Product not found"}
+		if err.Error() == "record not found" {
+			return dto.ProductDAO{}, &apperror.NotFoundError{Msg: "Product not found"}
 		}
-		return entity.Product{}, err
+		return dto.ProductDAO{}, err
 	}
 
 	return product, nil
 }
 
-func (r *GormDataSource) FindByIDs(_ context.Context, ids []string) ([]entity.Product, error) {
-	var products []entity.Product
+func (r *GormDataSource) FindByIDs(_ context.Context, ids []string) ([]dto.ProductDAO, error) {
+	var products []dto.ProductDAO
 
 	if err := r.db.Where("id IN ?", ids).Find(&products).Error; err != nil {
 		return nil, err
@@ -122,7 +121,7 @@ func (r *GormDataSource) FindByIDs(_ context.Context, ids []string) ([]entity.Pr
 }
 
 func (r *GormDataSource) Delete(_ context.Context, id string) error {
-	var product entity.Product
+	var product dto.ProductDAO
 
 	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
