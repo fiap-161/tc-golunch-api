@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"mime/multipart"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
@@ -35,4 +36,10 @@ func (c *Controller) ListCategories(ctx context.Context) []enum.Category {
 	productGateway := gateway.Build(c.ProductDatasource)
 	useCase := usecases.Build(*productGateway)
 	return useCase.ListCategories(ctx)
+}
+
+func (c *Controller) UploadImage(ctx context.Context, fileHeader *multipart.FileHeader) (string, error) {
+	productGateway := gateway.Build(c.ProductDatasource)
+	useCase := usecases.Build(*productGateway)
+	return useCase.UploadImage(ctx, fileHeader)
 }

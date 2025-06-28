@@ -165,7 +165,7 @@ func main() {
 	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
-	adminRoutes.POST("/image/upload", productHandler.UploadImage)
+	adminRoutes.POST("/image/upload", productHandlerCleanArch.UploadImage)
 	adminRoutes.POST("/", productHandlerCleanArch.Create)
 	adminRoutes.PUT("/:id", productHandler.ValidateIfProductExists, productHandler.Update)
 	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
