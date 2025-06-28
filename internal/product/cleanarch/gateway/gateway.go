@@ -70,3 +70,17 @@ func (g *Gateway) FindByID(c context.Context, productId string) (entity.Product,
 
 	return entity.FromProductDAO(found), nil
 }
+
+func (g *Gateway) Delete(c context.Context, productId string) error {
+	err := g.Datasource.Delete(c, productId)
+
+	if err != nil {
+		var notFoundErr *apperror.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return notFoundErr
+		}
+		return &apperror.InternalError{Msg: "Unexpected error"}
+	}
+
+	return nil
+}

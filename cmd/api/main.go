@@ -37,8 +37,6 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/presenter"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivens/postgre"
-	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivers/rest"
-	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/service"
 	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
@@ -94,8 +92,12 @@ func main() {
 
 	// Product
 	productRepository := productpostgre.New(db)
-	productService := servicesproduct.New(productRepository)
-	productHandler := restproduct.New(productService)
+
+	// CLEAN ARCH - Product
+	productDataSource := datasource.New(db)
+	productPresenter := presenter.Build()
+	productController := controller.Build(productDataSource, *productPresenter)
+	productHandlerCleanArch := handler.New(productController)
 
 	// ProductOrder
 	productOrderRepository := productorderrepository.New(db)
@@ -125,12 +127,6 @@ func main() {
 		paymentService,
 	)
 	orderHandler := orderrest.New(orderService)
-
-	// CLEAN ARCH - Product
-	productDataSource := datasource.New(db)
-	productPresenter := presenter.Build()
-	productController := controller.Build(productDataSource, *productPresenter)
-	productHandlerCleanArch := handler.New(productController)
 
 	// Default Routes
 	r.GET("/ping", ping)
@@ -168,7 +164,7 @@ func main() {
 	adminRoutes.POST("/image/upload", productHandlerCleanArch.UploadImage)
 	adminRoutes.POST("/", productHandlerCleanArch.Create)
 	adminRoutes.PUT("/:id", productHandlerCleanArch.Update)
-	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
+	adminRoutes.DELETE("/:id", productHandlerCleanArch.Delete)
 
 	r.Run(":8080")
 }

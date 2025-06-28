@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -139,7 +138,7 @@ func (u *UseCases) Update(ctx context.Context, productId string, product entity.
 	updated, err := u.ProductGateway.Update(ctx, productId, product)
 
 	if err != nil {
-		return entity.Product{}, &apperror.InternalError{Msg: err.Error()}
+		return entity.Product{}, err
 	}
 
 	return updated, nil
@@ -154,12 +153,28 @@ func (u *UseCases) FindByID(ctx context.Context, productId string) (entity.Produ
 	found, err := u.ProductGateway.FindByID(ctx, productId)
 
 	if err != nil {
-		var notFoundErr *apperror.NotFoundError
-		if errors.As(err, &notFoundErr) {
-			return entity.Product{}, notFoundErr
-		}
-		return entity.Product{}, &apperror.InternalError{Msg: "Unexpected error"}
+		return entity.Product{}, err
 	}
 
 	return found, nil
+}
+
+func (u *UseCases) Delete(ctx context.Context, productId string) error {
+
+	if _, err := uuid.Parse(productId); err != nil {
+		return &apperror.ValidationError{Msg: "Invalid UUID format for product ID"}
+	}
+	_, err := u.FindByID(ctx, productId)
+
+	if err != nil {
+		return err
+	}
+
+	err2 := u.ProductGateway.Delete(ctx, productId)
+
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
 }

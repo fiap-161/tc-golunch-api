@@ -2,7 +2,6 @@ package datasource
 
 import (
 	"context"
-	"errors"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
@@ -124,7 +123,7 @@ func (r *GormDataSource) Delete(_ context.Context, id string) error {
 	var product dto.ProductDAO
 
 	if err := r.db.First(&product, "id = ?", id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if err.Error() == "record not found" {
 			return &apperror.NotFoundError{Msg: "Product not found"}
 		}
 		return err

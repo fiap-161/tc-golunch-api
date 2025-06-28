@@ -160,6 +160,31 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, updated)
 }
 
+// Delete Product godoc
+// @Summary      Delete Product
+// @Description  Delete a product by ID
+// @Tags         Product Domain
+// @Security BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Product ID"
+// @Success      204  "No Content"
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
+// @Router       /product/{id} [delete]
+func (h *Handler) Delete(c *gin.Context) {
+	id := c.Param("id")
+
+	err := h.controller.Delete(context.Background(), id)
+
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
 func (h *Handler) ValidateIfProductExists(c *gin.Context) {
 	id := c.Param("id")
 
