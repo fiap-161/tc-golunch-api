@@ -1,28 +1,64 @@
 package entity
 
 import (
-	"errors"
 	"strings"
 	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/google/uuid"
 )
 
 type Product struct {
-	entity.Entity
-	Name          string        `json:"name"`
-	Price         float64       `json:"price" gorm:"type:decimal(10,2)"`
-	Description   string        `json:"description" gorm:"type:text"`
-	PreparingTime uint          `json:"preparing_time" gorm:"type:integer"`
-	Category      enum.Category `json:"category"`
-	ImageURL      string        `json:"image_url" gorm:"type:varchar(255)"`
+	Id            string
+	Name          string
+	Price         float64
+	Description   string
+	PreparingTime uint
+	Category      enum.Category
+	ImageURL      string
 }
 
 func (p Product) Build() Product {
 	return Product{
+		Id:            p.Id,
+		Name:          p.Name,
+		Price:         p.Price,
+		Description:   p.Description,
+		PreparingTime: p.PreparingTime,
+		Category:      p.Category,
+		ImageURL:      p.ImageURL,
+	}
+}
+
+func FromRequestDTO(dto dto.ProductRequestDTO) Product {
+	category := strings.ToUpper(string(dto.Category))
+	return Product{
+		Name:          dto.Name,
+		Price:         dto.Price,
+		Description:   dto.Description,
+		PreparingTime: dto.PreparingTime,
+		Category:      enum.Category(category),
+		ImageURL:      dto.ImageURL,
+	}
+}
+
+func FromUpdateDTO(dto dto.ProductRequestUpdateDTO) Product {
+	category := strings.ToUpper(string(dto.Category))
+	return Product{
+		Name:          dto.Name,
+		Price:         dto.Price,
+		Description:   dto.Description,
+		PreparingTime: dto.PreparingTime,
+		Category:      enum.Category(category),
+		ImageURL:      dto.ImageURL,
+	}
+}
+
+func (p Product) ToProductDAO() dto.ProductDAO {
+	return dto.ProductDAO{
 		Entity: entity.Entity{
 			ID:        uuid.NewString(),
 			CreatedAt: time.Now(),
@@ -37,39 +73,28 @@ func (p Product) Build() Product {
 	}
 }
 
-func (p Product) FromRequestDTO(dto dto.ProductRequestDTO) Product {
-	category := strings.ToUpper(string(dto.Category))
+func FromProductDAO(dao dto.ProductDAO) Product {
+	category := strings.ToUpper(string(dao.Category))
 	return Product{
-		Name:          dto.Name,
-		Price:         dto.Price,
-		Description:   dto.Description,
-		PreparingTime: dto.PreparingTime,
+		Id:            dao.ID,
+		Name:          dao.Name,
+		Price:         dao.Price,
+		Description:   dao.Description,
+		PreparingTime: dao.PreparingTime,
 		Category:      enum.Category(category),
-		ImageURL:      dto.ImageURL,
-	}
-}
-
-func (p Product) FromUpdateDTO(dto dto.ProductRequestUpdateDTO) Product {
-	category := strings.ToUpper(string(dto.Category))
-	return Product{
-		Name:          dto.Name,
-		Price:         dto.Price,
-		Description:   dto.Description,
-		PreparingTime: dto.PreparingTime,
-		Category:      enum.Category(category),
-		ImageURL:      dto.ImageURL,
+		ImageURL:      dao.ImageURL,
 	}
 }
 
 func (p Product) Validate() error {
 	if p.Name == "" {
-		return errors.New("name is required")
+		return &apperror.ValidationError{Msg: "Name is required"}
 	}
 	if p.Price < 0 {
-		return errors.New("price must be positive")
+		return &apperror.ValidationError{Msg: "Price must be positive"}
 	}
 	if p.Category == "" {
-		return errors.New("category is required")
+		return &apperror.ValidationError{Msg: "Category is required"}
 	}
 	return nil
 }

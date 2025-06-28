@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
+import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+)
 
 type ProductRequestDTO struct {
 	Name          string        `json:"name" binding:"required"`
@@ -37,4 +40,14 @@ type ProductRequestUpdateDTO struct {
 
 type ImageURLDTO struct {
 	ImageURL string `json:"url"`
+}
+
+type ProductDAO struct {
+	entity.Entity
+	Name          string        `json:"name"`
+	Price         float64       `json:"price" gorm:"type:decimal(10,2)"`
+	Description   string        `json:"description" gorm:"type:text"`
+	PreparingTime uint          `json:"preparing_time" gorm:"type:integer"`
+	Category      enum.Category `json:"category"`
+	ImageURL      string        `json:"image_url" gorm:"type:varchar(255)"`
 }

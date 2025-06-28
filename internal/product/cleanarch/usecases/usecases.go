@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway"
@@ -25,16 +24,18 @@ func Build(productGateway gateway.Gateway) *UseCases {
 	return &UseCases{ProductGateway: productGateway}
 }
 
-func (u *UseCases) CreateProduct(ctx context.Context, productDTO dto.ProductRequestDTO) (entity.Product, error) {
-	var product entity.Product
-	product = product.FromRequestDTO(productDTO)
+func (u *UseCases) CreateProduct(ctx context.Context, product entity.Product) (entity.Product, error) {
 	isValidCategory := enum.IsValidCategory(string(product.Category))
 
 	if !isValidCategory {
 		return entity.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
 	}
 
-	saved, err := u.ProductGateway.Create(ctx, product.Build())
+	if err := product.Validate(); err != nil {
+		return entity.Product{}, err
+	}
+
+	saved, err := u.ProductGateway.Create(ctx, product)
 	if err != nil {
 		return entity.Product{}, &apperror.InternalError{Msg: err.Error()}
 	}
@@ -107,4 +108,20 @@ func saveFile(fileHeader *multipart.FileHeader, dest string) error {
 
 	_, err = io.Copy(out, src)
 	return err
+}
+
+func (u *UseCases) GetAllByCategory(ctx context.Context, category string) ([]entity.Product, error) {
+	isValidCategory := enum.IsValidCategory(category)
+	invalidCategory := !isValidCategory && category != ""
+
+	if invalidCategory {
+		return []entity.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
+	}
+
+	result, err := u.ProductGateway.GetAllByCategory(ctx, category)
+	if err != nil {
+		return []entity.Product{}, &apperror.InternalError{Msg: err.Error()}
+	}
+
+	return result, nil
 }

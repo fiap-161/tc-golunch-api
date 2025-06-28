@@ -32,12 +32,12 @@ import (
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/presenter"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivens/postgre"
 	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivers/rest"
-	product "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/model"
 	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/service"
 	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
@@ -68,7 +68,7 @@ func main() {
 	if err := db.AutoMigrate(
 		&customermodel.Customer{},
 		&adminmodel.Admin{},
-		&product.Product{},
+		&productmodel.ProductDAO{},
 		&order.Order{},
 		&productordermodel.ProductOrder{},
 		&paymentmodel.Payment{},
@@ -154,7 +154,7 @@ func main() {
 	// Routes for regular authenticated users
 	// Product
 	authenticated.GET("/product/categories", productHandlerCleanArch.ListCategories)
-	authenticated.GET("/product", productHandler.GetAll)
+	authenticated.GET("/product", productHandlerCleanArch.GetAllByCategory)
 
 	// Order
 	authenticated.POST("/order", orderHandler.Create)

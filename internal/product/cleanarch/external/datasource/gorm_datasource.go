@@ -3,8 +3,8 @@ package datasource
 import (
 	"context"
 	"errors"
-	"fmt"
 
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"gorm.io/gorm"
@@ -30,24 +30,19 @@ func New(db DB) *GormDataSource {
 	}
 }
 
-func (r *GormDataSource) Create(_ context.Context, product entity.Product) (entity.Product, error) {
-	if err := product.Validate(); err != nil {
-		return entity.Product{}, err
-	}
-	fmt.Println("chegou aqui")
-
-	tx := r.db.Create(&product)
+func (r *GormDataSource) Create(_ context.Context, productDAO dto.ProductDAO) (dto.ProductDAO, error) {
+	tx := r.db.Create(&productDAO)
 	if tx.Error != nil {
-		return entity.Product{}, tx.Error
+		return dto.ProductDAO{}, tx.Error
 	}
 
-	return product, nil
+	return productDAO, nil
 }
 
-func (r *GormDataSource) GetAll(_ context.Context, category uint) ([]entity.Product, error) {
-	var products []entity.Product
+func (r *GormDataSource) GetAllByCategory(_ context.Context, category string) ([]dto.ProductDAO, error) {
+	var products []dto.ProductDAO
 	query := r.db
-	if category > 0 {
+	if category != "" {
 		query = query.Where("category = ?", category)
 	}
 

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
@@ -10,13 +11,6 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
 )
-
-const MaxFileSize = 5 << 20
-
-var allowedTypes = map[string]bool{
-	"image/jpeg": true,
-	"image/png":  true,
-}
 
 type Handler struct {
 	controller *controller.Controller
@@ -103,4 +97,30 @@ func (h *Handler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, created)
+}
+
+// GetAll Get All Products by Category godoc
+// @Summary      Get all products by category
+// @Description  Returns all products. Optionally, filter by category using query param. Categories must match those returned from [GET] /product/categories.
+// @Tags         Product Domain
+// @Security BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        category query string false "Category name (e.g., 'drink', 'meal', 'side', 'dessert')"
+// @Success      200  {object}  dto.ProductListResponseDTO
+// @Failure      400  {object}  errors.ErrorDTO
+// @Failure      401  {object}  errors.ErrorDTO
+// @Router       /product [get]
+func (h *Handler) GetAllByCategory(c *gin.Context) {
+	query := c.Query("category")
+	query = strings.ToUpper(query)
+	query = strings.ReplaceAll(query, " ", "")
+
+	list, err := h.controller.GetAllByCategory(context.Background(), query)
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, list)
 }
