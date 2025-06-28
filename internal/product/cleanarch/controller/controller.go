@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/presenter"
@@ -28,4 +29,10 @@ func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDT
 	useCase := usecases.Build(*productGateway)
 	product, _ := useCase.CreateProduct(ctx, productDTO)
 	return c.Presenter.FromEntityToResponseDTO(product), nil
+}
+
+func (c *Controller) ListCategories(ctx context.Context) []enum.Category {
+	productGateway := gateway.Build(c.ProductDatasource)
+	useCase := usecases.Build(*productGateway)
+	return useCase.ListCategories(ctx)
 }

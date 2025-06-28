@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
@@ -54,10 +55,10 @@ import (
 func main() {
 
 	// UNCOMMENT TO RUN ONLY THE DATABASE IN DOCKER
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal("Erro ao carregar o .env")
-	// }
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erro ao carregar o .env")
+	}
 
 	r := gin.Default()
 	loadYAML()
@@ -152,7 +153,7 @@ func main() {
 
 	// Routes for regular authenticated users
 	// Product
-	authenticated.GET("/product/categories", productHandler.ListCategories)
+	authenticated.GET("/product/categories", productHandlerCleanArch.ListCategories)
 	authenticated.GET("/product", productHandler.GetAll)
 
 	// Order

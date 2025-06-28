@@ -33,18 +33,6 @@ func New(service ports.ProductService) *Handler {
 	return &Handler{Service: service}
 }
 
-// Create Product godoc
-// @Summary      Create Product
-// @Description  Create a new product
-// @Tags         Product Domain
-// @Security BearerAuth
-// @Accept       json
-// @Produce      json
-// @Param        request body dto.ProductRequestDTO true "Product to create. Note category is an integer number. See [GET] /product/categories to get a valid category_id"
-// @Success      201  {object}  dto.ProductResponseDTO
-// @Failure      400  {object}  errors.ErrorDTO
-// @Failure      401  {object}  errors.ErrorDTO
-// @Router       /product/ [post]
 func (h *Handler) Create(c *gin.Context) {
 	var productDTO dto.ProductRequestDTO
 

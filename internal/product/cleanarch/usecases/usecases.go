@@ -34,3 +34,7 @@ func (u *UseCases) CreateProduct(ctx context.Context, productDTO dto.ProductRequ
 
 	return saved, nil
 }
+
+func (u *UseCases) ListCategories(ctx context.Context) []enum.Category {
+	return enum.GetAllCategories()
+}
