@@ -16,19 +16,17 @@ import (
 // INFO: controllers Criam gateways e requisitam usecases
 type Controller struct {
 	ProductDatasource datasource.DataSource
-	Presenter         presenter.Presenter
 }
 
-func Build(productDataSource datasource.DataSource, presenter presenter.Presenter) *Controller {
+func Build(productDataSource datasource.DataSource) *Controller {
 	return &Controller{
-		ProductDatasource: productDataSource,
-		Presenter:         presenter,
-	}
+		ProductDatasource: productDataSource}
 }
 
 func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDTO) (dto.ProductResponseDTO, error) {
 	productGateway := gateway.Build(c.ProductDatasource)
 	useCase := usecases.Build(*productGateway)
+	presenter := presenter.Build()
 
 	var product entity.Product
 	product = entity.FromRequestDTO(productDTO)
@@ -38,7 +36,7 @@ func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDT
 		return dto.ProductResponseDTO{}, err
 	}
 
-	return c.Presenter.FromEntityToResponseDTO(product), nil
+	return presenter.FromEntityToResponseDTO(product), nil
 }
 
 func (c *Controller) ListCategories(ctx context.Context) []enum.Category {
@@ -56,6 +54,7 @@ func (c *Controller) UploadImage(ctx context.Context, fileHeader *multipart.File
 func (c *Controller) GetAllByCategory(ctx context.Context, category string) (dto.ProductListResponseDTO, error) {
 	productGateway := gateway.Build(c.ProductDatasource)
 	useCase := usecases.Build(*productGateway)
+	presenter := presenter.Build()
 
 	result, err := useCase.GetAllByCategory(ctx, category)
 
@@ -63,12 +62,13 @@ func (c *Controller) GetAllByCategory(ctx context.Context, category string) (dto
 		return dto.ProductListResponseDTO{}, err
 	}
 
-	return c.Presenter.FromEntityListToProductListResponseDTO(result), nil
+	return presenter.FromEntityListToProductListResponseDTO(result), nil
 }
 
 func (c *Controller) Update(ctx context.Context, productId string, productDTO dto.ProductRequestUpdateDTO) (dto.ProductResponseDTO, error) {
 	productGateway := gateway.Build(c.ProductDatasource)
 	useCase := usecases.Build(*productGateway)
+	presenter := presenter.Build()
 
 	product := entity.FromUpdateDTO(productDTO)
 	result, err := useCase.Update(ctx, productId, product)
@@ -77,12 +77,13 @@ func (c *Controller) Update(ctx context.Context, productId string, productDTO dt
 		return dto.ProductResponseDTO{}, err
 	}
 
-	return c.Presenter.FromEntityToResponseDTO(result), nil
+	return presenter.FromEntityToResponseDTO(result), nil
 }
 
 func (c *Controller) FindByID(ctx context.Context, productId string) (dto.ProductResponseDTO, error) {
 	productGateway := gateway.Build(c.ProductDatasource)
 	useCase := usecases.Build(*productGateway)
+	presenter := presenter.Build()
 
 	result, err := useCase.FindByID(ctx, productId)
 
@@ -90,7 +91,7 @@ func (c *Controller) FindByID(ctx context.Context, productId string) (dto.Produc
 		return dto.ProductResponseDTO{}, err
 	}
 
-	return c.Presenter.FromEntityToResponseDTO(result), nil
+	return presenter.FromEntityToResponseDTO(result), nil
 }
 
 func (c *Controller) Delete(ctx context.Context, productId string) error {

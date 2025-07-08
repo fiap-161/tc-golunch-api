@@ -35,7 +35,6 @@ import (
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/presenter"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivens/postgre"
 	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
@@ -95,8 +94,7 @@ func main() {
 
 	// CLEAN ARCH - Product
 	productDataSource := datasource.New(db)
-	productPresenter := presenter.Build()
-	productController := controller.Build(productDataSource, *productPresenter)
+	productController := controller.Build(productDataSource)
 	productHandlerCleanArch := handler.New(productController)
 
 	// ProductOrder
