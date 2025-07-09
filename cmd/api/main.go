@@ -6,13 +6,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 
+	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 	adminpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
 	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
@@ -52,29 +50,25 @@ import (
 func main() {
 
 	// UNCOMMENT TO RUN ONLY THE DATABASE IN DOCKER
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Erro ao carregar o .env")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Erro ao carregar o .env")
+	// }
 
 	r := gin.Default()
 	loadYAML()
 
-	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
+	db := database.NewPostgresDatabase().GetDb()
 
-	err = db.AutoMigrate(
+	if err := db.AutoMigrate(
 		&customermodel.Customer{},
 		&adminmodel.Admin{},
 		&product.Product{},
 		&order.Order{},
 		&productordermodel.ProductOrder{},
 		&paymentmodel.Payment{},
-	)
-	if err != nil {
-		log.Fatalf("error to migrate: %v", err)
+	); err != nil {
+		log.Fatalf("Erro ao migrar o banco: %v", err)
 	}
 
 	// servir arquivos estáticos - imagens
