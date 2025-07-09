@@ -31,6 +31,11 @@ type ProductOrderResponseDTO struct {
 	UnitPrice float64 `json:"unit_price"`
 }
 
+type OrderProductInfo struct {
+	ProductID string `json:"product_id"`
+	Quantity  int    `json:"quantity"`
+}
+
 // Convert entity to DAO
 func ToProductOrderDAO(po entity.ProductOrder) ProductOrderDAO {
 	return ProductOrderDAO{

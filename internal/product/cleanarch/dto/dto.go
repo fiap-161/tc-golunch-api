@@ -113,3 +113,11 @@ func FromUpdateDTO(dto ProductRequestUpdateDTO) entity.Product {
 		ImageURL:      dto.ImageURL,
 	}
 }
+
+func EntityListFromDAOList(daoList []ProductDAO) []entity.Product {
+	products := make([]entity.Product, 0, len(daoList))
+	for _, dao := range daoList {
+		products = append(products, FromProductDAO(dao))
+	}
+	return products
+}

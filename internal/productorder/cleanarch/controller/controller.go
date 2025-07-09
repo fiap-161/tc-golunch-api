@@ -3,6 +3,8 @@ package controller
 import (
 	"context"
 
+	orderdto "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
+	productdto "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
@@ -52,5 +54,29 @@ func (c *Controller) FindByOrderID(ctx context.Context, orderId string) ([]dto.P
 	}
 
 	return presenter.FromEntityListToResponseDTOList(productOrderFoundList), nil
+
+}
+
+func (c *Controller) BuildBulkFromOrderAndProducts(
+	orderID string,
+	orderProductInfo []orderdto.OrderProductInfo,
+	productsDTOs []productdto.ProductResponseDTO) ([]dto.ProductOrderRequestDTO, error) {
+
+	var result []dto.ProductOrderRequestDTO
+
+	for _, product := range productsDTOs {
+		for _, item := range orderProductInfo {
+			if product.ID == item.ProductID {
+				result = append(result, dto.ProductOrderRequestDTO{
+					OrderID:   orderID,
+					ProductID: product.ID,
+					Quantity:  item.Quantity,
+					UnitPrice: product.Price,
+				})
+			}
+		}
+	}
+
+	return result, nil
 
 }

@@ -85,3 +85,17 @@ func (g *Gateway) Delete(c context.Context, productId string) error {
 
 	return nil
 }
+
+func (g *Gateway) FindByIDs(c context.Context, productIdList []string) ([]entity.Product, error) {
+	foundList, err := g.Datasource.FindByIDs(c, productIdList)
+
+	if err != nil {
+		var notFoundErr *apperror.NotFoundError
+		if errors.As(err, &notFoundErr) {
+			return []entity.Product{}, notFoundErr
+		}
+		return []entity.Product{}, &apperror.InternalError{Msg: "Unexpected error"}
+	}
+
+	return dto.EntityListFromDAOList(foundList), nil
+}

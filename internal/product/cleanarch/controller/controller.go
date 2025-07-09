@@ -106,3 +106,17 @@ func (c *Controller) Delete(ctx context.Context, productId string) error {
 
 	return nil
 }
+
+func (c *Controller) FindByIDs(ctx context.Context, productIdList []string) ([]dto.ProductResponseDTO, error) {
+	productGateway := gateway.Build(c.ProductDatasource)
+	useCase := usecases.Build(*productGateway)
+	presenter := presenter.Build()
+
+	result, err := useCase.FindByIDs(ctx, productIdList)
+
+	if err != nil {
+		return []dto.ProductResponseDTO{}, err
+	}
+
+	return presenter.FromEntityListToProductListResponseDTO(result).List, nil
+}

@@ -178,3 +178,25 @@ func (u *UseCases) Delete(ctx context.Context, productId string) error {
 
 	return nil
 }
+
+func (u *UseCases) FindByIDs(ctx context.Context, productIdList []string) ([]entity.Product, error) {
+
+	if len(productIdList) == 0 {
+		return nil, &apperror.ValidationError{Msg: "productIdList cannot be empty"}
+	}
+
+	// Validação de UUIDs
+	for _, id := range productIdList {
+		if _, err := uuid.Parse(id); err != nil {
+			return nil, &apperror.ValidationError{Msg: fmt.Sprintf("Invalid UUID format: %s", id)}
+		}
+	}
+
+	products, err := u.ProductGateway.FindByIDs(ctx, productIdList)
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
+
+}

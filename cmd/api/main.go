@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
 	ginswagger "github.com/swaggo/gin-swagger"
@@ -31,13 +30,13 @@ import (
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productController "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
-	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivens/postgre"
-	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/adapters/drivens/postgre"
-	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/core/model"
+	productDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
+	productHandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
+	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
+	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
+	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
 )
 
@@ -52,10 +51,10 @@ import (
 func main() {
 
 	// UNCOMMENT TO RUN ONLY THE DATABASE IN DOCKER
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Erro ao carregar o .env")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Erro ao carregar o .env")
+	// }
 
 	r := gin.Default()
 	loadYAML()
@@ -67,7 +66,7 @@ func main() {
 		&adminmodel.Admin{},
 		&productmodel.ProductDAO{},
 		&order.Order{},
-		&productordermodel.ProductOrder{},
+		&productordermodel.ProductOrderDAO{},
 		&paymentmodel.Payment{},
 	); err != nil {
 		log.Fatalf("Erro ao migrar o banco: %v", err)
@@ -89,16 +88,14 @@ func main() {
 	adminSrv := adminservice.New(adminRepository, jwtService)
 	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
-	// Product
-	productRepository := productpostgre.New(db)
-
 	// CLEAN ARCH - Product
-	productDataSource := datasource.New(db)
-	productController := controller.Build(productDataSource)
-	productHandlerCleanArch := handler.New(productController)
+	productDataSource := productDataSource.New(db)
+	productController := productController.Build(productDataSource)
+	productHandlerCleanArch := productHandler.New(productController)
 
-	// ProductOrder
-	productOrderRepository := productorderrepository.New(db)
+	// CLEAN ARCH ProductOrder Controller
+	productOrderDataSource := productOrderDataSource_.New(db)
+	productOrderController := productOrderController_.Build(productOrderDataSource)
 
 	// QR Code Client
 	qrCodeClient := mercadopago.New()
@@ -112,16 +109,16 @@ func main() {
 		qrCodeClient,
 		orderRepository,
 		paymentRepository,
-		productOrderRepository,
-		productRepository,
+		*productOrderController,
+		*productController,
 	)
 	paymentHandler := paymenthandler.New(paymentService)
 
 	// Order Service
 	orderService := orderservice.New(
 		orderRepository,
-		productRepository,
-		productOrderRepository,
+		*productController,
+		*productOrderController,
 		paymentService,
 	)
 	orderHandler := orderrest.New(orderService)
