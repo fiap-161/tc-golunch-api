@@ -3,15 +3,16 @@ package postgre_test
 import (
 	"context"
 	"errors"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"testing"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/adapters/drivens/postgre"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/core/model"
 )
 
 type MockDB struct {

@@ -36,8 +36,8 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
 	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivens/postgre"
-	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
-	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
+	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/adapters/drivens/postgre"
+	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
 )
 

@@ -10,7 +10,7 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
 	productport "github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/ports"
-	productorderport "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/ports"
+	productorderport "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/core/ports"
 	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
 	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/ports"
 )

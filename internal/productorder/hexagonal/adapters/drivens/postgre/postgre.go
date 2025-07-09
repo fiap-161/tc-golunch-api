@@ -5,8 +5,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/hexagonal/core/ports"
 )
 
 type DB interface {
