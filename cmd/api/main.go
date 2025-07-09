@@ -30,12 +30,13 @@ import (
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
-	productpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivens/postgre"
-	restproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/adapters/drivers/rest"
-	product "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
-	servicesproduct "github.com/fiap-161/tech-challenge-fiap161/internal/product/service"
-	productorderrepository "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/adapters/drivens/postgre"
-	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
+	productController "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
+	productDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
+	productHandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
+	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
+	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
+	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
 )
 
@@ -63,9 +64,9 @@ func main() {
 	if err := db.AutoMigrate(
 		&customermodel.Customer{},
 		&adminmodel.Admin{},
-		&product.Product{},
+		&productmodel.ProductDAO{},
 		&order.Order{},
-		&productordermodel.ProductOrder{},
+		&productordermodel.ProductOrderDAO{},
 		&paymentmodel.Payment{},
 	); err != nil {
 		log.Fatalf("Erro ao migrar o banco: %v", err)
@@ -87,13 +88,14 @@ func main() {
 	adminSrv := adminservice.New(adminRepository, jwtService)
 	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
-	// Product
-	productRepository := productpostgre.New(db)
-	productService := servicesproduct.New(productRepository)
-	productHandler := restproduct.New(productService)
+	// CLEAN ARCH - Product
+	productDataSource := productDataSource.New(db)
+	productController := productController.Build(productDataSource)
+	productHandlerCleanArch := productHandler.New(productController)
 
-	// ProductOrder
-	productOrderRepository := productorderrepository.New(db)
+	// CLEAN ARCH ProductOrder Controller
+	productOrderDataSource := productOrderDataSource_.New(db)
+	productOrderController := productOrderController_.Build(productOrderDataSource)
 
 	// QR Code Client
 	qrCodeClient := mercadopago.New()
@@ -107,16 +109,16 @@ func main() {
 		qrCodeClient,
 		orderRepository,
 		paymentRepository,
-		productOrderRepository,
-		productRepository,
+		*productOrderController,
+		*productController,
 	)
 	paymentHandler := paymenthandler.New(paymentService)
 
 	// Order Service
 	orderService := orderservice.New(
 		orderRepository,
-		productRepository,
-		productOrderRepository,
+		*productController,
+		*productOrderController,
 		paymentService,
 	)
 	orderHandler := orderrest.New(orderService)
@@ -142,8 +144,8 @@ func main() {
 
 	// Routes for regular authenticated users
 	// Product
-	authenticated.GET("/product/categories", productHandler.ListCategories)
-	authenticated.GET("/product", productHandler.GetAll)
+	authenticated.GET("/product/categories", productHandlerCleanArch.ListCategories)
+	authenticated.GET("/product", productHandlerCleanArch.GetAllByCategory)
 
 	// Order
 	authenticated.POST("/order", orderHandler.Create)
@@ -154,10 +156,10 @@ func main() {
 	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
-	adminRoutes.POST("/image/upload", productHandler.UploadImage)
-	adminRoutes.POST("/", productHandler.Create)
-	adminRoutes.PUT("/:id", productHandler.ValidateIfProductExists, productHandler.Update)
-	adminRoutes.DELETE("/:id", productHandler.ValidateIfProductExists, productHandler.Delete)
+	adminRoutes.POST("/image/upload", productHandlerCleanArch.UploadImage)
+	adminRoutes.POST("/", productHandlerCleanArch.Create)
+	adminRoutes.PUT("/:id", productHandlerCleanArch.Update)
+	adminRoutes.DELETE("/:id", productHandlerCleanArch.Delete)
 
 	r.Run(":8080")
 }

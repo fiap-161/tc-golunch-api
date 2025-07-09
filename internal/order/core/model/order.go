@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/core/model"
+	productdto "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 
@@ -67,7 +67,7 @@ func (o Order) BuildUpdate(status OrderStatus) Order {
 	}
 }
 
-func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
+func (o Order) FromDTO(dto dto.CreateOrderDTO, products []productdto.ProductResponseDTO) Order {
 	totalPrice, preparingTime := o.getOrderInfoFromProducts(products, dto)
 
 	return Order{
@@ -78,7 +78,7 @@ func (o Order) FromDTO(dto dto.CreateOrderDTO, products []model.Product) Order {
 	}
 }
 
-func (o Order) getOrderInfoFromProducts(products []model.Product, dto dto.CreateOrderDTO) (float64, uint) {
+func (o Order) getOrderInfoFromProducts(products []productdto.ProductResponseDTO, dto dto.CreateOrderDTO) (float64, uint) {
 	var totalPrice float64
 	var totalPreparingTime uint
 

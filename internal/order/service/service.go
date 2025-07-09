@@ -2,34 +2,34 @@ package service
 
 import (
 	"context"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
 	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 	paymentport "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
-	productport "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
-	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/model"
-	productorderport "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/ports"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type Service struct {
-	orderRepo        orderport.OrderRepository
-	productRepo      productport.ProductRepository
-	productOrderRepo productorderport.ProductOrderRepository
-	paymentService   paymentport.PaymentService
+	orderRepo              orderport.OrderRepository
+	productController      productcontroller.Controller
+	productOrderController productordercontroller.Controller
+	paymentService         paymentport.PaymentService
 }
 
 func New(
 	orderRepo orderport.OrderRepository,
-	productRepo productport.ProductRepository,
-	productOrderRepo productorderport.ProductOrderRepository,
+	productController productcontroller.Controller,
+	productOrderController productordercontroller.Controller,
 	paymentService paymentport.PaymentService,
 ) orderport.OrderService {
 	return &Service{
-		orderRepo:        orderRepo,
-		productRepo:      productRepo,
-		productOrderRepo: productOrderRepo,
-		paymentService:   paymentService,
+		orderRepo:              orderRepo,
+		productController:      productController,
+		productOrderController: productOrderController,
+		paymentService:         paymentService,
 	}
 }
 
@@ -39,7 +39,7 @@ func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (stri
 		productIds = append(productIds, item.ProductID)
 	}
 
-	products, findErr := s.productRepo.FindByIDs(ctx, productIds)
+	products, findErr := s.productController.FindByIDs(ctx, productIds)
 	if findErr != nil {
 		return "", findErr
 	}
@@ -56,8 +56,8 @@ func (s *Service) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (stri
 		return "", createErr
 	}
 
-	productOrders := productordermodel.BuildBulkFromOrderAndProducts(createdOrder.ID, orderDTO.Products, products)
-	_, createBulkErr := s.productOrderRepo.CreateBulk(ctx, productOrders)
+	productOrders, _ := s.productOrderController.BuildBulkFromOrderAndProducts(createdOrder.ID, orderDTO.Products, products)
+	_, createBulkErr := s.productOrderController.CreateBulk(ctx, productOrders)
 	if createBulkErr != nil {
 		return "", createBulkErr
 	}

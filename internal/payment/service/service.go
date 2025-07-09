@@ -3,43 +3,44 @@ package service
 import (
 	"context"
 	"fmt"
+
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
 
 	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
-	productport "github.com/fiap-161/tech-challenge-fiap161/internal/product/core/ports"
-	productorderport "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/core/ports"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
 	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
 	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/ports"
 )
 
 type service struct {
-	qrCodeClient     qrcodeports.QRCodeProvider
-	orderRepo        orderport.OrderRepository
-	paymentRepo      ports.PaymentRepository
-	productOrderRepo productorderport.ProductOrderRepository
-	productRepo      productport.ProductRepository
+	qrCodeClient           qrcodeports.QRCodeProvider
+	orderRepo              orderport.OrderRepository
+	paymentRepo            ports.PaymentRepository
+	productOrderController productordercontroller.Controller
+	productController      productcontroller.Controller
 }
 
 func New(
 	qrCodeClient qrcodeports.QRCodeProvider,
 	orderRepo orderport.OrderRepository,
 	paymentRepo ports.PaymentRepository,
-	productOrderRepo productorderport.ProductOrderRepository,
-	productRepo productport.ProductRepository,
+	productOrderController productordercontroller.Controller,
+	productController productcontroller.Controller,
 ) ports.PaymentService {
 	return &service{
-		qrCodeClient:     qrCodeClient,
-		orderRepo:        orderRepo,
-		paymentRepo:      paymentRepo,
-		productOrderRepo: productOrderRepo,
-		productRepo:      productRepo,
+		qrCodeClient:           qrCodeClient,
+		orderRepo:              orderRepo,
+		paymentRepo:            paymentRepo,
+		productOrderController: productOrderController,
+		productController:      productController,
 	}
 }
 
 func (s *service) CreateByOrderID(ctx context.Context, orderID string) (model.Payment, error) {
-	productOrders, productOrderErr := s.productOrderRepo.FindByOrderID(ctx, orderID)
+	productOrders, productOrderErr := s.productOrderController.FindByOrderID(ctx, orderID)
 	if productOrderErr != nil {
 		return model.Payment{}, productOrderErr
 	}
@@ -49,7 +50,7 @@ func (s *service) CreateByOrderID(ctx context.Context, orderID string) (model.Pa
 		productIDs = append(productIDs, po.ProductID)
 	}
 
-	products, productErr := s.productRepo.FindByIDs(ctx, productIDs)
+	products, productErr := s.productController.FindByIDs(ctx, productIDs)
 	if productErr != nil {
 		return model.Payment{}, productErr
 	}
