@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
+	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware(validateTokenUC *usecase.ValidateTokenUseCase) gin.HandlerFunc {
+func AuthMiddleware(authController *authController.Controller) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -24,7 +24,7 @@ func AuthMiddleware(validateTokenUC *usecase.ValidateTokenUseCase) gin.HandlerFu
 
 		tokenString := parts[1]
 
-		claims, err := validateTokenUC.Execute(tokenString)
+		claims, err := authController.ValidateToken(tokenString)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			return

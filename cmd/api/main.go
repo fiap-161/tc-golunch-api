@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
 	"log"
 	"os"
 	"time"
@@ -18,6 +17,7 @@ import (
 	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminservice "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
+	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
@@ -78,17 +78,16 @@ func main() {
 
 	// Jwt service for generate and validate tokens (CLEANARCH)
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
-	generateTokenUC := usecase.NewGenerateTokenUseCase(jwtGateway)
-	validateTokenUC := usecase.NewValidateTokenUseCase(jwtGateway)
+	authController := authController.New(jwtGateway)
 
 	// Customer
 	customerRepository := customerpostgre.NewRepository(db)
-	customerSrv := customerservice.New(customerRepository, generateTokenUC)
+	customerSrv := customerservice.New(customerRepository, authController)
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
 	// Admin
 	adminRepository := adminpostgre.NewRepository(db)
-	adminSrv := adminservice.New(adminRepository, generateTokenUC)
+	adminSrv := adminservice.New(adminRepository, authController)
 	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
 	// CLEAN ARCH - Product
@@ -143,7 +142,7 @@ func main() {
 
 	// Authenticated Group
 	authenticated := r.Group("/")
-	authenticated.Use(middleware.AuthMiddleware(validateTokenUC))
+	authenticated.Use(middleware.AuthMiddleware(authController))
 
 	// Routes for regular authenticated users
 	// Product

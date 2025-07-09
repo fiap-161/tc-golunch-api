@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
@@ -12,14 +12,14 @@ import (
 )
 
 type Service struct {
-	repo            ports.AdminRepository
-	generateTokenUC *usecase.GenerateTokenUseCase
+	repo          ports.AdminRepository
+	authController *controller.AuthController
 }
 
-func New(repo ports.AdminRepository, generateTokenUC *usecase.GenerateTokenUseCase) *Service {
+func New(repo ports.AdminRepository, authController *controller.AuthController) *Service {
 	return &Service{
-		repo:            repo,
-		generateTokenUC: generateTokenUC,
+		repo:          repo,
+		authController: authController,
 	}
 }
 
@@ -48,5 +48,5 @@ func (s *Service) Login(ctx context.Context, input dto.LoginDTO) (string, error)
 		return "", &apperror.UnauthorizedError{Msg: "Invalid email or password"}
 	}
 
-	return s.generateTokenUC.Execute(saved.ID, "admin", nil)
+	return s.authController.GenerateToken(saved.ID, "admin", nil)
 }
