@@ -7,6 +7,7 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/presenter"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 )
 
@@ -36,5 +37,20 @@ func (c *Controller) CreateBulk(ctx context.Context, listProductOrderRequestDTO 
 	}
 
 	return length, nil
+
+}
+
+func (c *Controller) FindByOrderID(ctx context.Context, orderId string) ([]dto.ProductOrderResponseDTO, error) {
+	produtOrderGateway := gateway.Build(c.ProductOrderDatasource)
+	useCase := usecases.Build(*produtOrderGateway)
+	presenter := presenter.Build()
+
+	productOrderFoundList, err := useCase.FindByOrderID(ctx, orderId)
+
+	if err != nil {
+		return []dto.ProductOrderResponseDTO{}, err
+	}
+
+	return presenter.FromEntityListToResponseDTOList(productOrderFoundList), nil
 
 }

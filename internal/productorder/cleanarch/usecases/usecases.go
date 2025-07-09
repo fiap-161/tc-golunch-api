@@ -41,3 +41,13 @@ func (u *UseCases) CreateBulk(ctx context.Context, productOrders []entity.Produc
 
 	return length, nil
 }
+
+func (u *UseCases) FindByOrderID(ctx context.Context, orderId string) ([]entity.ProductOrder, error) {
+
+	productOrderFound, err := u.ProductOrderGateway.FindByOrderID(ctx, orderId)
+	if err != nil {
+		return []entity.ProductOrder{}, err
+	}
+
+	return productOrderFound, nil
+}

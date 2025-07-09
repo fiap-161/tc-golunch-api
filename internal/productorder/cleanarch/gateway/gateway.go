@@ -28,3 +28,14 @@ func (g *Gateway) CreateBulk(c context.Context, productOrders []entity.ProductOr
 
 	return length, nil
 }
+
+func (g *Gateway) FindByOrderID(c context.Context, orderId string) ([]entity.ProductOrder, error) {
+	listProductOrderFoundDAO, err := g.Datasource.FindByOrderID(c, orderId)
+	productOrder := entity.ToListProducOrder(listProductOrderFoundDAO)
+
+	if err != nil {
+		return []entity.ProductOrder{}, &apperror.InternalError{Msg: err.Error()}
+	}
+
+	return productOrder, nil
+}

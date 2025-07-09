@@ -16,3 +16,11 @@ type ProductOrderRequestDTO struct {
 	Quantity  int     `json:"quantity"`
 	UnitPrice float64 `json:"unit_price"`
 }
+
+type ProductOrderResponseDTO struct {
+	ID        string  `json:"id"`
+	ProductID string  `json:"product_id"`
+	OrderID   string  `json:"order_id"`
+	Quantity  int     `json:"quantity"`
+	UnitPrice float64 `json:"unit_price"`
+}

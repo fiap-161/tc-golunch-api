@@ -47,3 +47,22 @@ func FromRequestDTO(dto dto.ProductOrderRequestDTO) ProductOrder {
 		UnitPrice: dto.UnitPrice,
 	}
 }
+
+func FromProductDAO(dao dto.ProductOrderDAO) ProductOrder {
+	return ProductOrder{
+		ID:        dao.ID,
+		OrderID:   dao.OrderID,
+		ProductID: dao.ProductID,
+		Quantity:  dao.Quantity,
+		UnitPrice: dao.UnitPrice,
+	}
+}
+
+func ToListProducOrder(list []dto.ProductOrderDAO) []ProductOrder {
+	var listProductOrder []ProductOrder
+	for _, dao := range list {
+		item := FromProductDAO(dao)
+		listProductOrder = append(listProductOrder, item)
+	}
+	return listProductOrder
+}
