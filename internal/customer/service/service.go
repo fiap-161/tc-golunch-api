@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/core/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
@@ -13,14 +13,14 @@ import (
 )
 
 type Service struct {
-	repo       ports.CustomerRepository
-	jwtService auth.TokenService
+	repo            ports.CustomerRepository
+	generateTokenUC *usecase.GenerateTokenUseCase
 }
 
-func New(repo ports.CustomerRepository, jwtService auth.TokenService) *Service {
+func New(repo ports.CustomerRepository, generateTokenUC *usecase.GenerateTokenUseCase) *Service {
 	return &Service{
-		repo:       repo,
-		jwtService: jwtService,
+		repo:            repo,
+		generateTokenUC: generateTokenUC,
 	}
 }
 
@@ -70,7 +70,7 @@ func (s *Service) createToken(id string, isAnonymous bool) (string, error) {
 		"is_anonymous": isAnonymous,
 	}
 
-	token, err := s.jwtService.GenerateToken(id, "customer", additionalClaims)
+	token, err := s.generateTokenUC.Execute(id, "customer", additionalClaims)
 	if err != nil {
 		return "", &apperror.InternalError{Msg: "Error creating token"}
 	}

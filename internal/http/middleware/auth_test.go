@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,8 +12,10 @@ import (
 )
 
 func TestAuthMiddleware(t *testing.T) {
-	jwtService := auth.auth.NewJWTService("secret", time.Minute*5)
-	validToken, err := jwtService.GenerateToken("user123", "admin", nil)
+	jwtGateway := external.NewJWTService("secret", time.Minute*5)
+	generateTokenUC := usecase.NewGenerateTokenUseCase(jwtGateway)
+	validateTokenUC := usecase.NewValidateTokenUseCase(jwtGateway)
+	validToken, err := generateTokenUC.Execute("user123", "admin", nil)
 	if err != nil {
 		t.Fatalf("failed to generate token: %v", err)
 	}
@@ -48,7 +51,7 @@ func TestAuthMiddleware(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gin.SetMode(gin.TestMode)
 			router := gin.New()
-			router.Use(AuthMiddleware(jwtService))
+			router.Use(AuthMiddleware(validateTokenUC))
 			router.GET("/protected", func(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{"message": "OK"})
 			})

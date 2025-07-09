@@ -1,14 +1,14 @@
 package middleware
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
 	"net/http"
 	"strings"
 
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware(jwtService *auth.JWTService) gin.HandlerFunc {
+func AuthMiddleware(validateTokenUC *usecase.ValidateTokenUseCase) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -24,7 +24,7 @@ func AuthMiddleware(jwtService *auth.JWTService) gin.HandlerFunc {
 
 		tokenString := parts[1]
 
-		claims, err := jwtService.ValidateToken(tokenString)
+		claims, err := validateTokenUC.Execute(tokenString)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			return

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
 	"log"
 	"os"
 	"time"
@@ -75,17 +76,19 @@ func main() {
 	// servir arquivos estáticos - imagens
 	uploadDir := os.Getenv("UPLOAD_DIR")
 
-	// Jwt service for generate and validate tokens
-	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+	// Jwt service for generate and validate tokens (CLEANARCH)
+	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+	generateTokenUC := usecase.NewGenerateTokenUseCase(jwtGateway)
+	validateTokenUC := usecase.NewValidateTokenUseCase(jwtGateway)
 
 	// Customer
 	customerRepository := customerpostgre.NewRepository(db)
-	customerSrv := customerservice.New(customerRepository, jwtService)
+	customerSrv := customerservice.New(customerRepository, generateTokenUC)
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
 	// Admin
 	adminRepository := adminpostgre.NewRepository(db)
-	adminSrv := adminservice.New(adminRepository, jwtService)
+	adminSrv := adminservice.New(adminRepository, generateTokenUC)
 	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
 	// CLEAN ARCH - Product
@@ -140,7 +143,7 @@ func main() {
 
 	// Authenticated Group
 	authenticated := r.Group("/")
-	authenticated.Use(middleware.AuthMiddleware(jwtService))
+	authenticated.Use(middleware.AuthMiddleware(validateTokenUC))
 
 	// Routes for regular authenticated users
 	// Product
