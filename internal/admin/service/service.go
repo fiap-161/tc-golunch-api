@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
+	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
@@ -12,13 +12,13 @@ import (
 )
 
 type Service struct {
-	repo          ports.AdminRepository
-	authController *controller.AuthController
+	repo           ports.AdminRepository
+	authController *authController.Controller
 }
 
-func New(repo ports.AdminRepository, authController *controller.AuthController) *Service {
+func New(repo ports.AdminRepository, authController *authController.Controller) *Service {
 	return &Service{
-		repo:          repo,
+		repo:           repo,
 		authController: authController,
 	}
 }
