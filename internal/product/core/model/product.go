@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 
 	"errors"
@@ -38,23 +39,25 @@ func (p Product) Build() Product {
 }
 
 func (p Product) FromRequestDTO(dto dto.ProductRequestDTO) Product {
+	category := strings.ToUpper(string(dto.Category))
 	return Product{
 		Name:          dto.Name,
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      enum.Category(dto.Category),
+		Category:      enum.Category(category),
 		ImageURL:      dto.ImageURL,
 	}
 }
 
 func (p Product) FromUpdateDTO(dto dto.ProductRequestUpdateDTO) Product {
+	category := strings.ToUpper(string(dto.Category))
 	return Product{
 		Name:          dto.Name,
 		Price:         dto.Price,
 		Description:   dto.Description,
 		PreparingTime: dto.PreparingTime,
-		Category:      enum.Category(dto.Category),
+		Category:      enum.Category(category),
 		ImageURL:      dto.ImageURL,
 	}
 }
@@ -66,7 +69,7 @@ func (p Product) FromEntityToResponseDTO() dto.ProductResponseDTO {
 		Price:         p.Price,
 		Description:   p.Description,
 		PreparingTime: p.PreparingTime,
-		Category:      p.Category.String(),
+		Category:      p.Category,
 		ImageURL:      p.ImageURL,
 	}
 }
@@ -78,7 +81,7 @@ func (p Product) Validate() error {
 	if p.Price < 0 {
 		return errors.New("price must be positive")
 	}
-	if p.Category == 0 {
+	if p.Category == "" {
 		return errors.New("category is required")
 	}
 	return nil

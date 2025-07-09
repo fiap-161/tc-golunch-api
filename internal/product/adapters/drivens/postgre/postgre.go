@@ -44,10 +44,10 @@ func (r *Repository) Create(_ context.Context, product model.Product) (model.Pro
 	return product, nil
 }
 
-func (r *Repository) GetAll(_ context.Context, category uint) ([]model.Product, error) {
+func (r *Repository) GetAll(_ context.Context, category enum.Category) ([]model.Product, error) {
 	var products []model.Product
 	query := r.db
-	if category > 0 {
+	if category != "" {
 		query = query.Where("category = ?", category)
 	}
 
@@ -80,7 +80,7 @@ func (r *Repository) Update(ctx context.Context, id string, updated model.Produc
 	if updated.PreparingTime != 0 {
 		updates["preparing_time"] = updated.PreparingTime
 	}
-	if updated.Category != enum.Unknown {
+	if updated.Category != "" {
 		updates["category"] = updated.Category
 	}
 

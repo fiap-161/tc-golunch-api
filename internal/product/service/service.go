@@ -19,7 +19,7 @@ func New(repo ports.ProductRepository) *Service {
 }
 
 func (s *Service) Create(ctx context.Context, product model.Product) (model.Product, error) {
-	isValidCategory := enum.IsValidCategory(uint(product.Category))
+	isValidCategory := enum.IsValidCategory(string(product.Category))
 
 	if !isValidCategory {
 		return model.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
@@ -33,11 +33,11 @@ func (s *Service) Create(ctx context.Context, product model.Product) (model.Prod
 	return saved, nil
 }
 
-func (s *Service) ListCategories(_ context.Context) []enum.CategoryDTO {
+func (s *Service) ListCategories(_ context.Context) []enum.Category {
 	return enum.GetAllCategories()
 }
 
-func (s *Service) GetAll(ctx context.Context, category uint) ([]model.Product, error) {
+func (s *Service) GetAll(ctx context.Context, category enum.Category) ([]model.Product, error) {
 	list, err := s.repo.GetAll(ctx, category)
 
 	if err != nil {
