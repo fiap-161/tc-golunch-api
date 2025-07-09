@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 
+	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
@@ -19,7 +20,7 @@ func Build(datasource datasource.DataSource) *Gateway {
 }
 
 func (g *Gateway) CreateBulk(c context.Context, productOrders []entity.ProductOrder) (int, error) {
-	var listProductOrderDAO = entity.ToListProducOrderDAO(productOrders)
+	var listProductOrderDAO = dto.ToListProductOrderDAO(productOrders)
 	length, err := g.Datasource.CreateBulk(c, listProductOrderDAO)
 
 	if err != nil {
@@ -31,7 +32,7 @@ func (g *Gateway) CreateBulk(c context.Context, productOrders []entity.ProductOr
 
 func (g *Gateway) FindByOrderID(c context.Context, orderId string) ([]entity.ProductOrder, error) {
 	listProductOrderFoundDAO, err := g.Datasource.FindByOrderID(c, orderId)
-	productOrder := entity.ToListProducOrder(listProductOrderFoundDAO)
+	productOrder := dto.ToListProductOrder(listProductOrderFoundDAO)
 
 	if err != nil {
 		return []entity.ProductOrder{}, &apperror.InternalError{Msg: err.Error()}

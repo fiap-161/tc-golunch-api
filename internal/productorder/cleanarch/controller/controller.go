@@ -26,7 +26,7 @@ func (c *Controller) CreateBulk(ctx context.Context, listProductOrderRequestDTO 
 
 	var productOrders []entity.ProductOrder
 	for _, item := range listProductOrderRequestDTO {
-		productOrder := entity.FromRequestDTO(item)
+		productOrder := dto.FromRequestDTO(item)
 		productOrders = append(productOrders, productOrder)
 	}
 
