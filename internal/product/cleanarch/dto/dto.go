@@ -1,8 +1,13 @@
 package dto
 
 import (
+	"strings"
+	"time"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	gormEntity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	"github.com/google/uuid"
 )
 
 type ProductRequestDTO struct {
@@ -43,11 +48,68 @@ type ImageURLDTO struct {
 }
 
 type ProductDAO struct {
-	entity.Entity
+	gormEntity.Entity
 	Name          string        `json:"name"`
 	Price         float64       `json:"price" gorm:"type:decimal(10,2)"`
 	Description   string        `json:"description" gorm:"type:text"`
 	PreparingTime uint          `json:"preparing_time" gorm:"type:integer"`
 	Category      enum.Category `json:"category"`
 	ImageURL      string        `json:"image_url" gorm:"type:varchar(255)"`
+}
+
+// Convert entity entity to DAO
+func ToProductDAO(p entity.Product) ProductDAO {
+	return ProductDAO{
+		Entity: gormEntity.Entity{
+			ID:        uuid.NewString(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
+		Name:          p.Name,
+		Price:         p.Price,
+		Description:   p.Description,
+		PreparingTime: p.PreparingTime,
+		Category:      p.Category,
+		ImageURL:      p.ImageURL,
+	}
+}
+
+// Convert DAO to entity entity
+func FromProductDAO(dao ProductDAO) entity.Product {
+	category := strings.ToUpper(string(dao.Category))
+	return entity.Product{
+		Id:            dao.ID,
+		Name:          dao.Name,
+		Price:         dao.Price,
+		Description:   dao.Description,
+		PreparingTime: dao.PreparingTime,
+		Category:      enum.Category(category),
+		ImageURL:      dao.ImageURL,
+	}
+}
+
+// Convert request DTO to entity entity
+func FromRequestDTO(dto ProductRequestDTO) entity.Product {
+	category := strings.ToUpper(string(dto.Category))
+	return entity.Product{
+		Name:          dto.Name,
+		Price:         dto.Price,
+		Description:   dto.Description,
+		PreparingTime: dto.PreparingTime,
+		Category:      enum.Category(category),
+		ImageURL:      dto.ImageURL,
+	}
+}
+
+// Convert update request DTO to entity entity
+func FromUpdateDTO(dto ProductRequestUpdateDTO) entity.Product {
+	category := strings.ToUpper(string(dto.Category))
+	return entity.Product{
+		Name:          dto.Name,
+		Price:         dto.Price,
+		Description:   dto.Description,
+		PreparingTime: dto.PreparingTime,
+		Category:      enum.Category(category),
+		ImageURL:      dto.ImageURL,
+	}
 }

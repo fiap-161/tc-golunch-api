@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
@@ -20,14 +21,14 @@ func Build(datasource datasource.DataSource) *Gateway {
 }
 
 func (g *Gateway) Create(c context.Context, product entity.Product) (entity.Product, error) {
-	var productDAO = product.ToProductDAO()
+	var productDAO = dto.ToProductDAO(product)
 	created, err := g.Datasource.Create(c, productDAO)
 
 	if err != nil {
 		return entity.Product{}, &apperror.InternalError{Msg: err.Error()}
 	}
 
-	return entity.FromProductDAO(created), nil
+	return dto.FromProductDAO(created), nil
 }
 
 func (g *Gateway) GetAllByCategory(c context.Context, category string) ([]entity.Product, error) {
@@ -39,7 +40,7 @@ func (g *Gateway) GetAllByCategory(c context.Context, category string) ([]entity
 
 	var products []entity.Product
 	for _, dao := range result {
-		entity := entity.FromProductDAO(dao)
+		entity := dto.FromProductDAO(dao)
 		products = append(products, entity)
 	}
 
@@ -47,14 +48,14 @@ func (g *Gateway) GetAllByCategory(c context.Context, category string) ([]entity
 }
 
 func (g *Gateway) Update(c context.Context, productId string, product entity.Product) (entity.Product, error) {
-	productDAO := product.ToProductDAO()
+	productDAO := dto.ToProductDAO(product)
 	updated, err := g.Datasource.Update(c, productId, productDAO)
 
 	if err != nil {
 		return entity.Product{}, &apperror.InternalError{Msg: err.Error()}
 	}
 
-	return entity.FromProductDAO(updated), nil
+	return dto.FromProductDAO(updated), nil
 }
 
 func (g *Gateway) FindByID(c context.Context, productId string) (entity.Product, error) {
@@ -68,7 +69,7 @@ func (g *Gateway) FindByID(c context.Context, productId string) (entity.Product,
 		return entity.Product{}, &apperror.InternalError{Msg: "Unexpected error"}
 	}
 
-	return entity.FromProductDAO(found), nil
+	return dto.FromProductDAO(found), nil
 }
 
 func (g *Gateway) Delete(c context.Context, productId string) error {

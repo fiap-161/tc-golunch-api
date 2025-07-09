@@ -29,7 +29,7 @@ func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDT
 	presenter := presenter.Build()
 
 	var product entity.Product
-	product = entity.FromRequestDTO(productDTO)
+	product = dto.FromRequestDTO(productDTO)
 	product, err := useCase.CreateProduct(ctx, product)
 
 	if err != nil {
@@ -70,7 +70,7 @@ func (c *Controller) Update(ctx context.Context, productId string, productDTO dt
 	useCase := usecases.Build(*productGateway)
 	presenter := presenter.Build()
 
-	product := entity.FromUpdateDTO(productDTO)
+	product := dto.FromUpdateDTO(productDTO)
 	result, err := useCase.Update(ctx, productId, product)
 
 	if err != nil {
