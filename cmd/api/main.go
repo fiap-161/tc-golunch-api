@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
 	"log"
 	"os"
 	"time"
@@ -16,7 +17,6 @@ import (
 	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminservice "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"

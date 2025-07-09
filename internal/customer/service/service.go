@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/core/ports"
 
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"

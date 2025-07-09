@@ -1,15 +1,14 @@
 package middleware
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 )
 
-func AuthMiddleware(jwtService *auth.JWTService) gin.HandlerFunc {
+func AuthMiddleware(jwtService *auth.auth) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {

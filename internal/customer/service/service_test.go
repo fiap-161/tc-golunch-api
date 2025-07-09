@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
 	"testing"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
@@ -120,7 +120,7 @@ func TestService_Identify(t *testing.T) {
 			},
 		}
 
-		jwtService := auth.NewJWTService("secret", time.Minute)
+		jwtService := auth.auth.NewJWTService("secret", time.Minute)
 		service := New(repo, jwtService)
 
 		token, err := service.Identify(context.Background(), tt.inputCPF)

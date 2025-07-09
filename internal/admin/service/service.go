@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
+	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/core/ports"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/ports"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
