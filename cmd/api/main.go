@@ -37,7 +37,7 @@ import (
 	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
+	qrCodeProvider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/gateway"
 )
 
 // @title           GoLunch
@@ -98,7 +98,7 @@ func main() {
 	productOrderController := productOrderController_.Build(productOrderDataSource)
 
 	// QR Code Client
-	qrCodeClient := mercadopago.New()
+	qrCodeClient := qrCodeProvider.New()
 
 	// Order Repository
 	orderRepository := orderpostgre.New(db)

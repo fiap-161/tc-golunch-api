@@ -1,4 +1,4 @@
-package dto
+package entity
 
 type GenerateQRCodeParams struct {
 	OrderID string

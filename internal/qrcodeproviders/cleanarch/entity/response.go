@@ -1,4 +1,4 @@
-package dto
+package entity
 
 type ResponseGenerateQRCode struct {
 	InStoreOrderID string `json:"in_store_order_id"`
