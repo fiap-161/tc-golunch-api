@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
-	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 	paymentport "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
@@ -13,18 +13,18 @@ import (
 )
 
 type Service struct {
-	orderRepo              orderport.OrderRepository
+	orderRepo              ports.OrderRepository
 	productController      productcontroller.Controller
 	productOrderController productordercontroller.Controller
 	paymentService         paymentport.PaymentService
 }
 
 func New(
-	orderRepo orderport.OrderRepository,
+	orderRepo ports.OrderRepository,
 	productController productcontroller.Controller,
 	productOrderController productordercontroller.Controller,
 	paymentService paymentport.PaymentService,
-) orderport.OrderService {
+) ports.OrderService {
 	return &Service{
 		orderRepo:              orderRepo,
 		productController:      productController,

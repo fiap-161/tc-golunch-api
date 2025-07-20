@@ -2,12 +2,12 @@ package rest
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )

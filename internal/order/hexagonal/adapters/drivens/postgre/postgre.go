@@ -2,11 +2,10 @@ package postgre
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
+	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 
 	"gorm.io/gorm"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
-	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 )
 
 type Repository struct {

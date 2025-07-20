@@ -1,6 +1,10 @@
 package main
 
 import (
+	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
+	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
+	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
+	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
 	"log"
 	"os"
 	"time"
@@ -22,10 +26,6 @@ import (
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
-	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivens/postgre"
-	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest"
-	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
-	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/service"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
