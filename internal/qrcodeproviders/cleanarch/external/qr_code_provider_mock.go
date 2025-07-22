@@ -5,14 +5,14 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 )
 
 type MockQRCodeProvider struct {
 	mock.Mock
 }
 
-func (m *MockQRCodeProvider) GenerateQRCode(ctx context.Context, request entity.GenerateQRCodeParams) (string, error) {
+func (m *MockQRCodeProvider) GenerateQRCode(ctx context.Context, request entities.GenerateQRCodeParams) (string, error) {
 	args := m.Called(ctx, request)
 	return args.String(0), args.Error(1)
 }

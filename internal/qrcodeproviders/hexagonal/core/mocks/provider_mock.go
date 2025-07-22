@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/dto"
 )
 
 type MockQRCodeProvider struct {

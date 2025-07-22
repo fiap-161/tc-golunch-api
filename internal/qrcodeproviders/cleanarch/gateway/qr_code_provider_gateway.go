@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/adapters"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/presenters"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
@@ -40,8 +41,8 @@ func getClient() *resty.Client {
 		})
 }
 
-func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entity.GenerateQRCodeParams) (string, error) {
-	request := adapters.FromParams(params)
+func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.GenerateQRCodeParams) (string, error) {
+	requestBody := presenters.RequestBodyFromParams(params)
 
 	pathParams := []shared.BuildPathParam{
 		{
@@ -58,9 +59,9 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entity.Gene
 		return "", err
 	}
 
-	var responseDTO entity.ResponseGenerateQRCode
+	var responseDTO dtos.ResponseGenerateQRCodeDTO
 	res, reqErr := m.client.R().
-		SetBody(request).
+		SetBody(requestBody).
 		SetResult(&responseDTO).
 		Post(resolvedPath)
 
@@ -75,16 +76,16 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entity.Gene
 	return responseDTO.QRData, nil
 }
 
-func (m *MercadoPagoClient) CheckPayment(_ context.Context, requestUrl string) (entity.ResponseVerifyOrder, error) {
-	var responseDTO entity.ResponseVerifyOrder
+func (m *MercadoPagoClient) CheckPayment(_ context.Context, requestUrl string) (dtos.ResponseVerifyOrderDTO, error) {
+	var responseDTO dtos.ResponseVerifyOrderDTO
 	res, reqErr := m.client.R().
 		SetResult(&responseDTO).
 		Get(requestUrl)
 	if res != nil && res.IsError() {
-		return entity.ResponseVerifyOrder{}, errors.New("error in request, endpoint called: " + res.Request.URL + "\n")
+		return dtos.ResponseVerifyOrderDTO{}, errors.New("error in request, endpoint called: " + res.Request.URL + "\n")
 	}
 	if reqErr != nil {
-		return entity.ResponseVerifyOrder{}, reqErr
+		return dtos.ResponseVerifyOrderDTO{}, reqErr
 	}
 
 	return responseDTO, nil

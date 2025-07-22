@@ -1,15 +1,16 @@
-package adapters
+package presenters
 
 import (
 	"os"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 )
 
-func FromParams(params entity.GenerateQRCodeParams) entity.RequestGenerateQRCode {
+func RequestBodyFromParams(params entities.GenerateQRCodeParams) dtos.RequestGenerateQRCodeDTO {
 	items, totalAmount := generateItems(params.Items)
 
-	return entity.RequestGenerateQRCode{
+	return dtos.RequestGenerateQRCodeDTO{
 		Title:             "Order " + params.OrderID,
 		Description:       "Order Description" + params.OrderID,
 		ExternalReference: params.OrderID,
@@ -19,13 +20,13 @@ func FromParams(params entity.GenerateQRCodeParams) entity.RequestGenerateQRCode
 	}
 }
 
-func generateItems(product []entity.Item) ([]entity.RequestGenerateQRCodeItem, float64) {
-	items := make([]entity.RequestGenerateQRCodeItem, len(product))
+func generateItems(product []entities.Item) ([]dtos.RequestGenerateQRCodeItemDTO, float64) {
+	items := make([]dtos.RequestGenerateQRCodeItemDTO, len(product))
 	var totalAmount float64
 
 	for i, item := range product {
 		totalAmount += item.Amount
-		items[i] = entity.RequestGenerateQRCodeItem{
+		items[i] = dtos.RequestGenerateQRCodeItemDTO{
 			Title:       item.Name,
 			UnitPrice:   FormatDecimal(item.Price),
 			Quantity:    item.Quantity,

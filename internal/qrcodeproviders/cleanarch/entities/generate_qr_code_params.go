@@ -1,4 +1,4 @@
-package entity
+package entities
 
 type GenerateQRCodeParams struct {
 	OrderID string
@@ -12,9 +12,4 @@ type Item struct {
 	Description string
 	Quantity    int
 	Amount      float64
-}
-
-type VerifyOrderResponse struct {
-	ExternalReference string `json:"external_reference"`
-	OrderStatus       string `json:"order_status"`
 }
