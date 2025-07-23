@@ -107,11 +107,15 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 └──  Dockerfile              # Docker build da aplicação
 ```
 
+## Testes
+
+Os testes podem ser executados com o comando:
+> go test ./... 
+
 # Coleção Postman
 ### Pode ser encontrada no arquivo:
 
 ```FIAP TC1.json```
-
 
 ## 📄 Licença
 

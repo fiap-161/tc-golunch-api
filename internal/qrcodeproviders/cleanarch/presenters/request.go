@@ -12,7 +12,7 @@ func RequestBodyFromParams(params entities.GenerateQRCodeParams) dtos.RequestGen
 
 	return dtos.RequestGenerateQRCodeDTO{
 		Title:             "Order " + params.OrderID,
-		Description:       "Order Description" + params.OrderID,
+		Description:       "Order Description " + params.OrderID,
 		ExternalReference: params.OrderID,
 		Items:             items,
 		NotificationURL:   os.Getenv("WEBHOOK_URL"), //TODO adjust this field

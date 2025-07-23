@@ -1,4 +1,4 @@
-package gateway
+package gateways
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
+	external "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/presenters"
 
 	"github.com/go-resty/resty/v2"
@@ -17,13 +17,16 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared"
 )
 
-var (
-	SellerUserID  = os.Getenv("MERCADO_PAGO_SELLER_APP_USER_ID")
-	ExternalPosID = os.Getenv("MERCADO_PAGO_EXTERNAL_POS_ID")
-)
+func GetSellerUserID() string {
+	return os.Getenv("MERCADO_PAGO_SELLER_APP_USER_ID")
+}
+
+func GetExternalPosID() string {
+	return os.Getenv("MERCADO_PAGO_EXTERNAL_POS_ID")
+}
 
 type MercadoPagoClient struct {
-	client *resty.Client
+	client external.MercadoPagoClient
 }
 
 func New() external.QRCodeProvider {
@@ -32,13 +35,15 @@ func New() external.QRCodeProvider {
 	}
 }
 
-func getClient() *resty.Client {
-	return resty.New().
-		SetBaseURL(viper.GetString(shared.MercadoPagoHost)).
-		SetHeaders(map[string]string{
-			"Content-Type":  "application/json",
-			"Authorization": "Bearer " + os.Getenv("MERCADO_PAGO_ACCESS_TOKEN"),
-		})
+func getClient() external.MercadoPagoClient {
+	return &MercadoPagoClientRest{
+		client: resty.New().
+			SetBaseURL(viper.GetString(shared.MercadoPagoHost)).
+			SetHeaders(map[string]string{
+				"Content-Type":  "application/json",
+				"Authorization": "Bearer " + os.Getenv("MERCADO_PAGO_ACCESS_TOKEN"),
+			}),
+	}
 }
 
 func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.GenerateQRCodeParams) (string, error) {
@@ -47,11 +52,11 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.Ge
 	pathParams := []shared.BuildPathParam{
 		{
 			Key:   "user_id",
-			Value: SellerUserID,
+			Value: GetSellerUserID(),
 		},
 		{
 			Key:   "external_pos_id",
-			Value: ExternalPosID,
+			Value: GetExternalPosID(),
 		},
 	}
 	resolvedPath, err := shared.BuildPath(viper.GetString(shared.MercadoPagoQRCodePath), pathParams)
@@ -60,10 +65,7 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.Ge
 	}
 
 	var responseDTO dtos.ResponseGenerateQRCodeDTO
-	res, reqErr := m.client.R().
-		SetBody(requestBody).
-		SetResult(&responseDTO).
-		Post(resolvedPath)
+	res, reqErr := m.client.Post(resolvedPath, requestBody, &responseDTO)
 
 	if res != nil && res.IsError() {
 		fmt.Println(res.Error())
@@ -77,10 +79,11 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.Ge
 }
 
 func (m *MercadoPagoClient) CheckPayment(_ context.Context, requestUrl string) (dtos.ResponseVerifyOrderDTO, error) {
+	fmt.Println(requestUrl)
+
 	var responseDTO dtos.ResponseVerifyOrderDTO
-	res, reqErr := m.client.R().
-		SetResult(&responseDTO).
-		Get(requestUrl)
+	res, reqErr := m.client.Get(requestUrl, &responseDTO)
+
 	if res != nil && res.IsError() {
 		return dtos.ResponseVerifyOrderDTO{}, errors.New("error in request, endpoint called: " + res.Request.URL + "\n")
 	}
