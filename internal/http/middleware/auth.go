@@ -4,12 +4,11 @@ import (
 	"net/http"
 	"strings"
 
+	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	"github.com/gin-gonic/gin"
-	
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 )
 
-func AuthMiddleware(jwtService *auth.JWTService) gin.HandlerFunc {
+func AuthMiddleware(authController *authController.Controller) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -25,7 +24,7 @@ func AuthMiddleware(jwtService *auth.JWTService) gin.HandlerFunc {
 
 		tokenString := parts[1]
 
-		claims, err := jwtService.ValidateToken(tokenString)
+		claims, err := authController.ValidateToken(tokenString)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			return

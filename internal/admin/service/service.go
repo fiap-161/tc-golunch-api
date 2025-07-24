@@ -2,24 +2,24 @@ package service
 
 import (
 	"context"
+	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/core/ports"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type Service struct {
-	repo       ports.AdminRepository
-	jwtService auth.TokenService
+	repo           ports.AdminRepository
+	authController *authController.Controller
 }
 
-func New(repo ports.AdminRepository, jwtService auth.TokenService) *Service {
+func New(repo ports.AdminRepository, authController *authController.Controller) *Service {
 	return &Service{
-		repo:       repo,
-		jwtService: jwtService,
+		repo:           repo,
+		authController: authController,
 	}
 }
 
@@ -48,5 +48,5 @@ func (s *Service) Login(ctx context.Context, input dto.LoginDTO) (string, error)
 		return "", &apperror.UnauthorizedError{Msg: "Invalid email or password"}
 	}
 
-	return s.jwtService.GenerateToken(saved.ID, "admin", nil)
+	return s.authController.GenerateToken(saved.ID, "admin", nil)
 }

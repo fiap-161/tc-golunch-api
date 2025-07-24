@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 	"log"
 	"os"
 	"time"
@@ -16,7 +17,7 @@ import (
 	adminrest "github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest"
 	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	adminservice "github.com/fiap-161/tech-challenge-fiap161/internal/admin/service"
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
+	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
@@ -75,17 +76,18 @@ func main() {
 	// servir arquivos estáticos - imagens
 	uploadDir := os.Getenv("UPLOAD_DIR")
 
-	// Jwt service for generate and validate tokens
-	jwtService := auth.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+	// Jwt service for generate and validate tokens (CLEANARCH)
+	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
+	authController := authController.New(jwtGateway)
 
 	// Customer
 	customerRepository := customerpostgre.NewRepository(db)
-	customerSrv := customerservice.New(customerRepository, jwtService)
+	customerSrv := customerservice.New(customerRepository, authController)
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
 	// Admin
 	adminRepository := adminpostgre.NewRepository(db)
-	adminSrv := adminservice.New(adminRepository, jwtService)
+	adminSrv := adminservice.New(adminRepository, authController)
 	adminHandler := adminrest.NewAdminHandler(adminSrv)
 
 	// CLEAN ARCH - Product
@@ -140,7 +142,7 @@ func main() {
 
 	// Authenticated Group
 	authenticated := r.Group("/")
-	authenticated.Use(middleware.AuthMiddleware(jwtService))
+	authenticated.Use(middleware.AuthMiddleware(authController))
 
 	// Routes for regular authenticated users
 	// Product

@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
 	"testing"
 	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/adapters/jwt"
 )
 
 type mockRepo struct {
@@ -121,7 +121,7 @@ func TestService_Login(t *testing.T) {
 			},
 		}
 
-		jwtService := auth.NewJWTService("secret", time.Minute)
+		jwtService := auth.auth.NewJWTService("secret", time.Minute)
 		service := New(repo, jwtService)
 
 		token, err := service.Login(context.Background(), tt.input)
