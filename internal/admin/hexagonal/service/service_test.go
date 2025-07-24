@@ -3,13 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/hexagonal/adapters/jwt"
 	"testing"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/utils"
 )
 
 type mockRepo struct {

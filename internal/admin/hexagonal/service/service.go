@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
+
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/utils"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 

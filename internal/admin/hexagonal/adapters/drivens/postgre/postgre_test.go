@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivens/postgre"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/adapters/drivens/postgre"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/model"
 )
 
 type MockDB struct {

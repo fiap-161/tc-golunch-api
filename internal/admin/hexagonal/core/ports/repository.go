@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/model"
 )
 
 type AdminRepository interface {
