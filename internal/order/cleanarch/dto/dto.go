@@ -39,6 +39,16 @@ type OrderDAO struct {
 	PreparingTime uint             `json:"preparing_time" gorm:"type:integer"`
 }
 
+type ProductDTO struct {
+	ID            string
+	Price         float64
+	PreparingTime uint
+}
+
+type ProductOrderDTO struct{}
+
+type PaymentDTO struct{ QrCode string }
+
 func (c *CreateOrderDTO) Validate() error {
 	if len(c.Products) == 0 {
 		return errors.New("at least one product is required")
