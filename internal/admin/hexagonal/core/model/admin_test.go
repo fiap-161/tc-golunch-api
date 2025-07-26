@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/hexagonal/adapters/drivers/rest/dto"
 )
 
 func TestAdmin_FromRegisterDTO(t *testing.T) {

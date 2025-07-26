@@ -2,8 +2,8 @@ package ports
 
 import (
 	"context"
-	
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/adapters/drivers/rest/dto"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/adapters/drivers/rest/dto"
 )
 
 type AdminService interface {

@@ -2,11 +2,12 @@ package postgre
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/ports"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/ports"
 
 	"gorm.io/gorm"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/model"
 )
 
 type DB interface {
