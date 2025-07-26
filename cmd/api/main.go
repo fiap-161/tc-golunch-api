@@ -38,7 +38,8 @@ import (
 	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago" // TODO remover quando migrar payment para Clean Architecture
+	// qrCodeProvider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external" 	// TODO descomentar quando migrar payment para Clean Architecture
 )
 
 // @title           GoLunch
@@ -100,7 +101,8 @@ func main() {
 	productOrderController := productOrderController_.Build(productOrderDataSource)
 
 	// QR Code Client
-	qrCodeClient := mercadopago.New()
+	qrCodeClient := mercadopago.New() // TODO remover quando migrar payment para Clean Architecture
+	// qrCodeClient := qrCodeProvider.New() // TODO: descomentar quando migrar payment para Clean arch
 
 	// Order Repository
 	orderRepository := orderpostgre.New(db)

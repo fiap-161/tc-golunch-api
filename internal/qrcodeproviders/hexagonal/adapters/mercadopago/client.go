@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/adapters/mercadopago/dto"
-	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/ports"
 	"os"
+
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago/dto"
+	providerdto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/ports"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"

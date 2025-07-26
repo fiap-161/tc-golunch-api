@@ -11,8 +11,8 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
-	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/dto"
-	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/core/ports"
+	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/dto"
+	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/ports"
 )
 
 type service struct {
