@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
+	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
+	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 
-	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
-
-	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"

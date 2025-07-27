@@ -2,7 +2,7 @@ package ports
 
 import (
 	"context"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/model"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 )
 
 type OrderRepository interface {

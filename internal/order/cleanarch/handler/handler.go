@@ -1,28 +1,26 @@
-package rest
+package handler
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/core/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
+	"github.com/gin-gonic/gin"
 )
 
-type handler struct {
-	service ports.OrderService
+type Handler struct {
+	controller *controller.Controller
 }
 
-func New(service ports.OrderService) *handler {
-	return &handler{
-		service: service,
-	}
+func New(controller *controller.Controller) *Handler {
+	return &Handler{controller: controller}
 }
 
-// Create Create Order godoc
+// Create Order godoc
 // @Summary      Create Order
 // @Description  Create a new order
 // @Tags         Order Domain
@@ -34,9 +32,7 @@ func New(service ports.OrderService) *handler {
 // @Failure      400  {object}  errors.ErrorDTO
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/ [post]
-func (h *handler) Create(c *gin.Context) {
-	ctx := context.Background()
-
+func (h *Handler) Create(c *gin.Context) {
 	var orderDTO dto.CreateOrderDTO
 	if err := c.ShouldBindJSON(&orderDTO); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
@@ -45,16 +41,13 @@ func (h *handler) Create(c *gin.Context) {
 		})
 		return
 	}
-
-	validateErr := orderDTO.Validate()
-	if validateErr != nil {
+	if err := orderDTO.Validate(); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "validation failed",
-			MessageError: validateErr.Error(),
+			MessageError: err.Error(),
 		})
 		return
 	}
-
 	customerIDRaw, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, apperror.ErrorDTO{
@@ -64,14 +57,13 @@ func (h *handler) Create(c *gin.Context) {
 		return
 	}
 	customerID := customerIDRaw.(string)
-
 	orderDTO.CustomerID = customerID
-	qrCode, err := h.service.Create(ctx, orderDTO)
+
+	qrCode, err := h.controller.Create(context.Background(), orderDTO)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"qr_code": qrCode,
 		"message": "Order created successfully",
@@ -92,9 +84,8 @@ func (h *handler) Create(c *gin.Context) {
 // @Failure      401  {object}  errors.ErrorDTO
 // @Failure      404  {object}  errors.ErrorDTO
 // @Router       /order/{id} [put]
-func (h *handler) Update(c *gin.Context) {
+func (h *Handler) Update(c *gin.Context) {
 	id := c.Param("id")
-
 	var orderUpdate dto.UpdateOrderDTO
 	if err := c.ShouldBindJSON(&orderUpdate); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
@@ -103,13 +94,17 @@ func (h *handler) Update(c *gin.Context) {
 		})
 		return
 	}
-
-	err := h.service.Update(context.Background(), id, orderUpdate.Status)
+	orderDAO, err := h.controller.FindByID(context.Background(), id)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
-
+	orderDAO.Status = enum.OrderStatus(orderUpdate.Status)
+	_, err = h.controller.Update(context.Background(), orderDAO)
+	if err != nil {
+		helper.HandleError(c, err)
+		return
+	}
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -124,14 +119,12 @@ func (h *handler) Update(c *gin.Context) {
 // @Failure      400  {object}  errors.ErrorDTO
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/ [get]
-func (h *handler) GetAll(c *gin.Context) {
-	ctx := context.Background()
-	orders, err := h.service.GetAll(ctx)
+func (h *Handler) GetAll(c *gin.Context) {
+	orders, err := h.controller.GetAll(context.Background())
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"orders": orders,
 	})
@@ -148,28 +141,19 @@ func (h *handler) GetAll(c *gin.Context) {
 // @Failure      400  {object}  errors.ErrorDTO
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/panel [get]
-func (h *handler) GetPanel(c *gin.Context) {
-	ctx := context.Background()
-	orders, err := h.service.GetPanel(ctx)
+func (h *Handler) GetPanel(c *gin.Context) {
+	orders, err := h.controller.GetPanel(context.Background(), nil)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
-
-	var panel []dto.OrderPanelItemDTO
+	panel := dto.OrderPanelDTO{Orders: []dto.OrderPanelItemDTO{}}
 	for _, order := range orders {
-		panelDTO := order.ToPanelItemDTO()
-		panel = append(panel, panelDTO)
-	}
-
-	if len(panel) == 0 {
-		c.JSON(http.StatusOK, dto.OrderPanelDTO{
-			Orders: []dto.OrderPanelItemDTO{},
+		panel.Orders = append(panel.Orders, dto.OrderPanelItemDTO{
+			OrderNumber:   order.Entity.ID[len(order.Entity.ID)-4:],
+			Status:        string(order.Status),
+			PreparingTime: order.PreparingTime,
 		})
-		return
 	}
-
-	c.JSON(http.StatusOK, dto.OrderPanelDTO{
-		Orders: panel,
-	})
+	c.JSON(http.StatusOK, panel)
 }
