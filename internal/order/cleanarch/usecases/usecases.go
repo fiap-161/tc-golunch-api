@@ -2,30 +2,18 @@ package usecases
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
 	paymentuc "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
+	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	productuc "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
+	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
 	productorderuc "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
+	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
-
-type ProductService interface {
-	FindByIDs(ctx context.Context, ids []string) ([]dto.ProductDTO, error)
-}
-
-type ProductOrderService interface {
-	BuildBulkFromOrderAndProducts(orderID string, items []dto.OrderProductInfo, products []dto.ProductDTO) ([]dto.ProductOrderDTO, error)
-	CreateBulk(ctx context.Context, productOrders []dto.ProductOrderDTO) ([]dto.ProductOrderDTO, error)
-}
-
-type PaymentService interface {
-	CreateByOrderID(ctx context.Context, orderID string) (dto.PaymentDTO, error)
-}
 
 type UseCases struct {
 	orderGateway        *gateway.Gateway
@@ -49,95 +37,90 @@ func Build(
 }
 
 func (u *UseCases) CreateCompleteOrder(ctx context.Context, orderDTO dto.CreateOrderDTO) (string, error) {
-	products, err := u.validateProducts(ctx, orderDTO.Products)
-	if err != nil {
-		return "", err
+	var productIds []string
+	for _, item := range orderDTO.Products {
+		productIds = append(productIds, item.ProductID)
 	}
 
-	totalPrice, totalPreparingTime := u.calculateOrderTotals(orderDTO.Products, products)
-
-	order := entity.Order{
-		CustomerID:    orderDTO.CustomerID,
-		Status:        enum.OrderStatusAwaitingPayment,
-		Price:         totalPrice,
-		PreparingTime: totalPreparingTime,
+	products, findErr := u.productUseCase.FindByIDs(ctx, productIds)
+	if findErr != nil {
+		return "", findErr
+	}
+	if len(products) != len(orderDTO.Products) {
+		return "", &apperror.NotFoundError{
+			Msg: "some products not found",
+		}
 	}
 
-	createdOrder, createOrderErr := u.CreateOrder(ctx, order)
-	if createOrderErr != nil {
-		return "", createOrderErr
+	populatedOrder := generateOrderByProducts(orderDTO, products)
+	createdOrder, createErr := u.orderGateway.Create(ctx, populatedOrder.Build())
+	if createErr != nil {
+		return "", createErr
 	}
 
-	createRelationsErr := u.createProductOrderRelations(ctx, createdOrder.ID, orderDTO.Products, products)
-	if createRelationsErr != nil {
-		return "", createRelationsErr
+	productOrders, _ := generateProductOrderFromOrderAndProducts(createdOrder.ID, orderDTO.Products, products)
+	_, createBulkErr := u.productOrderUseCase.CreateBulk(ctx, productOrders)
+	if createBulkErr != nil {
+		return "", createBulkErr
 	}
 
-	payment, createPaymentErr := u.paymentUseCase.CreateByOrderID(ctx, createdOrder.ID)
-	if createPaymentErr != nil {
-		return "", createPaymentErr
+	payment, paymentErr := u.paymentUseCase.CreateByOrderID(ctx, createdOrder.ID)
+	if paymentErr != nil {
+		return "", paymentErr
 	}
 
 	return payment.QrCode, nil
 }
 
-func (u *UseCases) validateProducts(ctx context.Context, orderProducts []dto.OrderProductInfo) ([]dto.ProductDTO, error) {
-	if len(orderProducts) == 0 {
-		return nil, errors.New("order need to have at least one product")
-	}
+// todo verify if we can move this function to other package
+func generateOrderByProducts(orderDTO dto.CreateOrderDTO, products []productentity.Product) entity.Order {
+	totalPrice, preparingTime := getOrderInfoFromProducts(products, orderDTO)
 
-	var productIds []string
-	for _, item := range orderProducts {
-		if item.Quantity <= 0 {
-			return nil, errors.New("quantity need to be greater than zero")
-		}
-		productIds = append(productIds, item.ProductID)
+	return entity.Order{
+		CustomerID:    orderDTO.CustomerID,
+		Status:        enum.OrderStatusAwaitingPayment,
+		Price:         totalPrice,
+		PreparingTime: preparingTime,
 	}
-
-	products, err := u.productUseCase.FindByIDs(ctx, productIds)
-	if err != nil {
-		return nil, fmt.Errorf("error when search products: %w", err)
-	}
-
-	if len(products) != len(orderProducts) {
-		return nil, errors.New("products need to have at least one product")
-	}
-
-	return products, nil
 }
 
-func (u *UseCases) calculateOrderTotals(orderProducts []dto.OrderProductInfo, products []dto.ProductDTO) (float64, uint) {
-	totalPrice := 0.0
-	totalPreparingTime := uint(0)
+func getOrderInfoFromProducts(products []productentity.Product, orderDTO dto.CreateOrderDTO) (float64, uint) {
+	var totalPrice float64
+	var preparingTime uint
 
-	for _, item := range orderProducts {
+	for _, item := range orderDTO.Products {
 		for _, product := range products {
-			if product.ID == item.ProductID {
-				itemPrice := product.Price * float64(item.Quantity)
-				itemPreparingTime := product.PreparingTime * uint(item.Quantity)
-
-				totalPrice += itemPrice
-				totalPreparingTime += itemPreparingTime
-				break
+			if product.Id == item.ProductID {
+				totalPrice += product.Price * float64(item.Quantity)
+				preparingTime += product.PreparingTime
 			}
 		}
 	}
 
-	return totalPrice, totalPreparingTime
+	return totalPrice, preparingTime
 }
 
-func (u *UseCases) createProductOrderRelations(ctx context.Context, orderID string, orderProducts []dto.OrderProductInfo, products []dto.ProductDTO) error {
-	productOrders, err := u.productOrderUseCase.BuildBulkFromOrderAndProducts(orderID, orderProducts, products)
-	if err != nil {
-		return fmt.Errorf("error when building product-order relationships: %w", err)
+func generateProductOrderFromOrderAndProducts(
+	orderID string,
+	orderProductInfo []dto.OrderProductInfo,
+	products []productentity.Product,
+) ([]productorderentity.ProductOrder, error) {
+	var res []productorderentity.ProductOrder
+
+	for _, product := range products {
+		for _, item := range orderProductInfo {
+			if product.Id == item.ProductID {
+				res = append(res, productorderentity.ProductOrder{
+					OrderID:   orderID,
+					ProductID: product.Id,
+					Quantity:  item.Quantity,
+					UnitPrice: product.Price,
+				})
+			}
+		}
 	}
 
-	_, err = u.productOrderUseCase.CreateBulk(ctx, productOrders)
-	if err != nil {
-		return fmt.Errorf("error persisting product-order relationships: %w", err)
-	}
-
-	return nil
+	return res, nil
 }
 
 func (u *UseCases) CreateOrder(ctx context.Context, order entity.Order) (entity.Order, error) {
