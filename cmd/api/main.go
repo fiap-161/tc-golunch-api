@@ -1,15 +1,10 @@
 package main
 
 import (
-	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
-	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
-	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
-	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago"
 	"log"
 	"os"
 	"time"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -18,31 +13,33 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
-
-	adminController "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
+	admincontroller "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
 	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/dto"
-	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
-	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
-
-	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
+	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
+	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
+	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
 	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
+	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
+	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
+	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
+	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
-	productController "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
-	productDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
-	productHandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
-	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
+	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
+	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
-	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago" // TODO remover quando migrar payment para Clean Architecture
-	// qrCodeProvider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external" 	// TODO descomentar quando migrar payment para Clean Architecture
+	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
+	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/gateways"
 )
 
 // @title           GoLunch
@@ -82,7 +79,7 @@ func main() {
 
 	// Jwt service for generate and validate tokens (CLEANARCH)
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
-	authController := authController.New(jwtGateway)
+	authController := authcontroller.New(jwtGateway)
 
 	// Customer
 	customerRepository := customerpostgre.NewRepository(db)
@@ -90,22 +87,21 @@ func main() {
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
 	// CLEAN ARCH - ADMIN
-	adminDatasource := adminDataSource.New(db)
-	adminController := adminController.Build(adminDatasource)
-	adminHandler := adminHandler.New(adminController, authController)
+	adminDatasource := admindatasource.New(db)
+	adminController := admincontroller.Build(adminDatasource)
+	adminHandler := adminhandler.New(adminController, authController)
 
 	// CLEAN ARCH - Product
-	productDataSource := productDataSource.New(db)
-	productController := productController.Build(productDataSource)
-	productHandlerCleanArch := productHandler.New(productController)
+	productDataSource := productdatasource.New(db)
+	productController := productcontroller.Build(productDataSource)
+	productHandlerCleanArch := producthandler.New(productController)
 
 	// CLEAN ARCH ProductOrder Controller
-	productOrderDataSource := productOrderDataSource_.New(db)
-	productOrderController := productOrderController_.Build(productOrderDataSource)
+	productOrderDataSource := productorderdatasource.New(db)
+	productOrderController := productordercontroller.Build(productOrderDataSource)
 
 	// QR Code Client
-	qrCodeClient := mercadopago.New() // TODO remover quando migrar payment para Clean Architecture
-	// qrCodeClient := qrCodeProvider.New() // TODO: descomentar quando migrar payment para Clean arch
+	qrCodeClient := qrcodeprovider.New()
 
 	// Order Repository
 	orderRepository := orderpostgre.New(db)
