@@ -6,7 +6,7 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
-	gormEntity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	coreentity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 )
 
@@ -48,7 +48,7 @@ type ImageURLDTO struct {
 }
 
 type ProductDAO struct {
-	gormEntity.Entity
+	coreentity.Entity
 	Name          string        `json:"name"`
 	Price         float64       `json:"price" gorm:"type:decimal(10,2)"`
 	Description   string        `json:"description" gorm:"type:text"`
@@ -60,7 +60,7 @@ type ProductDAO struct {
 // Convert entity entity to DAO
 func ToProductDAO(p entity.Product) ProductDAO {
 	return ProductDAO{
-		Entity: gormEntity.Entity{
+		Entity: coreentity.Entity{
 			ID:        uuid.NewString(),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),

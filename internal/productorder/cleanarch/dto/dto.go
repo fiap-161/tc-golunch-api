@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
-	entityGorm "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	coreentity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 )
 
 type ProductOrderDAO struct {
-	entityGorm.Entity
+	coreentity.Entity
 	ProductID string  `json:"product_id"`
 	OrderID   string  `json:"order_id"`
 	Quantity  int     `json:"quantity"`
@@ -39,7 +39,7 @@ type OrderProductInfo struct {
 // Convert entity to DAO
 func ToProductOrderDAO(po entity.ProductOrder) ProductOrderDAO {
 	return ProductOrderDAO{
-		Entity: entityGorm.Entity{
+		Entity: coreentity.Entity{
 			ID:        uuid.NewString(),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),

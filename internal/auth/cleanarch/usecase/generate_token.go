@@ -5,13 +5,15 @@ import (
 )
 
 type GenerateTokenUseCase struct {
-	TokenGateway gateway.TokenGateway
+	tokenGateway gateway.TokenGateway
 }
 
 func NewGenerateTokenUseCase(tokenGateway gateway.TokenGateway) *GenerateTokenUseCase {
-	return &GenerateTokenUseCase{TokenGateway: tokenGateway}
+	return &GenerateTokenUseCase{
+		tokenGateway: tokenGateway,
+	}
 }
 
 func (uc *GenerateTokenUseCase) Execute(userID, userType string, additionalClaims map[string]any) (string, error) {
-	return uc.TokenGateway.GenerateToken(userID, userType, additionalClaims)
-} 
+	return uc.tokenGateway.GenerateToken(userID, userType, additionalClaims)
+}

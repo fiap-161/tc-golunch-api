@@ -18,16 +18,15 @@ import (
 )
 
 type UseCases struct {
-	ProductGateway gateway.Gateway
+	productGateway gateway.Gateway
 }
 
 func Build(productGateway gateway.Gateway) *UseCases {
-	return &UseCases{ProductGateway: productGateway}
+	return &UseCases{productGateway: productGateway}
 }
 
 func (u *UseCases) CreateProduct(ctx context.Context, product entity.Product) (entity.Product, error) {
 	isValidCategory := enum.IsValidCategory(string(product.Category))
-
 	if !isValidCategory {
 		return entity.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
 	}
@@ -36,9 +35,9 @@ func (u *UseCases) CreateProduct(ctx context.Context, product entity.Product) (e
 		return entity.Product{}, err
 	}
 
-	saved, err := u.ProductGateway.Create(ctx, product)
-	if err != nil {
-		return entity.Product{}, &apperror.InternalError{Msg: err.Error()}
+	saved, createErr := u.productGateway.Create(ctx, product)
+	if createErr != nil {
+		return entity.Product{}, &apperror.InternalError{Msg: createErr.Error()}
 	}
 
 	return saved, nil
@@ -119,7 +118,7 @@ func (u *UseCases) GetAllByCategory(ctx context.Context, category string) ([]ent
 		return []entity.Product{}, &apperror.ValidationError{Msg: "Invalid category"}
 	}
 
-	result, err := u.ProductGateway.GetAllByCategory(ctx, category)
+	result, err := u.productGateway.GetAllByCategory(ctx, category)
 	if err != nil {
 		return []entity.Product{}, &apperror.InternalError{Msg: err.Error()}
 	}
@@ -129,29 +128,25 @@ func (u *UseCases) GetAllByCategory(ctx context.Context, category string) ([]ent
 
 func (u *UseCases) Update(ctx context.Context, productId string, product entity.Product) (entity.Product, error) {
 
-	_, err := u.FindByID(ctx, productId)
-
-	if err != nil {
-		return entity.Product{}, err
+	_, findErr := u.FindByID(ctx, productId)
+	if findErr != nil {
+		return entity.Product{}, findErr
 	}
 
-	updated, err := u.ProductGateway.Update(ctx, productId, product)
-
-	if err != nil {
-		return entity.Product{}, err
+	updated, updateErr := u.productGateway.Update(ctx, productId, product)
+	if updateErr != nil {
+		return entity.Product{}, updateErr
 	}
 
 	return updated, nil
 }
 
 func (u *UseCases) FindByID(ctx context.Context, productId string) (entity.Product, error) {
-
 	if _, err := uuid.Parse(productId); err != nil {
 		return entity.Product{}, &apperror.ValidationError{Msg: "Invalid UUID format for product ID"}
 	}
 
-	found, err := u.ProductGateway.FindByID(ctx, productId)
-
+	found, err := u.productGateway.FindByID(ctx, productId)
 	if err != nil {
 		return entity.Product{}, err
 	}
@@ -160,39 +155,35 @@ func (u *UseCases) FindByID(ctx context.Context, productId string) (entity.Produ
 }
 
 func (u *UseCases) Delete(ctx context.Context, productId string) error {
-
 	if _, err := uuid.Parse(productId); err != nil {
-		return &apperror.ValidationError{Msg: "Invalid UUID format for product ID"}
+		return &apperror.ValidationError{Msg: "invalid UUID format for product ID"}
 	}
-	_, err := u.FindByID(ctx, productId)
-
-	if err != nil {
-		return err
+	_, findErr := u.FindByID(ctx, productId)
+	if findErr != nil {
+		return findErr
 	}
 
-	err2 := u.ProductGateway.Delete(ctx, productId)
-
-	if err2 != nil {
-		return err2
+	deleteErr := u.productGateway.Delete(ctx, productId)
+	if deleteErr != nil {
+		return deleteErr
 	}
 
 	return nil
 }
 
 func (u *UseCases) FindByIDs(ctx context.Context, productIdList []string) ([]entity.Product, error) {
-
 	if len(productIdList) == 0 {
 		return nil, &apperror.ValidationError{Msg: "productIdList cannot be empty"}
 	}
 
-	// Validação de UUIDs
+	// UUIDs validation
 	for _, id := range productIdList {
 		if _, err := uuid.Parse(id); err != nil {
 			return nil, &apperror.ValidationError{Msg: fmt.Sprintf("Invalid UUID format: %s", id)}
 		}
 	}
 
-	products, err := u.ProductGateway.FindByIDs(ctx, productIdList)
+	products, err := u.productGateway.FindByIDs(ctx, productIdList)
 	if err != nil {
 		return nil, err
 	}

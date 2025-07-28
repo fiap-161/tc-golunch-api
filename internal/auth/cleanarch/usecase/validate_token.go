@@ -6,13 +6,15 @@ import (
 )
 
 type ValidateTokenUseCase struct {
-	TokenGateway gateway.TokenGateway
+	tokenGateway gateway.TokenGateway
 }
 
 func NewValidateTokenUseCase(tokenGateway gateway.TokenGateway) *ValidateTokenUseCase {
-	return &ValidateTokenUseCase{TokenGateway: tokenGateway}
+	return &ValidateTokenUseCase{
+		tokenGateway: tokenGateway,
+	}
 }
 
 func (uc *ValidateTokenUseCase) Execute(tokenString string) (*entity.CustomClaims, error) {
-	return uc.TokenGateway.ValidateToken(tokenString)
-} 
+	return uc.tokenGateway.ValidateToken(tokenString)
+}

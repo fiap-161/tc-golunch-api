@@ -2,8 +2,8 @@ package controller
 
 import (
 	"context"
-	orderdto "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
 
+	orderdto "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
 	productdto "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
@@ -14,17 +14,17 @@ import (
 )
 
 type Controller struct {
-	ProductOrderDatasource datasource.DataSource
+	productOrderDatasource datasource.DataSource
 }
 
 func Build(productDataSource datasource.DataSource) *Controller {
 	return &Controller{
-		ProductOrderDatasource: productDataSource}
+		productOrderDatasource: productDataSource}
 }
 
 func (c *Controller) CreateBulk(ctx context.Context, listProductOrderRequestDTO []dto.ProductOrderRequestDTO) (int, error) {
-	produtOrderGateway := gateway.Build(c.ProductOrderDatasource)
-	useCase := usecases.Build(*produtOrderGateway)
+	productOrderGateway := gateway.Build(c.productOrderDatasource)
+	useCase := usecases.Build(*productOrderGateway)
 
 	var productOrders []entity.ProductOrder
 	for _, item := range listProductOrderRequestDTO {
@@ -33,35 +33,31 @@ func (c *Controller) CreateBulk(ctx context.Context, listProductOrderRequestDTO 
 	}
 
 	length, err := useCase.CreateBulk(ctx, productOrders)
-
 	if err != nil {
 		return 0, err
 	}
 
 	return length, nil
-
 }
 
 func (c *Controller) FindByOrderID(ctx context.Context, orderId string) ([]dto.ProductOrderResponseDTO, error) {
-	produtOrderGateway := gateway.Build(c.ProductOrderDatasource)
-	useCase := usecases.Build(*produtOrderGateway)
+	productOrderGateway := gateway.Build(c.productOrderDatasource)
+	useCase := usecases.Build(*productOrderGateway)
 	presenter := presenter.Build()
 
-	productOrderFoundList, err := useCase.FindByOrderID(ctx, orderId)
-
-	if err != nil {
-		return []dto.ProductOrderResponseDTO{}, err
+	productOrderFoundList, findErr := useCase.FindByOrderID(ctx, orderId)
+	if findErr != nil {
+		return []dto.ProductOrderResponseDTO{}, findErr
 	}
 
 	return presenter.FromEntityListToResponseDTOList(productOrderFoundList), nil
-
 }
 
 func (c *Controller) BuildBulkFromOrderAndProducts(
 	orderID string,
 	orderProductInfo []orderdto.OrderProductInfo,
-	productsDTOs []productdto.ProductResponseDTO) ([]dto.ProductOrderRequestDTO, error) {
-
+	productsDTOs []productdto.ProductResponseDTO,
+) ([]dto.ProductOrderRequestDTO, error) {
 	var result []dto.ProductOrderRequestDTO
 
 	for _, product := range productsDTOs {
@@ -78,5 +74,4 @@ func (c *Controller) BuildBulkFromOrderAndProducts(
 	}
 
 	return result, nil
-
 }

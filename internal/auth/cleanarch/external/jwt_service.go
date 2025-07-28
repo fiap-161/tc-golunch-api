@@ -3,9 +3,9 @@ package external
 import (
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/gateway"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type JWTService struct {
@@ -44,7 +44,6 @@ func (s *JWTService) ValidateToken(tokenString string) (*entity.CustomClaims, er
 	token, err := jwt.ParseWithClaims(tokenString, &entity.CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(s.secretKey), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -54,4 +53,4 @@ func (s *JWTService) ValidateToken(tokenString string) (*entity.CustomClaims, er
 	}
 
 	return nil, jwt.ErrSignatureInvalid
-} 
+}

@@ -1,10 +1,9 @@
 package model
 
 import (
+	"errors"
 	"strings"
 	"time"
-
-	"errors"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/hexagonal/core/model/enum"
