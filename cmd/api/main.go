@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"os"
+	"time"
+
 	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
 	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
 	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
-	"log"
-	"os"
-	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 
@@ -24,11 +25,12 @@ import (
 	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
 	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
 
+	customercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/controller"
+	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/dto"
+	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/external/datasource"
+	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/handler"
+
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
-	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
-	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
-	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
-	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
@@ -67,7 +69,7 @@ func main() {
 	db := database.NewPostgresDatabase().GetDb()
 
 	if err := db.AutoMigrate(
-		&customermodel.Customer{},
+		&customermodel.CustomerDAO{},
 		&adminmodel.AdminDAO{},
 		&productmodel.ProductDAO{},
 		&order.Order{},
@@ -84,10 +86,10 @@ func main() {
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 	authController := authController.New(jwtGateway)
 
-	// Customer
-	customerRepository := customerpostgre.NewRepository(db)
-	customerSrv := customerservice.New(customerRepository, authController)
-	customerHandler := customerrest.NewCustomerHandler(customerSrv)
+	// CLEAN ARCH - CUSTOMER
+	customerDatasource := customerdatasource.New(db)
+	customerController := customercontroller.Build(customerDatasource, authController)
+	customerHandler := customerhandler.New(customerController)
 
 	// CLEAN ARCH - ADMIN
 	adminDatasource := adminDataSource.New(db)

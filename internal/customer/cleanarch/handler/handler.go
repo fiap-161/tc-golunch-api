@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
@@ -15,13 +14,11 @@ import (
 
 type Handler struct {
 	customerController *controller.Controller
-	authController     *auth.Controller // mantido por consistência, se quiser validar algo depois
 }
 
-func New(customerController *controller.Controller, authController *auth.Controller) *Handler {
+func New(customerController *controller.Controller) *Handler {
 	return &Handler{
 		customerController: customerController,
-		authController:     authController,
 	}
 }
 
@@ -39,7 +36,7 @@ func New(customerController *controller.Controller, authController *auth.Control
 func (h *Handler) Create(c *gin.Context) {
 	ctx := context.Background()
 
-	var customerDTO dto.CreateCustomerDTO
+	var customerDTO dto.CustomerRequestDTO
 	if err := c.ShouldBindJSON(&customerDTO); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",

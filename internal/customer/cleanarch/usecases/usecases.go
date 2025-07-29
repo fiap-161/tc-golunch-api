@@ -9,10 +9,10 @@ import (
 )
 
 type CustomerUseCases struct {
-	CustomerGateway gateway.CustomerGateway
+	CustomerGateway gateway.Gateway
 }
 
-func Build(gateway gateway.CustomerGateway) *CustomerUseCases {
+func Build(gateway gateway.Gateway) *CustomerUseCases {
 	return &CustomerUseCases{
 		CustomerGateway: gateway,
 	}
@@ -24,7 +24,7 @@ func (u *CustomerUseCases) Create(ctx context.Context, customer entity.Customer)
 		return "", &apperror.ValidationError{Msg: "Customer already registered"}
 	}
 
-	customerWithID := customer.Build() // adiciona ID e timestamps
+	customerWithID := customer.Build()
 	saved, err := u.CustomerGateway.Create(ctx, customerWithID)
 	if err != nil {
 		return "", err
@@ -33,11 +33,11 @@ func (u *CustomerUseCases) Create(ctx context.Context, customer entity.Customer)
 	return saved.Id, nil
 }
 
-func (u *CustomerUseCases) FindByCPF(ctx context.Context, cpf string) (entity.Customer, error) {
+func (u *CustomerUseCases) FindByCPF(ctx context.Context, cpf string) (string, error) {
 	customer, err := u.CustomerGateway.FindByCPF(ctx, cpf)
 	if err != nil || customer.Id == "" {
-		return entity.Customer{}, &apperror.NotFoundError{Msg: "Customer not found"}
+		return "", &apperror.NotFoundError{Msg: "Customer not found"}
 	}
 
-	return customer, nil
+	return customer.Id, nil
 }

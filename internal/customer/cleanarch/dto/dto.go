@@ -4,38 +4,52 @@ import (
 	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/entity"
+	gormEntity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	"github.com/google/uuid"
 )
 
 type CustomerDAO struct {
-	ID        string    `gorm:"primaryKey" json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	CPF       string    `gorm:"uniqueIndex" json:"cpf"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	gormEntity.Entity
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	CPF         string `gorm:"uniqueIndex" json:"cpf"`
+	IsAnonymous bool   `json:"is_anonymous" gorm:"default:false"`
 }
 
 func ToCustomerDAO(c entity.Customer) CustomerDAO {
 	return CustomerDAO{
-		ID:        c.Id,
-		Name:      c.Name,
-		Email:     c.Email,
-		CPF:       c.CPF,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Entity: gormEntity.Entity{
+			ID:        uuid.NewString(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
+		Name:        c.Name,
+		Email:       c.Email,
+		CPF:         c.CPF,
+		IsAnonymous: c.IsAnonymous,
 	}
 }
 
 func FromCustomerDAO(d CustomerDAO) entity.Customer {
 	return entity.Customer{
-		Id:    d.ID,
-		Name:  d.Name,
-		Email: d.Email,
-		CPF:   d.CPF,
+		Id:          d.ID,
+		Name:        d.Name,
+		Email:       d.Email,
+		CPF:         d.CPF,
+		IsAnonymous: d.IsAnonymous,
 	}
 }
 
-type CreateCustomerDTO struct {
+func FromCustomerRequestDTO(dto CustomerRequestDTO) entity.Customer {
+	return entity.Customer{
+		Name:        dto.Name,
+		Email:       dto.Email,
+		CPF:         dto.CPF,
+		IsAnonymous: false,
+	}
+}
+
+type CustomerRequestDTO struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	CPF   string `json:"cpf"`
