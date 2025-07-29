@@ -1,4 +1,4 @@
-package rest
+package handler
 
 import (
 	"context"
@@ -6,18 +6,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )
 
-type CustomerHandler struct {
-	service ports.CustomerService
+type Handler struct {
+	customerController *controller.Controller
 }
 
-func NewCustomerHandler(service ports.CustomerService) *CustomerHandler {
-	return &CustomerHandler{service: service}
+func New(customerController *controller.Controller) *Handler {
+	return &Handler{
+		customerController: customerController,
+	}
 }
 
 // Create godoc
@@ -27,14 +29,14 @@ func NewCustomerHandler(service ports.CustomerService) *CustomerHandler {
 // @Accept       json
 // @Produce      json
 // @Param        request  body      dto.CreateCustomerDTO  true  "Customer data"
-// @Success      200      {object}  map[string]interface{}
+// @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
 // @Router       /customer/register [post]
-func (h *CustomerHandler) Create(c *gin.Context) {
+func (h *Handler) Create(c *gin.Context) {
 	ctx := context.Background()
 
-	var customerDTO dto.CreateCustomerDTO
+	var customerDTO dto.CustomerRequestDTO
 	if err := c.ShouldBindJSON(&customerDTO); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
@@ -43,13 +45,13 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 		return
 	}
 
-	id, err := h.service.Create(ctx, customerDTO)
+	id, err := h.customerController.Create(ctx, customerDTO)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"id":      id,
 		"message": "Customer created successfully",
 	})
@@ -62,21 +64,21 @@ func (h *CustomerHandler) Create(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        cpf   path      string     true  "Customer CPF"
-// @Success      200   {object}  TokenDTO
+// @Success      200   {object}  dto.TokenDTO
 // @Failure      404   {object}  errors.ErrorDTO
 // @Failure      500   {object}  errors.ErrorDTO
 // @Router       /customer/identify/{cpf} [get]
-func (h *CustomerHandler) Identify(c *gin.Context) {
+func (h *Handler) Identify(c *gin.Context) {
 	ctx := context.Background()
-	CPF := c.Param("cpf")
+	cpf := c.Param("cpf")
 
-	token, err := h.service.Identify(ctx, CPF)
+	token, err := h.customerController.Identify(ctx, cpf)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, &TokenDTO{
+	c.JSON(http.StatusOK, dto.TokenDTO{
 		TokenString: token,
 	})
 }
@@ -87,23 +89,19 @@ func (h *CustomerHandler) Identify(c *gin.Context) {
 // @Tags         Customer Domain
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  TokenDTO
+// @Success      200  {object}  dto.TokenDTO
 // @Failure      500  {object}  errors.ErrorDTO
 // @Router       /customer/anonymous [get]
-func (h *CustomerHandler) Anonymous(c *gin.Context) {
+func (h *Handler) Anonymous(c *gin.Context) {
 	ctx := context.Background()
 
-	token, err := h.service.Identify(ctx, "")
+	token, err := h.customerController.Identify(ctx, "")
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, &TokenDTO{
+	c.JSON(http.StatusOK, dto.TokenDTO{
 		TokenString: token,
 	})
-}
-
-type TokenDTO struct {
-	TokenString string `json:"token"`
 }

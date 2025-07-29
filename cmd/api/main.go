@@ -25,11 +25,12 @@ import (
 	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
 	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
 
+	customercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/customer/controller"
+	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
+	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
+	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/handler"
+
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
-	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
-	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
-	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
-	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
@@ -68,7 +69,7 @@ func main() {
 	db := database.NewPostgresDatabase().GetDb()
 
 	if err := db.AutoMigrate(
-		&customermodel.Customer{},
+		&customermodel.CustomerDAO{},
 		&adminmodel.AdminDAO{},
 		&productmodel.ProductDAO{},
 		&order.Order{},
@@ -85,10 +86,10 @@ func main() {
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 	authController := authController.New(jwtGateway)
 
-	// Customer
-	customerRepository := customerpostgre.NewRepository(db)
-	customerSrv := customerservice.New(customerRepository, authController)
-	customerHandler := customerrest.NewCustomerHandler(customerSrv)
+	// CLEAN ARCH - CUSTOMER
+	customerDatasource := customerdatasource.New(db)
+	customerController := customercontroller.Build(customerDatasource, authController)
+	customerHandler := customerhandler.New(customerController)
 
 	// CLEAN ARCH - ADMIN
 	adminDatasource := admindatasource.New(db)
