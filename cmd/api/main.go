@@ -30,16 +30,18 @@ import (
 	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
 	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/handler"
 
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
+	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
+	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
+	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
+
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
-	productController "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
-	productDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
-	productHandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
+
 	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
@@ -97,9 +99,9 @@ func main() {
 	adminHandler := adminhandler.New(adminController)
 
 	// CLEAN ARCH - Product
-	productDataSource := productDataSource.New(db)
-	productController := productController.Build(productDataSource)
-	productHandlerCleanArch := productHandler.New(productController)
+	productDataSource := productdatasource.New(db)
+	productController := productcontroller.Build(productDataSource)
+	productHandlerCleanArch := producthandler.New(productController)
 
 	// CLEAN ARCH ProductOrder Controller
 	productOrderDataSource := productOrderDataSource_.New(db)
