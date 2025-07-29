@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 
 	paymentport "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
-	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/controller"
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/controller"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 

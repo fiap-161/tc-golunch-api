@@ -30,19 +30,22 @@ import (
 	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
 	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/handler"
 
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/controller"
+	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/dto"
+	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/external/datasource"
+	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/handler"
+
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
-	productController "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
-	productDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
-	productHandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
-	productOrderController_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
-	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
-	productOrderDataSource_ "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
+
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/controller"
+	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/dto"
+	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/external/datasource"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago" // TODO remover quando migrar payment para Clean Architecture
 	// qrCodeProvider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external" 	// TODO descomentar quando migrar payment para Clean Architecture
 )
@@ -97,13 +100,13 @@ func main() {
 	adminHandler := adminhandler.New(adminController)
 
 	// CLEAN ARCH - Product
-	productDataSource := productDataSource.New(db)
-	productController := productController.Build(productDataSource)
-	productHandlerCleanArch := productHandler.New(productController)
+	productDataSource := productdatasource.New(db)
+	productController := productcontroller.Build(productDataSource)
+	productHandlerCleanArch := producthandler.New(productController)
 
 	// CLEAN ARCH ProductOrder Controller
-	productOrderDataSource := productOrderDataSource_.New(db)
-	productOrderController := productOrderController_.Build(productOrderDataSource)
+	productOrderDataSource := productorderdatasource.New(db)
+	productOrderController := productordercontroller.Build(productOrderDataSource)
 
 	// QR Code Client
 	qrCodeClient := mercadopago.New() // TODO remover quando migrar payment para Clean Architecture

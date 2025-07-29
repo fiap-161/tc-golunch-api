@@ -3,13 +3,14 @@ package service
 import (
 	"context"
 	"fmt"
+
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
-	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/controller"
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/controller"
 	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/dto"
 	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/ports"
 )

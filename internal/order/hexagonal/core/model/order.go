@@ -1,13 +1,14 @@
 package model
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
 	"strings"
 	"time"
 
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
+
 	"github.com/google/uuid"
 
-	productdto "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
+	productdto "github.com/fiap-161/tech-challenge-fiap161/internal/product/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 
