@@ -25,10 +25,10 @@ import (
 	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
 	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
 
-	customercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/controller"
-	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/dto"
-	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/external/datasource"
-	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/handler"
+	customercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/customer/controller"
+	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
+	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
+	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/handler"
 
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"

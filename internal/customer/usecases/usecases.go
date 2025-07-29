@@ -3,8 +3,8 @@ package usecases
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/gateway"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 

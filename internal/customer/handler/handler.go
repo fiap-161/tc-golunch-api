@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/controller"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 )

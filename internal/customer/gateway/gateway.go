@@ -3,9 +3,9 @@ package gateway
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/cleanarch/external/datasource"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
