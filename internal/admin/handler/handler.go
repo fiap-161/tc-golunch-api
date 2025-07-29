@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"

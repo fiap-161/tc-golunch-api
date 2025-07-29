@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/entity"
 	gormEntity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 )

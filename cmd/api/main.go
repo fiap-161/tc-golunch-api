@@ -20,10 +20,10 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 
-	adminController "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
-	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/dto"
-	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
-	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
+	adminController "github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
+	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
+	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
+	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
 
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"

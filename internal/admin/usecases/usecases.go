@@ -3,9 +3,9 @@ package usecases
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/gateway"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/utils"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/utils"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
