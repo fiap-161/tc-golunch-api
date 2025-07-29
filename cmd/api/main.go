@@ -20,10 +20,10 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 
-	adminController "github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
+	admincontroller "github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
 	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
-	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
-	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
+	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
+	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
 
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
@@ -91,9 +91,9 @@ func main() {
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
 	// CLEAN ARCH - ADMIN
-	adminDatasource := adminDataSource.New(db)
-	adminController := adminController.Build(adminDatasource, authController)
-	adminHandler := adminHandler.New(adminController)
+	adminDatasource := admindatasource.New(db)
+	adminController := admincontroller.Build(adminDatasource, authController)
+	adminHandler := adminhandler.New(adminController)
 
 	// CLEAN ARCH - Product
 	productDataSource := productDataSource.New(db)
