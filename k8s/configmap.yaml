@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  UPLOAD_DIR: /app/uploads
+  PUBLIC_URL: http://localhost:8080/
+  WEBHOOK_URL: https://webhook.site/bb7b5226-6a40-4804-a292-d9b86a28ad83
