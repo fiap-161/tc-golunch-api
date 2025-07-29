@@ -24,3 +24,5 @@ postgres-data/
 
 # Images
 /uploads
+
+/k8s/secret.yaml
