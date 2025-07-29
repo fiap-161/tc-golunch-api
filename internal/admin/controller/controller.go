@@ -40,9 +40,14 @@ func (c *Controller) Login(ctx context.Context, adminRequest dto.AdminRequestDTO
 	useCase := usecases.Build(*adminGateway)
 	admin := dto.FromAdminRequestDTO(adminRequest)
 	adminId, _, err := useCase.Login(ctx, admin)
-	token, err := c.AuthGateway.GenerateToken(adminId, "admin", nil)
 
 	if err != nil {
+		return "", err
+	}
+
+	token, err2 := c.AuthGateway.GenerateToken(adminId, "admin", nil)
+
+	if err2 != nil {
 		return "", err
 	}
 
