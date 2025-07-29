@@ -1,23 +1,24 @@
-package rest
+package handler
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/adapters/drivers/rest/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/hexagonal/core/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
+	"github.com/gin-gonic/gin"
 )
 
-type AdminHandler struct {
-	service ports.AdminService
+type Handler struct {
+	adminController *controller.Controller
 }
 
-func NewAdminHandler(service ports.AdminService) *AdminHandler {
-	return &AdminHandler{service: service}
+func New(adminController *controller.Controller) *Handler {
+	return &Handler{
+		adminController: adminController,
+	}
 }
 
 // Register godoc
@@ -31,11 +32,11 @@ func NewAdminHandler(service ports.AdminService) *AdminHandler {
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
 // @Router       /admin/register [post]
-func (a *AdminHandler) Register(c *gin.Context) {
+func (h *Handler) Register(c *gin.Context) {
 	ctx := context.Background()
 
-	var input dto.RegisterDTO
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var adminRequest dto.AdminRequestDTO
+	if err := c.ShouldBindJSON(&adminRequest); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
@@ -43,7 +44,7 @@ func (a *AdminHandler) Register(c *gin.Context) {
 		return
 	}
 
-	err := a.service.Register(ctx, input)
+	err := h.adminController.Register(ctx, adminRequest)
 
 	if err != nil {
 		helper.HandleError(c, err)
@@ -65,11 +66,11 @@ func (a *AdminHandler) Register(c *gin.Context) {
 // @Failure      401      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
 // @Router       /admin/login [post]
-func (a *AdminHandler) Login(c *gin.Context) {
+func (h *Handler) Login(c *gin.Context) {
 	ctx := context.Background()
 
-	var input dto.LoginDTO
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var adminRequest dto.AdminRequestDTO
+	if err := c.ShouldBindJSON(&adminRequest); err != nil {
 		c.JSON(http.StatusBadRequest, apperror.ErrorDTO{
 			Message:      "Invalid request body",
 			MessageError: err.Error(),
@@ -77,17 +78,14 @@ func (a *AdminHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := a.service.Login(ctx, input)
+	token, err := h.adminController.Login(ctx, adminRequest)
+
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, &TokenDTO{
+	c.JSON(http.StatusOK, &dto.TokenDTO{
 		TokenString: token,
 	})
-}
-
-type TokenDTO struct {
-	TokenString string `json:"token"`
 }

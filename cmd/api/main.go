@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"os"
+	"time"
+
 	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
 	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
 	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
-	"log"
-	"os"
-	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 
@@ -19,10 +20,10 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
 
-	adminController "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
-	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/dto"
-	adminDataSource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
-	adminHandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
+	admincontroller "github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
+	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
+	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
+	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
 
 	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
@@ -90,9 +91,9 @@ func main() {
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
 	// CLEAN ARCH - ADMIN
-	adminDatasource := adminDataSource.New(db)
-	adminController := adminController.Build(adminDatasource)
-	adminHandler := adminHandler.New(adminController, authController)
+	adminDatasource := admindatasource.New(db)
+	adminController := admincontroller.Build(adminDatasource, authController)
+	adminHandler := adminhandler.New(adminController)
 
 	// CLEAN ARCH - Product
 	productDataSource := productDataSource.New(db)
