@@ -11,11 +11,14 @@ import (
 
 type Controller struct {
 	AdminDatasource datasource.DataSource
+	AuthGateway     gateway.AuthGateway
 }
 
-func Build(productDataSource datasource.DataSource) *Controller {
+func Build(productDataSource datasource.DataSource, authGateway gateway.AuthGateway) *Controller {
 	return &Controller{
-		AdminDatasource: productDataSource}
+		AdminDatasource: productDataSource,
+		AuthGateway:     authGateway,
+	}
 }
 
 func (c *Controller) Register(ctx context.Context, adminRequest dto.AdminRequestDTO) error {
@@ -32,16 +35,16 @@ func (c *Controller) Register(ctx context.Context, adminRequest dto.AdminRequest
 
 }
 
-func (c *Controller) Login(ctx context.Context, adminRequest dto.AdminRequestDTO) (string, bool, error) {
+func (c *Controller) Login(ctx context.Context, adminRequest dto.AdminRequestDTO) (string, error) {
 	adminGateway := gateway.Build(c.AdminDatasource)
 	useCase := usecases.Build(*adminGateway)
 	admin := dto.FromAdminRequestDTO(adminRequest)
-	adminId, isAdmin, err := useCase.Login(ctx, admin)
+	adminId, _, err := useCase.Login(ctx, admin)
+	token, err := c.AuthGateway.GenerateToken(adminId, "admin", nil)
 
 	if err != nil {
-		return "", true, err
+		return "", err
 	}
 
-	return adminId, isAdmin, nil
-
+	return token, nil
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/dto"
-	auth "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
@@ -14,13 +13,11 @@ import (
 
 type Handler struct {
 	adminController *controller.Controller
-	authController  *auth.Controller
 }
 
-func New(adminController *controller.Controller, authController *auth.Controller) *Handler {
+func New(adminController *controller.Controller) *Handler {
 	return &Handler{
 		adminController: adminController,
-		authController:  authController,
 	}
 }
 
@@ -81,14 +78,12 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	adminId, _, err := h.adminController.Login(ctx, adminRequest)
+	token, err := h.adminController.Login(ctx, adminRequest)
 
 	if err != nil {
 		helper.HandleError(c, err)
 		return
 	}
-
-	token, err := h.authController.GenerateToken(adminId, "admin", nil)
 
 	c.JSON(http.StatusOK, &dto.TokenDTO{
 		TokenString: token,

@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"os"
+	"time"
+
 	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
 	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
 	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
-	"log"
-	"os"
-	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 
@@ -91,8 +92,8 @@ func main() {
 
 	// CLEAN ARCH - ADMIN
 	adminDatasource := adminDataSource.New(db)
-	adminController := adminController.Build(adminDatasource)
-	adminHandler := adminHandler.New(adminController, authController)
+	adminController := adminController.Build(adminDatasource, authController)
+	adminHandler := adminHandler.New(adminController)
 
 	// CLEAN ARCH - Product
 	productDataSource := productDataSource.New(db)
