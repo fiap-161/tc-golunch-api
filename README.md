@@ -12,6 +12,105 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 - [Docker](https://www.docker.com/) – Containerização
 - [PostgreSQL](https://www.postgresql.org/) – Banco de dados relacional
 
+## 📦 Deploy com Kubernetes e Minikube
+
+### ✅ Pré-requisitos
+
+* [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/)
+* Habilitar o `metrics-server` do Minikube para utilizar HPA:
+
+```bash
+minikube addons enable metrics-server
+```
+
+---
+
+### 🔪 Inicialização com Minikube
+
+1. **Inicie o Minikube** (caso ainda não tenha iniciado):
+
+```bash
+minikube start
+```
+
+2. **Gere o Secret a partir do template**
+
+Utilize o comando abaixo para criar o `secret.yaml` com os dados necessários (substitua pelos seus dados reais, se necessário):
+
+IMPORTANTE
+- Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
+- Também altere as variáveis do Mercado Pago para as descritas no documento PDF que foi enviado na entrega.
+- Para gerar o QRCode (explicado no vídeo) pode-se utilizar esse site: https://www.qr-code-generator.com/
+
+```bash
+kubectl create secret generic app-secrets \
+  --from-literal=DATABASE_URL=postgres://user:password@postgres:5432/dbname \
+  --from-literal=POSTGRES_USER=user \
+  --from-literal=POSTGRES_PASSWORD=password \
+  --from-literal=POSTGRES_DB=dbname \
+  --from-literal=SECRET_KEY=random_key \
+  --from-literal=MERCADO_PAGO_ACCESS_TOKEN=APP_USR-8119906223498266-051516-0b1dc0cc2f9c6fb392955fb8e20dde55-2444053782 \
+  --from-literal=MERCADO_PAGO_SELLER_APP_USER_ID=2444053782 \
+  --from-literal=MERCADO_PAGO_EXTERNAL_POS_ID=DEFAULT \
+  --dry-run=client -o yaml > secret.yaml
+```
+
+Aplique o secret:
+
+```bash
+kubectl apply -f secret.yaml
+```
+
+---
+
+### 📂 Aplicando os manifestos do Kubernetes
+
+Certifique-se de estar na pasta raiz onde os arquivos `YAML` estão localizados, nesse projeto, dentro da pasta `k8s`. Execute os comandos abaixo para aplicar os recursos:
+
+```bash
+kubectl apply -f configmap.yaml
+kubectl apply -f postgres-service.yaml
+kubectl apply -f postgres-statefulset.yaml
+kubectl apply -f app-deployment.yaml
+kubectl apply -f app-service.yaml
+kubectl apply -f hpa.yaml
+```
+
+---
+
+### 🌐 Acessando a aplicação
+
+Exponha o serviço para acesso externo via Minikube:
+
+```bash
+minikube service go-web-service
+```
+IP  e porta da aplicação serão serão logados no terminal. 
+
+---
+
+### 🚰 Troubleshooting
+
+* Verifique os pods:
+
+```bash
+kubectl get pods
+```
+
+* Verifique os logs da aplicação:
+
+```bash
+kubectl logs <nome-do-pod>
+```
+
+* Reinicie os recursos, se necessário:
+
+```bash
+kubectl delete -f <arquivo>.yaml
+kubectl apply -f <arquivo>.yaml
+```
+
 ## 🚀 Inicialização do Projeto Localmente
 
 ### Pré-requisitos
@@ -40,10 +139,6 @@ docker ps
 ```bash
 cp .env.example .env
 ```
-IMPORTANTE
-- Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
-- Também altere as variáveis do Mercado Pago para as descritas no documento PDF que foi enviado na entrega.
-- Para gerar o QRCode (explicado no vídeo) pode-se utilizar esse site: https://www.qr-code-generator.com/
 
 4. Suba os containers com Docker Compose:
 
