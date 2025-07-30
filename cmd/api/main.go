@@ -10,7 +10,7 @@ import (
 	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
 	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/external"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -35,7 +35,8 @@ import (
 	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/external/datasource"
 	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/handler"
 
-	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
+	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/controller"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
@@ -87,7 +88,7 @@ func main() {
 
 	// Jwt service for generate and validate tokens (CLEANARCH)
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
-	authController := authController.New(jwtGateway)
+	authController := authcontroller.New(jwtGateway)
 
 	// CLEAN ARCH - CUSTOMER
 	customerDatasource := customerdatasource.New(db)
