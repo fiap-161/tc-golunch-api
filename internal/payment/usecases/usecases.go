@@ -6,11 +6,11 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/external"
 
-	orderenum "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity/enum"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/interfaces"
+	orderenum "github.com/fiap-161/tech-challenge-fiap161/internal/order/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/interfaces"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 

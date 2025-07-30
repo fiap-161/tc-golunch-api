@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/controller"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity/enum"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"

@@ -3,8 +3,8 @@ package dto
 import (
 	"errors"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity/enum"
 	coreentity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 

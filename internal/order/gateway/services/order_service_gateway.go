@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
-	paymentinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/interfaces"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/usecases"
+	paymentinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/payment/interfaces"
 )
 
 type OrderServiceGateway struct {

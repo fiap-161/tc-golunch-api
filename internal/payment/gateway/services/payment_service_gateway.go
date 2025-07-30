@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/interfaces"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/usecases"
 )
 
 type PaymentServiceGateway struct {

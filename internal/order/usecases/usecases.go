@@ -3,10 +3,10 @@ package usecases
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/interfaces"
 	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/entity"
 	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/entity"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"

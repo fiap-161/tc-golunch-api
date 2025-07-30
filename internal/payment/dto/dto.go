@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity/enum"
 	coreentity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 

@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/external/datasource"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/external/datasource"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 

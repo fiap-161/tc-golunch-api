@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
-	orderinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
-	paymentinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/interfaces"
+	orderinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/order/interfaces"
+	paymentinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/payment/interfaces"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/usecases"
 )

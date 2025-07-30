@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 	"time"

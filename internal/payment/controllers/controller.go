@@ -3,9 +3,9 @@ package controllers
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/presenter"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/presenter"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/usecases"
 )
 
 type Controller struct {

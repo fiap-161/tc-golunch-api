@@ -1,8 +1,8 @@
 package presenter
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity"
 )
 
 type Presenter struct{}

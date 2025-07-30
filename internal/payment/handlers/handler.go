@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/controllers"
-	dto "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/controllers"
+	dto "github.com/fiap-161/tech-challenge-fiap161/internal/payment/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/helper"
 	"github.com/gin-gonic/gin"
