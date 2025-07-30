@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/gateway"
 )
 
 type GenerateTokenUseCase struct {
@@ -14,4 +14,4 @@ func NewGenerateTokenUseCase(tokenGateway gateway.TokenGateway) *GenerateTokenUs
 
 func (uc *GenerateTokenUseCase) Execute(userID, userType string, additionalClaims map[string]any) (string, error) {
 	return uc.TokenGateway.GenerateToken(userID, userType, additionalClaims)
-} 
+}

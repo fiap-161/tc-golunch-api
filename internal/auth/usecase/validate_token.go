@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/gateway"
 )
 
 type ValidateTokenUseCase struct {
@@ -15,4 +15,4 @@ func NewValidateTokenUseCase(tokenGateway gateway.TokenGateway) *ValidateTokenUs
 
 func (uc *ValidateTokenUseCase) Execute(tokenString string) (*entity.CustomClaims, error) {
 	return uc.TokenGateway.ValidateToken(tokenString)
-} 
+}

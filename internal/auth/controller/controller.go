@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/gateway"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/usecase"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/gateway"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/usecase"
 )
 
 type Controller struct {
