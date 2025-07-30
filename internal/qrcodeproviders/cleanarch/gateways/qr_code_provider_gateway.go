@@ -10,7 +10,6 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 	external "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/presenters"
-
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
 

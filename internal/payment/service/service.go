@@ -8,14 +8,14 @@ import (
 	orderport "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/ports"
-	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
-	qrcodeproviderentity "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
-	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/controller"
+	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/controller"
+	qrcodedto "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/dto"
+	qrcodeports "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/core/ports"
 )
 
 type service struct {
-	qrCodeClient           qrcodeprovider.QRCodeProvider
+	qrCodeClient           qrcodeports.QRCodeProvider
 	orderRepo              orderport.OrderRepository
 	paymentRepo            ports.PaymentRepository
 	productOrderController productordercontroller.Controller
@@ -23,7 +23,7 @@ type service struct {
 }
 
 func New(
-	qrCodeClient qrcodeprovider.QRCodeProvider,
+	qrCodeClient qrcodeports.QRCodeProvider,
 	orderRepo orderport.OrderRepository,
 	paymentRepo ports.PaymentRepository,
 	productOrderController productordercontroller.Controller,
@@ -54,11 +54,11 @@ func (s *service) CreateByOrderID(ctx context.Context, orderID string) (model.Pa
 		return model.Payment{}, productErr
 	}
 
-	var items []qrcodeproviderentity.Item
+	var items []qrcodedto.Item
 	for _, po := range productOrders {
 		for _, product := range products {
 			if po.ProductID == product.ID {
-				items = append(items, qrcodeproviderentity.Item{
+				items = append(items, qrcodedto.Item{
 					ID:          product.ID,
 					Name:        product.Name,
 					Price:       product.Price,
@@ -71,7 +71,7 @@ func (s *service) CreateByOrderID(ctx context.Context, orderID string) (model.Pa
 		}
 	}
 
-	qrCode, qrCodeErr := s.qrCodeClient.GenerateQRCode(ctx, qrcodeproviderentity.GenerateQRCodeParams{
+	qrCode, qrCodeErr := s.qrCodeClient.GenerateQRCode(ctx, qrcodedto.GenerateQRCodeParams{
 		OrderID: orderID,
 		Items:   items,
 	})

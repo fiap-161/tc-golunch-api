@@ -1,6 +1,8 @@
 package main
 
 import (
+	productservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway/services"
+	productorderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway/services"
 	"log"
 	"os"
 	"time"
@@ -12,16 +14,16 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
-	admincontroller "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/controller"
-	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/dto"
-	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/external/datasource"
-	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/cleanarch/handler"
-	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
-	customerpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivens/postgre"
-	customerrest "github.com/fiap-161/tech-challenge-fiap161/internal/customer/adapters/drivers/rest"
-	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
-	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
+	admincontroller "github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
+	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
+	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
+	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
+	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/external"
+	customercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/customer/controller"
+	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
+	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
+	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/handler"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
 	ordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/controller"
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
@@ -37,18 +39,16 @@ import (
 	paymentservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway/services"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/handlers"
 	paymentusecases "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
-	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
-	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
-	productgateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway"
-	productservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway/services"
-	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
-	productusecases "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
-	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
-	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
-	productordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/gateway"
-	productorderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/gateway/services"
-	productorderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/controller"
+	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/dto"
+	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/external/datasource"
+	productgateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway"
+	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/handler"
+	productusecases "github.com/fiap-161/tech-challenge-fiap161/internal/product/usecases"
+	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/dto"
+	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/external/datasource"
+	productordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway"
+	productorderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/usecases"
 	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/gateways"
 )
 
@@ -74,7 +74,7 @@ func main() {
 	db := database.NewPostgresDatabase().GetDb()
 
 	if err := db.AutoMigrate(
-		&customermodel.Customer{}, // todo
+		&customermodel.CustomerDAO{},
 		&adminmodel.AdminDAO{},
 		&productmodel.ProductDAO{},
 		&ordermodel.OrderDAO{},
@@ -87,29 +87,31 @@ func main() {
 	// Serve static files
 	uploadDir := os.Getenv("UPLOAD_DIR")
 
-	// Jwt service for generate and validate tokens
+	// Jwt service for generate and validate tokens (CLEANARCH)
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 	authController := authcontroller.New(jwtGateway)
 
-	// ADMIN
-	adminDatasource := admindatasource.New(db)
-	adminController := admincontroller.Build(adminDatasource)
-	adminHandler := adminhandler.New(adminController, authController)
-
-	// Customer
-	customerRepository := customerpostgre.NewRepository(db)
-	customerSrv := customerservice.New(customerRepository, authController)
-	customerHandler := customerrest.NewCustomerHandler(customerSrv)
+	// CLEAN ARCH - CUSTOMER
+	customerDatasource := customerdatasource.New(db)
+	customerController := customercontroller.Build(customerDatasource, authController)
+	customerHandler := customerhandler.New(customerController)
 
 	// Product
 	productDataSource := productdatasource.New(db)
 	productController := productcontroller.Build(productDataSource)
-	productHandlerCleanArch := producthandler.New(productController)
+	productHandler := producthandler.New(productController)
+
+	// CLEAN ARCH - ADMIN
+	adminDatasource := admindatasource.New(db)
+	adminController := admincontroller.Build(adminDatasource, authController)
+	adminHandler := adminhandler.New(adminController)
 
 	// CLEAN ARCH ProductOrder
 	productOrderDataSource := productorderdatasource.New(db)
 	productOrderGateway := productordergateway.Build(productOrderDataSource)
 	productOrderUseCase := productorderusecases.Build(*productOrderGateway)
+
+	// CLEAN ARCH - Product
 
 	// CLEAN ARCH Payment
 	paymentDataSource := paymentdatasource.New(db)
@@ -171,8 +173,8 @@ func main() {
 
 	// Routes for regular authenticated users
 	// Product
-	authenticated.GET("/product/categories", productHandlerCleanArch.ListCategories)
-	authenticated.GET("/product", productHandlerCleanArch.GetAllByCategory)
+	authenticated.GET("/product/categories", productHandler.ListCategories)
+	authenticated.GET("/product", productHandler.GetAllByCategory)
 
 	// Order
 	authenticated.POST("/order", orderHandler.Create)
@@ -183,10 +185,10 @@ func main() {
 	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
-	adminRoutes.POST("/image/upload", productHandlerCleanArch.UploadImage)
-	adminRoutes.POST("/", productHandlerCleanArch.Create)
-	adminRoutes.PUT("/:id", productHandlerCleanArch.Update)
-	adminRoutes.DELETE("/:id", productHandlerCleanArch.Delete)
+	adminRoutes.POST("/image/upload", productHandler.UploadImage)
+	adminRoutes.POST("/", productHandler.Create)
+	adminRoutes.PUT("/:id", productHandler.Update)
+	adminRoutes.DELETE("/:id", productHandler.Delete)
 
 	r.Run(":8080")
 }

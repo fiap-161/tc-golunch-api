@@ -3,8 +3,8 @@ package interfaces
 import (
 	"context"
 
-	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
-	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
+	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/entity"
+	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/entity"
 )
 
 type ProductService interface {

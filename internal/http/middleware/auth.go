@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strings"
 
-	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
+	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/controller"
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware(authController *authController.Controller) gin.HandlerFunc {
+func AuthMiddleware(authController *authcontroller.Controller) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {

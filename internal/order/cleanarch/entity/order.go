@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
-	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
+	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 )

@@ -7,8 +7,8 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
-	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
-	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
+	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/entity"
+	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/entity"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
@@ -69,7 +69,6 @@ func (u *UseCases) CreateCompleteOrder(ctx context.Context, orderDTO dto.CreateO
 	return payment.QrCode, nil
 }
 
-// todo verify if we can move this function to other package
 func generateOrderByProducts(orderDTO dto.CreateOrderDTO, products []productentity.Product) entity.Order {
 	orderProductInfo := make([]entity.OrderProductInfo, len(orderDTO.Products))
 	for i, product := range orderDTO.Products {
@@ -80,22 +79,6 @@ func generateOrderByProducts(orderDTO dto.CreateOrderDTO, products []productenti
 	}
 
 	return entity.Order{}.FromDTO(orderDTO.CustomerID, orderProductInfo, products)
-}
-
-func getOrderInfoFromProducts(products []productentity.Product, orderDTO dto.CreateOrderDTO) (float64, uint) {
-	var totalPrice float64
-	var preparingTime uint
-
-	for _, item := range orderDTO.Products {
-		for _, product := range products {
-			if product.Id == item.ProductID {
-				totalPrice += product.Price * float64(item.Quantity)
-				preparingTime += product.PreparingTime
-			}
-		}
-	}
-
-	return totalPrice, preparingTime
 }
 
 func generateProductOrderFromOrderAndProducts(
