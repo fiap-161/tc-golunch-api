@@ -2,9 +2,8 @@ package external
 
 import (
 	"context"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/dtos"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 )
 
 type QRCodeProvider interface {

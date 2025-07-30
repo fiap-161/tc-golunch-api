@@ -21,4 +21,4 @@ func (p *Presenter) FromEntityListToDAOList(orders []entity.Order) []dto.OrderDA
 		ordersDAO = append(ordersDAO, dto.ToOrderDAO(order))
 	}
 	return ordersDAO
-} 
+}

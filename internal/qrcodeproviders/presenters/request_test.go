@@ -1,12 +1,11 @@
 package presenters
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/dtos"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 )
 
 func TestRequestBodyFromParams(t *testing.T) {

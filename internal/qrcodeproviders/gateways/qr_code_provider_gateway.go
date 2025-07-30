@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/dtos"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
+	external2 "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/external"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/presenters"
 	"os"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
-	external "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/presenters"
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
 
@@ -25,16 +25,16 @@ func GetExternalPosID() string {
 }
 
 type MercadoPagoClient struct {
-	client external.MercadoPagoClient
+	client external2.MercadoPagoClient
 }
 
-func New() external.QRCodeProvider {
+func New() external2.QRCodeProvider {
 	return &MercadoPagoClient{
 		client: getClient(),
 	}
 }
 
-func getClient() external.MercadoPagoClient {
+func getClient() external2.MercadoPagoClient {
 	return &MercadoPagoClientRest{
 		client: resty.New().
 			SetBaseURL(viper.GetString(shared.MercadoPagoHost)).

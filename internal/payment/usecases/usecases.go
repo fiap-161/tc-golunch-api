@@ -3,14 +3,14 @@ package usecases
 import (
 	"context"
 	"fmt"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/external"
 
 	orderenum "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/interfaces"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 

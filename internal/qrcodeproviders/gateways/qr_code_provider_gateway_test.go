@@ -2,12 +2,12 @@ package gateways
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared"
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"

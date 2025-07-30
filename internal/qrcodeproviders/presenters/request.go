@@ -1,10 +1,9 @@
 package presenters
 
 import (
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/dtos"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 	"os"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/dtos"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 )
 
 func RequestBodyFromParams(params entities.GenerateQRCodeParams) dtos.RequestGenerateQRCodeDTO {

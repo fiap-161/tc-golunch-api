@@ -2,10 +2,9 @@ package external
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 
 	"github.com/stretchr/testify/mock"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 )
 
 type MockQRCodeProvider struct {
