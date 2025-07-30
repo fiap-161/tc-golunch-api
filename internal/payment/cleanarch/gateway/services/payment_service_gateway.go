@@ -8,17 +8,17 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
 )
 
-type PaymentServiceAdapter struct {
+type PaymentServiceGateway struct {
 	paymentUseCase *usecases.UseCases
 }
 
-func NewPaymentServiceAdapter(paymentUseCase *usecases.UseCases) interfaces.PaymentService {
-	return &PaymentServiceAdapter{
+func NewPaymentServiceGateway(paymentUseCase *usecases.UseCases) interfaces.PaymentService {
+	return &PaymentServiceGateway{
 		paymentUseCase: paymentUseCase,
 	}
 }
 
-func (a *PaymentServiceAdapter) CreateByOrderID(ctx context.Context, orderID string) (*entity.Payment, error) {
+func (a *PaymentServiceGateway) CreateByOrderID(ctx context.Context, orderID string) (*entity.Payment, error) {
 	payment, err := a.paymentUseCase.CreateByOrderID(ctx, orderID)
 	if err != nil {
 		return nil, err

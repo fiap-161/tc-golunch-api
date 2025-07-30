@@ -8,17 +8,17 @@ import (
 	paymentinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/interfaces"
 )
 
-type OrderServiceAdapter struct {
+type OrderServiceGateway struct {
 	orderUseCase *usecases.UseCases
 }
 
-func NewOrderServiceAdapter(orderUseCase *usecases.UseCases) paymentinterfaces.OrderService {
-	return &OrderServiceAdapter{
+func NewOrderServiceGateway(orderUseCase *usecases.UseCases) paymentinterfaces.OrderService {
+	return &OrderServiceGateway{
 		orderUseCase: orderUseCase,
 	}
 }
 
-func (a *OrderServiceAdapter) FindByID(ctx context.Context, orderID string) (paymentinterfaces.Order, error) {
+func (a *OrderServiceGateway) FindByID(ctx context.Context, orderID string) (paymentinterfaces.Order, error) {
 	order, err := a.orderUseCase.FindByID(ctx, orderID)
 	if err != nil {
 		return paymentinterfaces.Order{}, err
@@ -30,7 +30,7 @@ func (a *OrderServiceAdapter) FindByID(ctx context.Context, orderID string) (pay
 	}, nil
 }
 
-func (a *OrderServiceAdapter) Update(ctx context.Context, order paymentinterfaces.Order) (paymentinterfaces.Order, error) {
+func (a *OrderServiceGateway) Update(ctx context.Context, order paymentinterfaces.Order) (paymentinterfaces.Order, error) {
 	currentOrder, err := a.orderUseCase.FindByID(ctx, order.ID)
 	if err != nil {
 		return paymentinterfaces.Order{}, err

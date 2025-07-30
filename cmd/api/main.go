@@ -1,7 +1,6 @@
 package main
 
 import (
-	orderadapters "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway/services"
 	"log"
 	"os"
 	"time"
@@ -28,6 +27,7 @@ import (
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
 	orderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/external/datasource"
 	ordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
+	orderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway/services"
 	orderhandler "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/handler"
 	orderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
 	paymentcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/controllers"
@@ -126,21 +126,21 @@ func main() {
 	productGateway := productgateway.Build(productDataSource)
 	productUseCase := productusecases.Build(*productGateway)
 
-	productServiceAdapter := productservicegateway.NewProductServiceAdapter(productUseCase)
-	productOrderServiceAdapterForOrder, productOrderServiceAdapterForPayment := productorderservicegateway.NewProductOrderServiceAdapter(productOrderUseCase)
+	productServiceGateway := productservicegateway.NewProductServiceGateway(productUseCase)
+	productOrderServiceGatewayForOrder, productOrderServiceGatewayForPayment := productorderservicegateway.NewProductOrderServiceGateway(productOrderUseCase)
 
 	// Creating payment use case without orderService (to avoid circular dependency)
-	paymentUseCaseWithoutOrder := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceAdapter, productOrderServiceAdapterForPayment, nil)
-	paymentServiceAdapter := paymentservicegateway.NewPaymentServiceAdapter(paymentUseCaseWithoutOrder)
+	paymentUseCaseWithoutOrder := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceGateway, productOrderServiceGatewayForPayment, nil)
+	paymentServiceGateway := paymentservicegateway.NewPaymentServiceGateway(paymentUseCaseWithoutOrder)
 
 	// Creating orderUseCase with productService and productOrderService (to avoid circular dependency)
-	orderUseCase := orderusecases.Build(orderGateway, productServiceAdapter, productOrderServiceAdapterForOrder, paymentServiceAdapter)
+	orderUseCase := orderusecases.Build(orderGateway, productServiceGateway, productOrderServiceGatewayForOrder, paymentServiceGateway)
 
-	// Creating orderServiceAdapter with orderUseCase
-	orderServiceAdapter := orderadapters.NewOrderServiceAdapter(orderUseCase)
+	// Creating orderServiceGateway with orderUseCase
+	orderServiceGateway := orderservicegateway.NewOrderServiceGateway(orderUseCase)
 
-	// Creating payment use case with orderServiceAdapter
-	paymentUseCase := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceAdapter, productOrderServiceAdapterForPayment, orderServiceAdapter)
+	// Creating payment use case with orderServiceGateway
+	paymentUseCase := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceGateway, productOrderServiceGatewayForPayment, orderServiceGateway)
 
 	// Order
 	orderController := ordercontroller.Build(orderUseCase)

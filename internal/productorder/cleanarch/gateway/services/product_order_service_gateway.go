@@ -9,24 +9,24 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 )
 
-type ProductOrderServiceAdapter struct {
+type ProductOrderServiceGateway struct {
 	productOrderUseCase *usecases.UseCases
 }
 
-func NewProductOrderServiceAdapter(productOrderUseCase *usecases.UseCases) (
+func NewProductOrderServiceGateway(productOrderUseCase *usecases.UseCases) (
 	orderinterfaces.ProductOrderService,
 	paymentinterfaces.ProductOrderService,
 ) {
-	adapter := &ProductOrderServiceAdapter{
+	adapter := &ProductOrderServiceGateway{
 		productOrderUseCase: productOrderUseCase,
 	}
 	return adapter, adapter
 }
 
-func (a *ProductOrderServiceAdapter) CreateBulk(ctx context.Context, productOrders []entity.ProductOrder) (int, error) {
+func (a *ProductOrderServiceGateway) CreateBulk(ctx context.Context, productOrders []entity.ProductOrder) (int, error) {
 	return a.productOrderUseCase.CreateBulk(ctx, productOrders)
 }
 
-func (a *ProductOrderServiceAdapter) FindByOrderID(ctx context.Context, orderID string) ([]entity.ProductOrder, error) {
+func (a *ProductOrderServiceGateway) FindByOrderID(ctx context.Context, orderID string) ([]entity.ProductOrder, error) {
 	return a.productOrderUseCase.FindByOrderID(ctx, orderID)
 }

@@ -8,16 +8,16 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 )
 
-type ProductServiceAdapter struct {
+type ProductServiceGateway struct {
 	productUseCase *usecases.UseCases
 }
 
-func NewProductServiceAdapter(productUseCase *usecases.UseCases) interfaces.ProductService {
-	return &ProductServiceAdapter{
+func NewProductServiceGateway(productUseCase *usecases.UseCases) interfaces.ProductService {
+	return &ProductServiceGateway{
 		productUseCase: productUseCase,
 	}
 }
 
-func (a *ProductServiceAdapter) FindByIDs(ctx context.Context, productIDs []string) ([]entity.Product, error) {
+func (a *ProductServiceGateway) FindByIDs(ctx context.Context, productIDs []string) ([]entity.Product, error) {
 	return a.productUseCase.FindByIDs(ctx, productIDs)
 }
