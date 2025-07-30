@@ -3,7 +3,7 @@ package datasource
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/dto"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 	"gorm.io/gorm"
 )

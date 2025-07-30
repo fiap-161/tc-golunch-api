@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/interfaces"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/usecases"
 )
