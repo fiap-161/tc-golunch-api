@@ -8,26 +8,27 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/presenter"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
 	paymentuc "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
+	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productuc "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 	productorderuc "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 )
 
 type Controller struct {
 	orderDatasource     datasource.DataSource
-	productUseCase      productuc.UseCases
+	productController   productcontroller.Controller
 	productOrderUseCase productorderuc.UseCases
 	paymentUseCase      paymentuc.UseCases
 }
 
 func Build(
 	orderDatasource datasource.DataSource,
-	productService productuc.UseCases,
+	productController productcontroller.Controller,
 	productOrderService productorderuc.UseCases,
 	paymentService paymentuc.UseCases,
 ) *Controller {
 	return &Controller{
 		orderDatasource:     orderDatasource,
-		productUseCase:      productService,
+		productController:   productController,
 		productOrderUseCase: productOrderService,
 		paymentUseCase:      paymentService,
 	}
@@ -35,7 +36,7 @@ func Build(
 
 func (c *Controller) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (string, error) {
 	orderGateway := gateway.Build(c.orderDatasource)
-	useCase := usecases.Build(orderGateway, c.productUseCase, c.productOrderUseCase, c.paymentUseCase)
+	useCase := usecases.Build(orderGateway, c.productController, c.productOrderUseCase, c.paymentUseCase)
 
 	return useCase.CreateCompleteOrder(ctx, orderDTO)
 }

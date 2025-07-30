@@ -13,6 +13,8 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 )
 
+// controller (DTOS)
+
 // INFO: controllers Criam gateways e requisitam usecases
 type Controller struct {
 	productDatasource datasource.DataSource
@@ -20,7 +22,8 @@ type Controller struct {
 
 func Build(productDataSource datasource.DataSource) *Controller {
 	return &Controller{
-		productDatasource: productDataSource}
+		productDatasource: productDataSource,
+	}
 }
 
 func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDTO) (dto.ProductResponseDTO, error) {
@@ -30,13 +33,12 @@ func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDT
 
 	var product entity.Product
 	product = dto.FromRequestDTO(productDTO)
-	product, err := useCase.CreateProduct(ctx, product)
-
-	if err != nil {
-		return dto.ProductResponseDTO{}, err
+	createdProduct, createErr := useCase.CreateProduct(ctx, product)
+	if createErr != nil {
+		return dto.ProductResponseDTO{}, createErr
 	}
 
-	return presenter.FromEntityToResponseDTO(product), nil
+	return presenter.FromEntityToResponseDTO(createdProduct), nil
 }
 
 func (c *Controller) ListCategories(ctx context.Context) []enum.Category {

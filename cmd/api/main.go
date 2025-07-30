@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago"
 	"log"
 	"os"
 	"time"
@@ -24,13 +23,13 @@ import (
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
-	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
-	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
-	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
-	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
+	ordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/controller"
+	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
+	orderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/external/datasource"
+	orderhandler "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/handler"
 	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
-	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
+	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
 	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
@@ -64,17 +63,17 @@ func main() {
 	db := database.NewPostgresDatabase().GetDb()
 
 	if err := db.AutoMigrate(
-		&customermodel.Customer{},
+		&customermodel.Customer{}, // todo
 		&adminmodel.AdminDAO{},
 		&productmodel.ProductDAO{},
-		&order.Order{},
+		&ordermodel.OrderDAO{},
 		&productordermodel.ProductOrderDAO{},
-		&paymentmodel.Payment{},
+		&paymentmodel.PaymentDAO{},
 	); err != nil {
 		log.Fatalf("Erro ao migrar o banco: %v", err)
 	}
 
-	// servir arquivos estáticos - imagens
+	// Serve static files
 	uploadDir := os.Getenv("UPLOAD_DIR")
 
 	// Jwt service for generate and validate tokens (CLEANARCH)
@@ -100,31 +99,38 @@ func main() {
 	productOrderDataSource := productorderdatasource.New(db)
 	productOrderController := productordercontroller.Build(productOrderDataSource)
 
+	// CLEAN ARCH Order
+	orderDataSource := orderdatasource.New(db)
+	orderController := ordercontroller.Build(
+		orderDataSource,
+		prod, // useCaseProduct
+		nil,  // useCaseProductOrder
+		nil,  // useCasePayment
+	)
+	orderHandler := orderhandler.New(orderController)
+
 	// QR Code Client
 	qrCodeClient := qrcodeprovider.New()
 
-	// Order Repository
-	orderRepository := orderpostgre.New(db)
-
 	// Payment
-	paymentRepository := paymentpostgre.New(db)
-	paymentService := paymentservice.New(
-		qrCodeClient,
-		orderRepository,
-		paymentRepository,
-		*productOrderController,
-		*productController,
-	)
-	paymentHandler := paymenthandler.New(paymentService)
+	//paymentRepository := paymentpostgre.New(db)
+	//paymentService := paymentservice.New(
+	//	qrCodeClient,
+	//	orderRepository,
+	//	paymentRepository,
+	//	*productOrderController,
+	//	*productController,
+	//)
+	//paymentHandler := paymenthandler.New(paymentService)
 
 	// Order Service
-	orderService := orderservice.New(
-		orderRepository,
-		*productController,
-		*productOrderController,
-		paymentService,
-	)
-	orderHandler := orderrest.New(orderService)
+	//orderService := orderservice.New(
+	//	orderRepository,
+	//	*productController,
+	//	*productOrderController,
+	//	paymentService,
+	//)
+	//orderHandler := orderrest.New(orderService)
 
 	// Default Routes
 	r.GET("/ping", ping)
