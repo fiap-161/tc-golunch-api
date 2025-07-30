@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity/enum"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/product/entity/enum"
 	coreentity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
 )
