@@ -1,8 +1,6 @@
 package main
 
 import (
-	productservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway/services"
-	productorderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway/services"
 	"log"
 	"os"
 	"time"
@@ -43,11 +41,13 @@ import (
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/dto"
 	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/external/datasource"
 	productgateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway"
+	productservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway/services"
 	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/handler"
 	productusecases "github.com/fiap-161/tech-challenge-fiap161/internal/product/usecases"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/dto"
 	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/external/datasource"
 	productordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway"
+	productorderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway/services"
 	productorderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/usecases"
 	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/gateways"
 )
@@ -101,26 +101,24 @@ func main() {
 	productController := productcontroller.Build(productDataSource)
 	productHandler := producthandler.New(productController)
 
-	// CLEAN ARCH - ADMIN
+	// Admin
 	adminDatasource := admindatasource.New(db)
 	adminController := admincontroller.Build(adminDatasource, authController)
 	adminHandler := adminhandler.New(adminController)
 
-	// CLEAN ARCH ProductOrder
+	// Product Order
 	productOrderDataSource := productorderdatasource.New(db)
 	productOrderGateway := productordergateway.Build(productOrderDataSource)
 	productOrderUseCase := productorderusecases.Build(*productOrderGateway)
 
-	// CLEAN ARCH - Product
-
-	// CLEAN ARCH Payment
+	// Payment
 	paymentDataSource := paymentdatasource.New(db)
 	paymentGateway := paymentgateway.Build(paymentDataSource)
 
 	// QR Code Client
 	qrCodeClient := qrcodeprovider.New()
 
-	// CLEAN ARCH Order
+	// Order Data Source and Gateway
 	orderDataSource := orderdatasource.New(db)
 	orderGateway := ordergateway.Build(orderDataSource)
 
@@ -144,7 +142,7 @@ func main() {
 	// Creating payment use case with orderServiceGateway
 	paymentUseCase := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceGateway, productOrderServiceGatewayForPayment, orderServiceGateway)
 
-	// Order
+	// Order Controller and Handler
 	orderController := ordercontroller.Build(orderUseCase)
 	orderHandler := orderhandler.New(orderController)
 
