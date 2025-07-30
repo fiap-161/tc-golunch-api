@@ -3,7 +3,7 @@ package controller
 import (
 	"context"
 
-	orderdto "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest/dto"
+	orderdto "github.com/fiap-161/tech-challenge-fiap161/internal/order/dto"
 	productdto "github.com/fiap-161/tech-challenge-fiap161/internal/product/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/entity"

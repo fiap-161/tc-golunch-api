@@ -91,7 +91,7 @@ func main() {
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 	authController := authcontroller.New(jwtGateway)
 
-	// CLEAN ARCH - CUSTOMER
+	// Customer
 	customerDatasource := customerdatasource.New(db)
 	customerController := customercontroller.Build(customerDatasource, authController)
 	customerHandler := customerhandler.New(customerController)
