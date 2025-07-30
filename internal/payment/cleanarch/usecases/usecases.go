@@ -17,17 +17,17 @@ import (
 type UseCases struct {
 	paymentGateway      *gateway.Gateway
 	qrCodeProvider      external.QRCodeProvider
-	productService      ports.ProductService
-	productOrderService ports.ProductOrderService
-	orderService        ports.OrderService
+	productService      interfaces.ProductService
+	productOrderService interfaces.ProductOrderService
+	orderService        interfaces.OrderService
 }
 
 func Build(
 	paymentGateway *gateway.Gateway,
 	qrCodeProvider external.QRCodeProvider,
-	productService ports.ProductService,
-	productOrderService ports.ProductOrderService,
-	orderService ports.OrderService,
+	productService interfaces.ProductService,
+	productOrderService interfaces.ProductOrderService,
+	orderService interfaces.OrderService,
 ) *UseCases {
 	return &UseCases{
 		paymentGateway:      paymentGateway,

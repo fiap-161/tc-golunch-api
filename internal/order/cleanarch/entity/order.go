@@ -31,7 +31,6 @@ func (o Order) Build() Order {
 	}
 }
 
-// OrderProductInfo representa as informações de um produto no pedido
 type OrderProductInfo struct {
 	ProductID string `json:"product_id"`
 	Quantity  int    `json:"quantity"`

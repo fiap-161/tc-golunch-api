@@ -16,6 +16,14 @@ var OrderPanelStatus = []string{
 	OrderStatusReady.String(),
 }
 
+var StatusMapper = map[string]OrderStatus{
+	OrderStatusAwaitingPayment.String(): OrderStatusAwaitingPayment,
+	OrderStatusReceived.String():        OrderStatusReceived,
+	OrderStatusInPreparation.String():   OrderStatusInPreparation,
+	OrderStatusReady.String():           OrderStatusReady,
+	OrderStatusCompleted.String():       OrderStatusCompleted,
+}
+
 func (o OrderStatus) String() string {
 	return string(o)
 }

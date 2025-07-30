@@ -6,7 +6,7 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/ports"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
 	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
@@ -14,16 +14,16 @@ import (
 
 type UseCases struct {
 	orderGateway        *gateway.Gateway
-	productService      ports.ProductService
-	productOrderService ports.ProductOrderService
-	paymentService      ports.PaymentService
+	productService      interfaces.ProductService
+	productOrderService interfaces.ProductOrderService
+	paymentService      interfaces.PaymentService
 }
 
 func Build(
 	orderGateway *gateway.Gateway,
-	productService ports.ProductService,
-	productOrderService ports.ProductOrderService,
-	paymentService ports.PaymentService,
+	productService interfaces.ProductService,
+	productOrderService interfaces.ProductOrderService,
+	paymentService interfaces.PaymentService,
 ) *UseCases {
 	return &UseCases{
 		orderGateway:        orderGateway,

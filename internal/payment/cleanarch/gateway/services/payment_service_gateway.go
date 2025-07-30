@@ -1,19 +1,18 @@
-package adapters
+package services
 
 import (
 	"context"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
 )
 
-// PaymentServiceAdapter implementa a interface PaymentService do domínio Order
 type PaymentServiceAdapter struct {
 	paymentUseCase *usecases.UseCases
 }
 
-func NewPaymentServiceAdapter(paymentUseCase *usecases.UseCases) ports.PaymentService {
+func NewPaymentServiceAdapter(paymentUseCase *usecases.UseCases) interfaces.PaymentService {
 	return &PaymentServiceAdapter{
 		paymentUseCase: paymentUseCase,
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	orderadapters "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway/services"
 	"log"
 	"os"
 	"time"
@@ -23,30 +24,30 @@ import (
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
-	orderadapters "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/adapters"
 	ordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/controller"
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
 	orderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/external/datasource"
 	ordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
 	orderhandler "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/handler"
 	orderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
-	paymentadapters "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/adapters"
 	paymentcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/controllers"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
 	paymentdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/external/datasource"
 	paymentgateway "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway"
+	paymentservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway/services"
 	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/handlers"
 	paymentusecases "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
-	productadapters "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/adapters"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
 	productgateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway"
+	productservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway/services"
 	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
 	productusecases "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
 	productordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/gateway"
+	productorderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/gateway/services"
 	productorderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/gateways"
 )
@@ -125,12 +126,12 @@ func main() {
 	productGateway := productgateway.Build(productDataSource)
 	productUseCase := productusecases.Build(*productGateway)
 
-	productServiceAdapter := productadapters.NewProductServiceAdapter(productUseCase)
-	productOrderServiceAdapterForOrder, productOrderServiceAdapterForPayment := productordergateway.NewProductOrderServiceAdapter(productOrderUseCase)
+	productServiceAdapter := productservicegateway.NewProductServiceAdapter(productUseCase)
+	productOrderServiceAdapterForOrder, productOrderServiceAdapterForPayment := productorderservicegateway.NewProductOrderServiceAdapter(productOrderUseCase)
 
 	// Creating payment use case without orderService (to avoid circular dependency)
 	paymentUseCaseWithoutOrder := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceAdapter, productOrderServiceAdapterForPayment, nil)
-	paymentServiceAdapter := paymentadapters.NewPaymentServiceAdapter(paymentUseCaseWithoutOrder)
+	paymentServiceAdapter := paymentservicegateway.NewPaymentServiceAdapter(paymentUseCaseWithoutOrder)
 
 	// Creating orderUseCase with productService and productOrderService (to avoid circular dependency)
 	orderUseCase := orderusecases.Build(orderGateway, productServiceAdapter, productOrderServiceAdapterForOrder, paymentServiceAdapter)

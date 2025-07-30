@@ -1,10 +1,10 @@
-package gateway
+package services
 
 import (
 	"context"
 
-	orderports "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/ports"
-	paymentports "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/ports"
+	orderinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/interfaces"
+	paymentinterfaces "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/interfaces"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 )
@@ -13,7 +13,10 @@ type ProductOrderServiceAdapter struct {
 	productOrderUseCase *usecases.UseCases
 }
 
-func NewProductOrderServiceAdapter(productOrderUseCase *usecases.UseCases) (orderports.ProductOrderService, paymentports.ProductOrderService) {
+func NewProductOrderServiceAdapter(productOrderUseCase *usecases.UseCases) (
+	orderinterfaces.ProductOrderService,
+	paymentinterfaces.ProductOrderService,
+) {
 	adapter := &ProductOrderServiceAdapter{
 		productOrderUseCase: productOrderUseCase,
 	}
