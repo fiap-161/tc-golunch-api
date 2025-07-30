@@ -1,12 +1,12 @@
 package entity
 
 import (
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
+	"time"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
 	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 	"github.com/google/uuid"
-	"time"
 )
 
 type Order struct {
@@ -31,22 +31,28 @@ func (o Order) Build() Order {
 	}
 }
 
-func (o Order) FromDTO(dto dto.CreateOrderDTO, products []productentity.Product) Order {
-	totalPrice, preparingTime := o.getOrderInfoFromProducts(products, dto)
+// OrderProductInfo representa as informações de um produto no pedido
+type OrderProductInfo struct {
+	ProductID string `json:"product_id"`
+	Quantity  int    `json:"quantity"`
+}
+
+func (o Order) FromDTO(customerID string, products []OrderProductInfo, allProducts []productentity.Product) Order {
+	totalPrice, preparingTime := o.getOrderInfoFromProducts(allProducts, products)
 
 	return Order{
-		CustomerID:    dto.CustomerID,
+		CustomerID:    customerID,
 		Price:         totalPrice,
 		PreparingTime: preparingTime,
 		Status:        enum.OrderStatusAwaitingPayment,
 	}
 }
 
-func (o Order) getOrderInfoFromProducts(products []productentity.Product, orderDTO dto.CreateOrderDTO) (float64, uint) {
+func (o Order) getOrderInfoFromProducts(products []productentity.Product, orderProducts []OrderProductInfo) (float64, uint) {
 	var totalPrice float64
 	var preparingTime uint
 
-	for _, item := range orderDTO.Products {
+	for _, item := range orderProducts {
 		for _, product := range products {
 			if product.Id == item.ProductID {
 				totalPrice += product.Price * float64(item.Quantity)

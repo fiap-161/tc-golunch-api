@@ -2,51 +2,30 @@ package controller
 
 import (
 	"context"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/external/datasource"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/presenter"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
-	paymentuc "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
-	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
-	productuc "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
-	productorderuc "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 )
 
 type Controller struct {
-	orderDatasource     datasource.DataSource
-	productController   productcontroller.Controller
-	productOrderUseCase productorderuc.UseCases
-	paymentUseCase      paymentuc.UseCases
+	orderUseCase *usecases.UseCases
 }
 
-func Build(
-	orderDatasource datasource.DataSource,
-	productController productcontroller.Controller,
-	productOrderService productorderuc.UseCases,
-	paymentService paymentuc.UseCases,
-) *Controller {
+func Build(orderUseCase *usecases.UseCases) *Controller {
 	return &Controller{
-		orderDatasource:     orderDatasource,
-		productController:   productController,
-		productOrderUseCase: productOrderService,
-		paymentUseCase:      paymentService,
+		orderUseCase: orderUseCase,
 	}
 }
 
 func (c *Controller) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (string, error) {
-	orderGateway := gateway.Build(c.orderDatasource)
-	useCase := usecases.Build(orderGateway, c.productController, c.productOrderUseCase, c.paymentUseCase)
-
-	return useCase.CreateCompleteOrder(ctx, orderDTO)
+	return c.orderUseCase.CreateCompleteOrder(ctx, orderDTO)
 }
 
 func (c *Controller) GetAll(ctx context.Context) ([]dto.OrderDAO, error) {
-	orderGateway := gateway.Build(c.orderDatasource)
-	useCase := usecases.Build(orderGateway, c.productUseCase, c.productOrderUseCase, c.paymentUseCase)
 	presenter := presenter.Build()
 
-	orders, err := useCase.GetAll(ctx)
+	orders, err := c.orderUseCase.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +34,9 @@ func (c *Controller) GetAll(ctx context.Context) ([]dto.OrderDAO, error) {
 }
 
 func (c *Controller) GetPanel(ctx context.Context, status []string) ([]dto.OrderDAO, error) {
-	orderGateway := gateway.Build(c.orderDatasource)
-	useCase := usecases.Build(orderGateway, c.productUseCase, c.productOrderUseCase, c.paymentUseCase)
 	presenter := presenter.Build()
 
-	orders, err := useCase.GetPanel(ctx, status)
+	orders, err := c.orderUseCase.GetPanel(ctx, status)
 	if err != nil {
 		return nil, err
 	}
@@ -68,11 +45,9 @@ func (c *Controller) GetPanel(ctx context.Context, status []string) ([]dto.Order
 }
 
 func (c *Controller) FindByID(ctx context.Context, id string) (dto.OrderDAO, error) {
-	orderGateway := gateway.Build(c.orderDatasource)
-	useCase := usecases.Build(orderGateway, c.productUseCase, c.productOrderUseCase, c.paymentUseCase)
 	presenter := presenter.Build()
 
-	order, err := useCase.FindByID(ctx, id)
+	order, err := c.orderUseCase.FindByID(ctx, id)
 	if err != nil {
 		return dto.OrderDAO{}, err
 	}
@@ -81,12 +56,10 @@ func (c *Controller) FindByID(ctx context.Context, id string) (dto.OrderDAO, err
 }
 
 func (c *Controller) Update(ctx context.Context, orderDTO dto.OrderDAO) (dto.OrderDAO, error) {
-	orderGateway := gateway.Build(c.orderDatasource)
-	useCase := usecases.Build(orderGateway, c.productUseCase, c.productOrderUseCase, c.paymentUseCase)
 	presenter := presenter.Build()
 
 	order := dto.FromOrderDAO(orderDTO)
-	updated, err := useCase.Update(ctx, order)
+	updated, err := c.orderUseCase.Update(ctx, order)
 	if err != nil {
 		return dto.OrderDAO{}, err
 	}

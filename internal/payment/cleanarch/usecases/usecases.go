@@ -5,12 +5,10 @@ import (
 	"fmt"
 
 	orderenum "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
-	orderuc "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway"
-	productuc "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
-	productorderuc "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/ports"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/entities"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
@@ -19,29 +17,29 @@ import (
 type UseCases struct {
 	paymentGateway      *gateway.Gateway
 	qrCodeProvider      external.QRCodeProvider
-	productUseCase      productuc.UseCases
-	productOrderUseCase productorderuc.UseCases
-	orderUseCase        orderuc.UseCases
+	productService      ports.ProductService
+	productOrderService ports.ProductOrderService
+	orderService        ports.OrderService
 }
 
 func Build(
 	paymentGateway *gateway.Gateway,
 	qrCodeProvider external.QRCodeProvider,
-	productUseCase productuc.UseCases,
-	productOrderUseCase productorderuc.UseCases,
-	orderUseCase orderuc.UseCases,
+	productService ports.ProductService,
+	productOrderService ports.ProductOrderService,
+	orderService ports.OrderService,
 ) *UseCases {
 	return &UseCases{
 		paymentGateway:      paymentGateway,
 		qrCodeProvider:      qrCodeProvider,
-		productUseCase:      productUseCase,
-		productOrderUseCase: productOrderUseCase,
-		orderUseCase:        orderUseCase,
+		productService:      productService,
+		productOrderService: productOrderService,
+		orderService:        orderService,
 	}
 }
 
 func (u *UseCases) CreateByOrderID(ctx context.Context, orderID string) (entity.Payment, error) {
-	productOrders, productOrderErr := u.productOrderUseCase.FindByOrderID(ctx, orderID)
+	productOrders, productOrderErr := u.productOrderService.FindByOrderID(ctx, orderID)
 	if productOrderErr != nil {
 		return entity.Payment{}, productOrderErr
 	}
@@ -51,7 +49,7 @@ func (u *UseCases) CreateByOrderID(ctx context.Context, orderID string) (entity.
 		productIDs = append(productIDs, po.ProductID)
 	}
 
-	products, productsErr := u.productUseCase.FindByIDs(ctx, productIDs)
+	products, productsErr := u.productService.FindByIDs(ctx, productIDs)
 	if productsErr != nil {
 		return entity.Payment{}, productsErr
 	}
@@ -111,13 +109,13 @@ func (u *UseCases) CheckPayment(ctx context.Context, requestUrl string) (interfa
 			return nil, updateErr
 		}
 
-		order, orderErr := u.orderUseCase.FindByID(ctx, response.ExternalReference)
+		order, orderErr := u.orderService.FindByID(ctx, response.ExternalReference)
 		if orderErr != nil {
 			return nil, orderErr
 		}
 
-		order.Status = orderenum.OrderStatusReceived
-		_, updateOrderErr := u.orderUseCase.Update(ctx, order)
+		order.Status = string(orderenum.OrderStatusReceived)
+		_, updateOrderErr := u.orderService.Update(ctx, order)
 		if updateOrderErr != nil {
 			return nil, updateOrderErr
 		}

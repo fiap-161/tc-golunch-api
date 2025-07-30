@@ -23,21 +23,31 @@ import (
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/core/model"
 	customerservice "github.com/fiap-161/tech-challenge-fiap161/internal/customer/service"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
+	orderadapters "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/adapters"
 	ordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/controller"
 	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
 	orderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/external/datasource"
+	ordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
 	orderhandler "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/handler"
-	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
-	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
+	orderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/usecases"
+	paymentadapters "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/adapters"
+	paymentcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/controllers"
 	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/dto"
-	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
+	paymentdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/external/datasource"
+	paymentgateway "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/gateway"
+	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/handlers"
+	paymentusecases "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
+	productadapters "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/adapters"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/controller"
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/dto"
 	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/external/datasource"
+	productgateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/gateway"
 	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/handler"
-	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/controller"
+	productusecases "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/dto"
 	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/external/datasource"
+	productordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/gateway"
+	productorderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/gateways"
 )
 
@@ -76,61 +86,68 @@ func main() {
 	// Serve static files
 	uploadDir := os.Getenv("UPLOAD_DIR")
 
-	// Jwt service for generate and validate tokens (CLEANARCH)
+	// Jwt service for generate and validate tokens
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 	authController := authcontroller.New(jwtGateway)
+
+	// ADMIN
+	adminDatasource := admindatasource.New(db)
+	adminController := admincontroller.Build(adminDatasource)
+	adminHandler := adminhandler.New(adminController, authController)
 
 	// Customer
 	customerRepository := customerpostgre.NewRepository(db)
 	customerSrv := customerservice.New(customerRepository, authController)
 	customerHandler := customerrest.NewCustomerHandler(customerSrv)
 
-	// CLEAN ARCH - ADMIN
-	adminDatasource := admindatasource.New(db)
-	adminController := admincontroller.Build(adminDatasource)
-	adminHandler := adminhandler.New(adminController, authController)
-
-	// CLEAN ARCH - Product
+	// Product
 	productDataSource := productdatasource.New(db)
 	productController := productcontroller.Build(productDataSource)
 	productHandlerCleanArch := producthandler.New(productController)
 
-	// CLEAN ARCH ProductOrder Controller
+	// CLEAN ARCH ProductOrder
 	productOrderDataSource := productorderdatasource.New(db)
-	productOrderController := productordercontroller.Build(productOrderDataSource)
+	productOrderGateway := productordergateway.Build(productOrderDataSource)
+	productOrderUseCase := productorderusecases.Build(*productOrderGateway)
 
-	// CLEAN ARCH Order
-	orderDataSource := orderdatasource.New(db)
-	orderController := ordercontroller.Build(
-		orderDataSource,
-		prod, // useCaseProduct
-		nil,  // useCaseProductOrder
-		nil,  // useCasePayment
-	)
-	orderHandler := orderhandler.New(orderController)
+	// CLEAN ARCH Payment
+	paymentDataSource := paymentdatasource.New(db)
+	paymentGateway := paymentgateway.Build(paymentDataSource)
 
 	// QR Code Client
 	qrCodeClient := qrcodeprovider.New()
 
-	// Payment
-	//paymentRepository := paymentpostgre.New(db)
-	//paymentService := paymentservice.New(
-	//	qrCodeClient,
-	//	orderRepository,
-	//	paymentRepository,
-	//	*productOrderController,
-	//	*productController,
-	//)
-	//paymentHandler := paymenthandler.New(paymentService)
+	// CLEAN ARCH Order
+	orderDataSource := orderdatasource.New(db)
+	orderGateway := ordergateway.Build(orderDataSource)
 
-	// Order Service
-	//orderService := orderservice.New(
-	//	orderRepository,
-	//	*productController,
-	//	*productOrderController,
-	//	paymentService,
-	//)
-	//orderHandler := orderrest.New(orderService)
+	// Common Gateways
+	productGateway := productgateway.Build(productDataSource)
+	productUseCase := productusecases.Build(*productGateway)
+
+	productServiceAdapter := productadapters.NewProductServiceAdapter(productUseCase)
+	productOrderServiceAdapterForOrder, productOrderServiceAdapterForPayment := productordergateway.NewProductOrderServiceAdapter(productOrderUseCase)
+
+	// Creating payment use case without orderService (to avoid circular dependency)
+	paymentUseCaseWithoutOrder := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceAdapter, productOrderServiceAdapterForPayment, nil)
+	paymentServiceAdapter := paymentadapters.NewPaymentServiceAdapter(paymentUseCaseWithoutOrder)
+
+	// Creating orderUseCase with productService and productOrderService (to avoid circular dependency)
+	orderUseCase := orderusecases.Build(orderGateway, productServiceAdapter, productOrderServiceAdapterForOrder, paymentServiceAdapter)
+
+	// Creating orderServiceAdapter with orderUseCase
+	orderServiceAdapter := orderadapters.NewOrderServiceAdapter(orderUseCase)
+
+	// Creating payment use case with orderServiceAdapter
+	paymentUseCase := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceAdapter, productOrderServiceAdapterForPayment, orderServiceAdapter)
+
+	// Order
+	orderController := ordercontroller.Build(orderUseCase)
+	orderHandler := orderhandler.New(orderController)
+
+	// Payment
+	paymentController := paymentcontroller.Build(paymentUseCase)
+	paymentHandler := paymenthandler.New(paymentController)
 
 	// Default Routes
 	r.GET("/ping", ping)

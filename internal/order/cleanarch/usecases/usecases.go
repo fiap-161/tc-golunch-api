@@ -5,34 +5,31 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/dto"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/entity/enum"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/gateway"
-	paymentuc "github.com/fiap-161/tech-challenge-fiap161/internal/payment/cleanarch/usecases"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/order/cleanarch/ports"
 	productentity "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/entity"
-	productuc "github.com/fiap-161/tech-challenge-fiap161/internal/product/cleanarch/usecases"
 	productorderentity "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/entity"
-	productorderuc "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/cleanarch/usecases"
 	apperror "github.com/fiap-161/tech-challenge-fiap161/internal/shared/errors"
 )
 
 type UseCases struct {
 	orderGateway        *gateway.Gateway
-	productUseCase      productuc.UseCases
-	productOrderUseCase productorderuc.UseCases
-	paymentUseCase      *paymentuc.UseCases
+	productService      ports.ProductService
+	productOrderService ports.ProductOrderService
+	paymentService      ports.PaymentService
 }
 
 func Build(
 	orderGateway *gateway.Gateway,
-	productUseCase productuc.UseCases,
-	productOrderUseCase productorderuc.UseCases,
-	paymentUseCase paymentuc.UseCases,
+	productService ports.ProductService,
+	productOrderService ports.ProductOrderService,
+	paymentService ports.PaymentService,
 ) *UseCases {
 	return &UseCases{
 		orderGateway:        orderGateway,
-		productUseCase:      productUseCase,
-		productOrderUseCase: productOrderUseCase,
-		paymentUseCase:      &paymentUseCase,
+		productService:      productService,
+		productOrderService: productOrderService,
+		paymentService:      paymentService,
 	}
 }
 
@@ -42,7 +39,7 @@ func (u *UseCases) CreateCompleteOrder(ctx context.Context, orderDTO dto.CreateO
 		productIds = append(productIds, item.ProductID)
 	}
 
-	products, findErr := u.productUseCase.FindByIDs(ctx, productIds)
+	products, findErr := u.productService.FindByIDs(ctx, productIds)
 	if findErr != nil {
 		return "", findErr
 	}
@@ -59,12 +56,12 @@ func (u *UseCases) CreateCompleteOrder(ctx context.Context, orderDTO dto.CreateO
 	}
 
 	productOrders, _ := generateProductOrderFromOrderAndProducts(createdOrder.ID, orderDTO.Products, products)
-	_, createBulkErr := u.productOrderUseCase.CreateBulk(ctx, productOrders)
+	_, createBulkErr := u.productOrderService.CreateBulk(ctx, productOrders)
 	if createBulkErr != nil {
 		return "", createBulkErr
 	}
 
-	payment, paymentErr := u.paymentUseCase.CreateByOrderID(ctx, createdOrder.ID)
+	payment, paymentErr := u.paymentService.CreateByOrderID(ctx, createdOrder.ID)
 	if paymentErr != nil {
 		return "", paymentErr
 	}
@@ -74,14 +71,15 @@ func (u *UseCases) CreateCompleteOrder(ctx context.Context, orderDTO dto.CreateO
 
 // todo verify if we can move this function to other package
 func generateOrderByProducts(orderDTO dto.CreateOrderDTO, products []productentity.Product) entity.Order {
-	totalPrice, preparingTime := getOrderInfoFromProducts(products, orderDTO)
-
-	return entity.Order{
-		CustomerID:    orderDTO.CustomerID,
-		Status:        enum.OrderStatusAwaitingPayment,
-		Price:         totalPrice,
-		PreparingTime: preparingTime,
+	orderProductInfo := make([]entity.OrderProductInfo, len(orderDTO.Products))
+	for i, product := range orderDTO.Products {
+		orderProductInfo[i] = entity.OrderProductInfo{
+			ProductID: product.ProductID,
+			Quantity:  product.Quantity,
+		}
 	}
+
+	return entity.Order{}.FromDTO(orderDTO.CustomerID, orderProductInfo, products)
 }
 
 func getOrderInfoFromProducts(products []productentity.Product, orderDTO dto.CreateOrderDTO) (float64, uint) {
