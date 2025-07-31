@@ -8,4 +8,4 @@ type LoginRequestDTO struct {
 
 type TokenResponseDTO struct {
 	Token string `json:"token"`
-} 
+}

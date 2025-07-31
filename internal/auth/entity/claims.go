@@ -7,4 +7,4 @@ type CustomClaims struct {
 	UserID   string         `json:"user_id"`
 	UserType string         `json:"user_type"`
 	Custom   map[string]any `json:"custom"`
-} 
+}

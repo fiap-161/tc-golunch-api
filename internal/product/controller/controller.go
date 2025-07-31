@@ -13,46 +13,48 @@ import (
 	"github.com/fiap-161/tech-challenge-fiap161/internal/product/usecases"
 )
 
+// controller (DTOS)
+
 // INFO: controllers Criam gateways e requisitam usecases
 type Controller struct {
-	ProductDatasource datasource.DataSource
+	productDatasource datasource.DataSource
 }
 
 func Build(productDataSource datasource.DataSource) *Controller {
 	return &Controller{
-		ProductDatasource: productDataSource}
+		productDatasource: productDataSource,
+	}
 }
 
 func (c *Controller) Create(ctx context.Context, productDTO dto.ProductRequestDTO) (dto.ProductResponseDTO, error) {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	presenter := presenter.Build()
 
 	var product entity.Product
 	product = dto.FromRequestDTO(productDTO)
-	product, err := useCase.CreateProduct(ctx, product)
-
-	if err != nil {
-		return dto.ProductResponseDTO{}, err
+	createdProduct, createErr := useCase.CreateProduct(ctx, product)
+	if createErr != nil {
+		return dto.ProductResponseDTO{}, createErr
 	}
 
-	return presenter.FromEntityToResponseDTO(product), nil
+	return presenter.FromEntityToResponseDTO(createdProduct), nil
 }
 
 func (c *Controller) ListCategories(ctx context.Context) []enum.Category {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	return useCase.ListCategories(ctx)
 }
 
 func (c *Controller) UploadImage(ctx context.Context, fileHeader *multipart.FileHeader) (string, error) {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	return useCase.UploadImage(ctx, fileHeader)
 }
 
 func (c *Controller) GetAllByCategory(ctx context.Context, category string) (dto.ProductListResponseDTO, error) {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	presenter := presenter.Build()
 
@@ -66,13 +68,12 @@ func (c *Controller) GetAllByCategory(ctx context.Context, category string) (dto
 }
 
 func (c *Controller) Update(ctx context.Context, productId string, productDTO dto.ProductRequestUpdateDTO) (dto.ProductResponseDTO, error) {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	presenter := presenter.Build()
 
 	product := dto.FromUpdateDTO(productDTO)
 	result, err := useCase.Update(ctx, productId, product)
-
 	if err != nil {
 		return dto.ProductResponseDTO{}, err
 	}
@@ -81,12 +82,11 @@ func (c *Controller) Update(ctx context.Context, productId string, productDTO dt
 }
 
 func (c *Controller) FindByID(ctx context.Context, productId string) (dto.ProductResponseDTO, error) {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	presenter := presenter.Build()
 
 	result, err := useCase.FindByID(ctx, productId)
-
 	if err != nil {
 		return dto.ProductResponseDTO{}, err
 	}
@@ -95,11 +95,10 @@ func (c *Controller) FindByID(ctx context.Context, productId string) (dto.Produc
 }
 
 func (c *Controller) Delete(ctx context.Context, productId string) error {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 
 	err := useCase.Delete(ctx, productId)
-
 	if err != nil {
 		return err
 	}
@@ -108,12 +107,11 @@ func (c *Controller) Delete(ctx context.Context, productId string) error {
 }
 
 func (c *Controller) FindByIDs(ctx context.Context, productIdList []string) ([]dto.ProductResponseDTO, error) {
-	productGateway := gateway.Build(c.ProductDatasource)
+	productGateway := gateway.Build(c.productDatasource)
 	useCase := usecases.Build(*productGateway)
 	presenter := presenter.Build()
 
 	result, err := useCase.FindByIDs(ctx, productIdList)
-
 	if err != nil {
 		return []dto.ProductResponseDTO{}, err
 	}

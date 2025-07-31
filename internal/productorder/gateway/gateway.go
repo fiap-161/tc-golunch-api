@@ -10,18 +10,18 @@ import (
 )
 
 type Gateway struct {
-	Datasource datasource.DataSource
+	datasource datasource.DataSource
 }
 
 func Build(datasource datasource.DataSource) *Gateway {
 	return &Gateway{
-		Datasource: datasource,
+		datasource: datasource,
 	}
 }
 
 func (g *Gateway) CreateBulk(c context.Context, productOrders []entity.ProductOrder) (int, error) {
 	var listProductOrderDAO = dto.ToListProductOrderDAO(productOrders)
-	length, err := g.Datasource.CreateBulk(c, listProductOrderDAO)
+	length, err := g.datasource.CreateBulk(c, listProductOrderDAO)
 
 	if err != nil {
 		return 0, &apperror.InternalError{Msg: err.Error()}
@@ -31,7 +31,7 @@ func (g *Gateway) CreateBulk(c context.Context, productOrders []entity.ProductOr
 }
 
 func (g *Gateway) FindByOrderID(c context.Context, orderId string) ([]entity.ProductOrder, error) {
-	listProductOrderFoundDAO, err := g.Datasource.FindByOrderID(c, orderId)
+	listProductOrderFoundDAO, err := g.datasource.FindByOrderID(c, orderId)
 	productOrder := dto.ToListProductOrder(listProductOrderFoundDAO)
 
 	if err != nil {

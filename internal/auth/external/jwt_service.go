@@ -44,7 +44,6 @@ func (s *JWTService) ValidateToken(tokenString string) (*entity.CustomClaims, er
 	token, err := jwt.ParseWithClaims(tokenString, &entity.CustomClaims{}, func(token *jwt.Token) (any, error) {
 		return []byte(s.secretKey), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}

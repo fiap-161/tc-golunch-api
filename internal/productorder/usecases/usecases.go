@@ -10,31 +10,32 @@ import (
 )
 
 type UseCases struct {
-	ProductOrderGateway gateway.Gateway
+	productOrderGateway gateway.Gateway
 }
 
-func Build(productGateway gateway.Gateway) *UseCases {
-	return &UseCases{ProductOrderGateway: productGateway}
+func Build(productOrderGateway gateway.Gateway) *UseCases {
+	return &UseCases{
+		productOrderGateway: productOrderGateway,
+	}
 }
 
 func (u *UseCases) CreateBulk(ctx context.Context, productOrders []entity.ProductOrder) (int, error) {
-
 	for i, po := range productOrders {
 		if po.ProductID == "" {
-			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: ProductID não pode ser vazio", i)}
+			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: productID should not be empty", i)}
 		}
 		if po.OrderID == "" {
-			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: OrderID não pode ser vazio", i)}
+			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: orderID should not be empty", i)}
 		}
 		if po.Quantity <= 0 {
-			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: Quantity deve ser maior que zero", i)}
+			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: quantity has to be more than zero", i)}
 		}
 		if po.UnitPrice < 0 {
-			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: UnitPrice não pode ser negativo", i)}
+			return 0, &apperror.ValidationError{Msg: fmt.Sprintf("productOrder[%d]: unitPrice cannot be negative", i)}
 		}
 	}
 
-	length, err := u.ProductOrderGateway.CreateBulk(ctx, productOrders)
+	length, err := u.productOrderGateway.CreateBulk(ctx, productOrders)
 	if err != nil {
 		return 0, err
 	}
@@ -42,9 +43,8 @@ func (u *UseCases) CreateBulk(ctx context.Context, productOrders []entity.Produc
 	return length, nil
 }
 
-func (u *UseCases) FindByOrderID(ctx context.Context, orderId string) ([]entity.ProductOrder, error) {
-
-	productOrderFound, err := u.ProductOrderGateway.FindByOrderID(ctx, orderId)
+func (u *UseCases) FindByOrderID(ctx context.Context, orderID string) ([]entity.ProductOrder, error) {
+	productOrderFound, err := u.productOrderGateway.FindByOrderID(ctx, orderID)
 	if err != nil {
 		return []entity.ProductOrder{}, err
 	}

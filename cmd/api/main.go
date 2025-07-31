@@ -5,13 +5,6 @@ import (
 	"os"
 	"time"
 
-	orderpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivens/postgre"
-	orderrest "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/adapters/drivers/rest"
-	order "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/core/model"
-	orderservice "github.com/fiap-161/tech-challenge-fiap161/internal/order/hexagonal/service"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/external"
-
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
@@ -19,36 +12,44 @@ import (
 
 	"github.com/fiap-161/tech-challenge-fiap161/database"
 	_ "github.com/fiap-161/tech-challenge-fiap161/docs"
-
 	admincontroller "github.com/fiap-161/tech-challenge-fiap161/internal/admin/controller"
 	adminmodel "github.com/fiap-161/tech-challenge-fiap161/internal/admin/dto"
 	admindatasource "github.com/fiap-161/tech-challenge-fiap161/internal/admin/external/datasource"
 	adminhandler "github.com/fiap-161/tech-challenge-fiap161/internal/admin/handler"
-
+	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/external"
 	customercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/customer/controller"
 	customermodel "github.com/fiap-161/tech-challenge-fiap161/internal/customer/dto"
 	customerdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/customer/external/datasource"
 	customerhandler "github.com/fiap-161/tech-challenge-fiap161/internal/customer/handler"
-
+	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
+	ordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/order/controller"
+	ordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/order/dto"
+	orderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/order/external/datasource"
+	ordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/order/gateway"
+	orderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/order/gateway/services"
+	orderhandler "github.com/fiap-161/tech-challenge-fiap161/internal/order/handler"
+	orderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/order/usecases"
+	paymentcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/payment/controllers"
+	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/dto"
+	paymentdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/payment/external/datasource"
+	paymentgateway "github.com/fiap-161/tech-challenge-fiap161/internal/payment/gateway"
+	paymentservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/payment/gateway/services"
+	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/handlers"
+	paymentusecases "github.com/fiap-161/tech-challenge-fiap161/internal/payment/usecases"
 	productcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/product/controller"
 	productmodel "github.com/fiap-161/tech-challenge-fiap161/internal/product/dto"
 	productdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/product/external/datasource"
+	productgateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway"
+	productservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/product/gateway/services"
 	producthandler "github.com/fiap-161/tech-challenge-fiap161/internal/product/handler"
-
-	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/controller"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/http/middleware"
-	paymentpostgre "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivens/postgre"
-	paymenthandler "github.com/fiap-161/tech-challenge-fiap161/internal/payment/adapters/drivers/rest"
-	paymentmodel "github.com/fiap-161/tech-challenge-fiap161/internal/payment/core/model"
-	paymentservice "github.com/fiap-161/tech-challenge-fiap161/internal/payment/service"
-
-	productordercontroller "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/controller"
+	productusecases "github.com/fiap-161/tech-challenge-fiap161/internal/product/usecases"
 	productordermodel "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/dto"
 	productorderdatasource "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/external/datasource"
-
-	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/hexagonal/adapters/mercadopago" // TODO remover quando migrar payment para Clean Architecture
-	// qrCodeProvider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/cleanarch/external" 	// TODO descomentar quando migrar payment para Clean Architecture
+	productordergateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway"
+	productorderservicegateway "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/gateway/services"
+	productorderusecases "github.com/fiap-161/tech-challenge-fiap161/internal/productorder/usecases"
+	qrcodeprovider "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/gateways"
 )
 
 // @title           GoLunch
@@ -76,65 +77,78 @@ func main() {
 		&customermodel.CustomerDAO{},
 		&adminmodel.AdminDAO{},
 		&productmodel.ProductDAO{},
-		&order.Order{},
+		&ordermodel.OrderDAO{},
 		&productordermodel.ProductOrderDAO{},
-		&paymentmodel.Payment{},
+		&paymentmodel.PaymentDAO{},
 	); err != nil {
 		log.Fatalf("Erro ao migrar o banco: %v", err)
 	}
 
-	// servir arquivos estáticos - imagens
+	// Serve static files
 	uploadDir := os.Getenv("UPLOAD_DIR")
 
 	// Jwt service for generate and validate tokens (CLEANARCH)
 	jwtGateway := external.NewJWTService(os.Getenv("SECRET_KEY"), 24*time.Hour)
 	authController := authcontroller.New(jwtGateway)
 
-	// CLEAN ARCH - CUSTOMER
+	// Customer
 	customerDatasource := customerdatasource.New(db)
 	customerController := customercontroller.Build(customerDatasource, authController)
 	customerHandler := customerhandler.New(customerController)
 
-	// CLEAN ARCH - ADMIN
+	// Product
+	productDataSource := productdatasource.New(db)
+	productController := productcontroller.Build(productDataSource)
+	productHandler := producthandler.New(productController)
+
+	// Admin
 	adminDatasource := admindatasource.New(db)
 	adminController := admincontroller.Build(adminDatasource, authController)
 	adminHandler := adminhandler.New(adminController)
 
-	// CLEAN ARCH - Product
-	productDataSource := productdatasource.New(db)
-	productController := productcontroller.Build(productDataSource)
-	productHandlerCleanArch := producthandler.New(productController)
-
-	// CLEAN ARCH ProductOrder Controller
+	// Product Order
 	productOrderDataSource := productorderdatasource.New(db)
-	productOrderController := productordercontroller.Build(productOrderDataSource)
-
-	// QR Code Client
-	qrCodeClient := mercadopago.New() // TODO remover quando migrar payment para Clean Architecture
-	// qrCodeClient := qrCodeProvider.New() // TODO: descomentar quando migrar payment para Clean arch
-
-	// Order Repository
-	orderRepository := orderpostgre.New(db)
+	productOrderGateway := productordergateway.Build(productOrderDataSource)
+	productOrderUseCase := productorderusecases.Build(*productOrderGateway)
 
 	// Payment
-	paymentRepository := paymentpostgre.New(db)
-	paymentService := paymentservice.New(
-		qrCodeClient,
-		orderRepository,
-		paymentRepository,
-		*productOrderController,
-		*productController,
-	)
-	paymentHandler := paymenthandler.New(paymentService)
+	paymentDataSource := paymentdatasource.New(db)
+	paymentGateway := paymentgateway.Build(paymentDataSource)
 
-	// Order Service
-	orderService := orderservice.New(
-		orderRepository,
-		*productController,
-		*productOrderController,
-		paymentService,
-	)
-	orderHandler := orderrest.New(orderService)
+	// QR Code Client
+	qrCodeClient := qrcodeprovider.New()
+
+	// Order Data Source and Gateway
+	orderDataSource := orderdatasource.New(db)
+	orderGateway := ordergateway.Build(orderDataSource)
+
+	// Common Gateways
+	productGateway := productgateway.Build(productDataSource)
+	productUseCase := productusecases.Build(*productGateway)
+
+	productServiceGateway := productservicegateway.NewProductServiceGateway(productUseCase)
+	productOrderServiceGatewayForOrder, productOrderServiceGatewayForPayment := productorderservicegateway.NewProductOrderServiceGateway(productOrderUseCase)
+
+	// Creating payment use case without orderService (to avoid circular dependency)
+	paymentUseCaseWithoutOrder := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceGateway, productOrderServiceGatewayForPayment, nil)
+	paymentServiceGateway := paymentservicegateway.NewPaymentServiceGateway(paymentUseCaseWithoutOrder)
+
+	// Creating orderUseCase with productService and productOrderService (to avoid circular dependency)
+	orderUseCase := orderusecases.Build(orderGateway, productServiceGateway, productOrderServiceGatewayForOrder, paymentServiceGateway)
+
+	// Creating orderServiceGateway with orderUseCase
+	orderServiceGateway := orderservicegateway.NewOrderServiceGateway(orderUseCase)
+
+	// Creating payment use case with orderServiceGateway
+	paymentUseCase := paymentusecases.Build(paymentGateway, qrCodeClient, productServiceGateway, productOrderServiceGatewayForPayment, orderServiceGateway)
+
+	// Order Controller and Handler
+	orderController := ordercontroller.Build(orderUseCase)
+	orderHandler := orderhandler.New(orderController)
+
+	// Payment
+	paymentController := paymentcontroller.Build(paymentUseCase)
+	paymentHandler := paymenthandler.New(paymentController)
 
 	// Default Routes
 	r.GET("/ping", ping)
@@ -157,8 +171,8 @@ func main() {
 
 	// Routes for regular authenticated users
 	// Product
-	authenticated.GET("/product/categories", productHandlerCleanArch.ListCategories)
-	authenticated.GET("/product", productHandlerCleanArch.GetAllByCategory)
+	authenticated.GET("/product/categories", productHandler.ListCategories)
+	authenticated.GET("/product", productHandler.GetAllByCategory)
 
 	// Order
 	authenticated.POST("/order", orderHandler.Create)
@@ -169,10 +183,10 @@ func main() {
 	// Group for admin users inside authenticated group
 	adminRoutes := authenticated.Group("/product")
 	adminRoutes.Use(middleware.AdminOnly())
-	adminRoutes.POST("/image/upload", productHandlerCleanArch.UploadImage)
-	adminRoutes.POST("/", productHandlerCleanArch.Create)
-	adminRoutes.PUT("/:id", productHandlerCleanArch.Update)
-	adminRoutes.DELETE("/:id", productHandlerCleanArch.Delete)
+	adminRoutes.POST("/image/upload", productHandler.UploadImage)
+	adminRoutes.POST("/", productHandler.Create)
+	adminRoutes.PUT("/:id", productHandler.Update)
+	adminRoutes.DELETE("/:id", productHandler.Delete)
 
 	r.Run(":8080")
 }
