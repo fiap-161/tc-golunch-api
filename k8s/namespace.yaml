@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tech-challenge-fiap161
+  labels:
+    name: tech-challenge-fiap161
+    app: golunch

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: golunch-config
+  namespace: tech-challenge-fiap161
+data:
+  default.yml: |
+    app:
+      providers:
+        mercadopago:
+          host: https://api.mercadopago.com
+          qrcode:
+            path: /instore/orders/qr/seller/collectors/{user_id}/pos/{external_pos_id}/qrs
+  DATABASE_HOST: "postgres-service"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "dbname"
+  DATABASE_USER: "user"
+  UPLOAD_DIR: "/uploads"
+  GIN_MODE: "release"

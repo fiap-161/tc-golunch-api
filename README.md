@@ -62,8 +62,100 @@ A API estará disponível em `http://localhost:8080`.
 docker-compose down -v --remove-orphans
 ```
 
+## ☸️ Inicialização do Projeto no Kubernetes (Minikube)
+
+### Pré-requisitos
+
+- Minikube instalado
+- kubectl instalado e configurado
+- Docker instalado
+
+### Passos
+
+1. **Iniciar o minikube:**
+```bash
+minikube start
+```
+
+2. **Verificar se o cluster está funcionando:**
+```bash
+kubectl cluster-info
+```
+
+3. **Construir e carregar a imagem Docker no minikube:**
+```bash
+# Configurar docker para usar o registry do minikube
+eval $(minikube docker-env)
+
+# Construir a imagem
+docker build -t golunch-app:latest .
+```
+
+4. **Configurar secrets (IMPORTANTE):**
+```bash
+# Editar o arquivo k8s/secrets.yaml com suas credenciais
+# Encode os valores em base64:
+echo -n "sua-secret-key-jwt" | base64
+echo -n "sua-senha-database" | base64
+echo -n "seu-token-mercadopago" | base64
+```
+
+5. **Aplicar os recursos do Kubernetes:**
+```bash
+# IMPORTANTE: Aplicar em ordem específica para evitar erros
+
+# 1. Primeiro criar o namespace
+kubectl apply -f k8s/namespace.yaml
+
+# 2. Aguardar o namespace estar pronto
+kubectl wait --for=condition=Active namespace/tech-challenge-fiap161 --timeout=60s
+
+# 3. Aplicar configurações
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secrets.yaml
+
+# 4. Aplicar deployments e services
+kubectl apply -f k8s/postgres-deployment.yaml
+kubectl apply -f k8s/postgres-service.yaml
+kubectl apply -f k8s/app-deployment.yaml
+kubectl apply -f k8s/app-service.yaml
+
+# 5. Aplicar HPA por último
+kubectl apply -f k8s/hpa.yaml
+
+# ALTERNATIVA: Use kustomize (se disponível)
+kubectl apply -k k8s/
+```
+
+6. **Verificar se os pods estão rodando:**
+```bash
+kubectl get pods -n tech-challenge-fiap161
+```
+
+7. **Acessar a aplicação:**
+```bash
+# Obter URL de acesso
+minikube service golunch-app-service -n tech-challenge-fiap161 --url
+```
+
+### Troubleshoot Kubernetes
+
+```bash
+# Ver logs da aplicação
+kubectl logs -f deployment/golunch-app-deployment -n tech-challenge-fiap161
+
+# Ver logs do banco de dados
+kubectl logs -f deployment/postgres-deployment -n tech-challenge-fiap161
+
+# Verificar status do HPA
+kubectl get hpa -n tech-challenge-fiap161
+
+# Acessar o banco diretamente
+kubectl exec -it deployment/postgres-deployment -n tech-challenge-fiap161 -- psql -U golunch_user -d golunch
+```
+
 ## 📌 Swagger
-O link para a documentação do swagger está aqui: http://localhost:8080/swagger/index.html
+O link para a documentação do swagger está aqui: http://localhost:8080/swagger/index.html (Docker) ou utilize a URL fornecida pelo minikube service
 
 ## 🧠 Modelagem do Sistema
 
@@ -105,6 +197,50 @@ O link para a documentação do swagger está aqui: http://localhost:8080/swagge
 ├── .env.example            # Exemplo de variáveis de ambiente
 ├── docker-compose.yml      # Orquestração com Docker
 └──  Dockerfile              # Docker build da aplicação
+```
+
+## 🛑 Como Parar Todos os Processos
+
+### Para Minikube + Kubernetes
+
+1. **Parar aplicação específica (recomendado):**
+```bash
+# Parar todos os recursos do namespace
+kubectl delete all --all -n tech-challenge-fiap161
+
+# Ou parar usando os arquivos de configuração
+kubectl delete -f k8s/
+# Ou com kustomize
+kubectl delete -k k8s/
+```
+
+2. **Parar minikube completamente:**
+```bash
+# Parar o cluster minikube
+minikube stop
+
+# Deletar completamente o cluster (remove tudo)
+minikube delete
+```
+
+### Para Docker Compose (se também estiver rodando)
+
+```bash
+# Parar e remover containers
+docker-compose down -v --remove-orphans
+```
+
+### Verificar se tudo parou
+
+```bash
+# Verificar pods (deve estar vazio)
+kubectl get pods -n tech-challenge-fiap161
+
+# Verificar status do minikube
+minikube status
+
+# Verificar containers docker
+docker ps
 ```
 
 ## Testes

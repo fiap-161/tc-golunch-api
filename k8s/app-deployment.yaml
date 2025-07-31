@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golunch-app-deployment
+  namespace: tech-challenge-fiap161
+  labels:
+    app: golunch-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: golunch-app
+  template:
+    metadata:
+      labels:
+        app: golunch-app
+    spec:
+      containers:
+      - name: golunch-app
+        image: golunch-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: golunch-secrets
+              key: SECRET_KEY
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: golunch-config
+              key: DATABASE_HOST
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: golunch-config
+              key: DATABASE_PORT
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: golunch-config
+              key: DATABASE_NAME
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: golunch-config
+              key: DATABASE_USER
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: golunch-secrets
+              key: DATABASE_PASSWORD
+        - name: UPLOAD_DIR
+          valueFrom:
+            configMapKeyRef:
+              name: golunch-config
+              key: UPLOAD_DIR
+        - name: GIN_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: golunch-config
+              key: GIN_MODE
+        - name: MERCADOPAGO_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: golunch-secrets
+              key: MERCADOPAGO_ACCESS_TOKEN
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config-volume
+          mountPath: /conf/environment
+        - name: uploads-volume
+          mountPath: /uploads
+      volumes:
+      - name: config-volume
+        configMap:
+          name: golunch-config
+          items:
+          - key: default.yml
+            path: default.yml
+      - name: uploads-volume
+        emptyDir: {}
