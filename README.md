@@ -36,12 +36,14 @@ minikube start
 
 2. **Gere o Secret a partir do template**
 
-Utilize o comando abaixo para criar o `secret.yaml` com os dados necessários (substitua pelos seus dados reais, se necessário):
+Entre na pasta com os arquivos manifesto `cd k8s` e utilize o comando abaixo para criar o `secret.yaml` com os dados necessários.
+Por boas práticas, o secret.yaml não foi versionado.
 
 IMPORTANTE
-- Altere a variável WEBHOOK_URL para um link novo que deverá gerar aqui: https://webhook.site
-- Também altere as variáveis do Mercado Pago para as descritas no documento PDF que foi enviado na entrega.
+- Altere a variável WEBHOOK_URL em `k8s/configmap.yaml` para um link novo que deverá gerar aqui: https://webhook.site
+- As variáveis do Mercado Pago já estão no comando abaixo.
 - Para gerar o QRCode (explicado no vídeo) pode-se utilizar esse site: https://www.qr-code-generator.com/
+
 
 ```bash
 kubectl create secret generic app-secrets \
