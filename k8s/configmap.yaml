@@ -5,4 +5,4 @@ metadata:
 data:
   UPLOAD_DIR: /app/uploads
   PUBLIC_URL: http://localhost:8080/
-  WEBHOOK_URL: https://webhook.site/bb7b5226-6a40-4804-a292-d9b86a28ad83
+  WEBHOOK_URL: https://webhook.site/9ec079cb-8b5c-4d3e-ad1f-4a33ab23fa31
