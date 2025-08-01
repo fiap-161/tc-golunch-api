@@ -1,19 +1,20 @@
 package middleware
 
 import (
-	authController "github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/controller"
-	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/cleanarch/external"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	authcontroller "github.com/fiap-161/tech-challenge-fiap161/internal/auth/controller"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/auth/external"
 
 	"github.com/gin-gonic/gin"
 )
 
 func TestAuthMiddleware(t *testing.T) {
 	jwtGateway := external.NewJWTService("secret", time.Minute*5)
-	controller := authController.New(jwtGateway)
+	controller := authcontroller.New(jwtGateway)
 	validToken, err := controller.GenerateToken("user123", "admin", nil)
 	if err != nil {
 		t.Fatalf("failed to generate token: %v", err)
