@@ -120,7 +120,8 @@ func (h *Handler) Update(c *gin.Context) {
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/ [get]
 func (h *Handler) GetAll(c *gin.Context) {
-	orders, err := h.controller.GetAll(context.Background())
+	id := c.Query("id")
+	orders, err := h.controller.GetAll(context.Background(), id)
 	if err != nil {
 		helper.HandleError(c, err)
 		return

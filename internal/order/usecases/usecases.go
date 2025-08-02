@@ -108,7 +108,14 @@ func (u *UseCases) CreateOrder(ctx context.Context, order entity.Order) (entity.
 	return u.orderGateway.Create(ctx, order)
 }
 
-func (u *UseCases) GetAll(ctx context.Context) ([]entity.Order, error) {
+func (u *UseCases) GetAllOrById(ctx context.Context, id string) ([]entity.Order, error) {
+	if id != "" {
+		order, err := u.orderGateway.FindByID(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return []entity.Order{order}, nil
+	}
 	return u.orderGateway.GetAll(ctx)
 }
 
