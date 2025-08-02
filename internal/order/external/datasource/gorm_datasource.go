@@ -17,6 +17,7 @@ type DB interface {
 	Model(value any) *gorm.DB
 	Updates(values any) *gorm.DB
 	Save(value any) *gorm.DB
+	Order(value any) *gorm.DB
 }
 
 // GormDataSource implements DataSource interface using GORM
@@ -61,10 +62,21 @@ func (g *GormDataSource) FindByID(ctx context.Context, id string) (dto.OrderDAO,
 	return order, nil
 }
 
-func (g *GormDataSource) GetPanel(ctx context.Context, status []string) ([]dto.OrderDAO, error) {
+func (g *GormDataSource) GetPanel(ctx context.Context) ([]dto.OrderDAO, error) {
 	var orders []dto.OrderDAO
 
-	if err := g.db.Where("status IN ?", status).Find(&orders).Error; err != nil {
+	if err := g.db.
+		Where("status != ?", "completed").
+		Order(`
+			CASE 
+				WHEN status = 'ready' THEN 1
+				WHEN status = 'in_preparation' THEN 2
+				WHEN status = 'received' THEN 3
+				ELSE 4
+			END,
+			created_at ASC
+		`).
+		Find(&orders).Error; err != nil {
 		return nil, err
 	}
 

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"errors"
+	"time"
 
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity/enum"
@@ -27,9 +28,10 @@ type OrderPanelDTO struct {
 }
 
 type OrderPanelItemDTO struct {
-	OrderNumber   string `json:"order_number"`
-	Status        string `json:"status"`
-	PreparingTime uint   `json:"preparing_time"`
+	OrderNumber   string    `json:"order_number"`
+	Status        string    `json:"status"`
+	PreparingTime uint      `json:"preparing_time"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 type OrderDAO struct {

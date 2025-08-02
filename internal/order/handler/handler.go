@@ -120,7 +120,8 @@ func (h *Handler) Update(c *gin.Context) {
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/ [get]
 func (h *Handler) GetAll(c *gin.Context) {
-	orders, err := h.controller.GetAll(context.Background())
+	id := c.Query("id")
+	orders, err := h.controller.GetAll(context.Background(), id)
 	if err != nil {
 		helper.HandleError(c, err)
 		return
@@ -142,7 +143,7 @@ func (h *Handler) GetAll(c *gin.Context) {
 // @Failure      401  {object}  errors.ErrorDTO
 // @Router       /order/panel [get]
 func (h *Handler) GetPanel(c *gin.Context) {
-	orders, err := h.controller.GetPanel(context.Background(), nil)
+	orders, err := h.controller.GetPanel(context.Background())
 	if err != nil {
 		helper.HandleError(c, err)
 		return
@@ -153,6 +154,7 @@ func (h *Handler) GetPanel(c *gin.Context) {
 			OrderNumber:   order.Entity.ID[len(order.Entity.ID)-4:],
 			Status:        string(order.Status),
 			PreparingTime: order.PreparingTime,
+			CreatedAt:     order.CreatedAt,
 		})
 	}
 	c.JSON(http.StatusOK, panel)

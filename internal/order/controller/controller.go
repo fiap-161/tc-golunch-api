@@ -22,10 +22,10 @@ func (c *Controller) Create(ctx context.Context, orderDTO dto.CreateOrderDTO) (s
 	return c.orderUseCase.CreateCompleteOrder(ctx, orderDTO)
 }
 
-func (c *Controller) GetAll(ctx context.Context) ([]dto.OrderDAO, error) {
+func (c *Controller) GetAll(ctx context.Context, id string) ([]dto.OrderDAO, error) {
 	presenter := presenter.Build()
 
-	orders, err := c.orderUseCase.GetAll(ctx)
+	orders, err := c.orderUseCase.GetAllOrById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -33,10 +33,10 @@ func (c *Controller) GetAll(ctx context.Context) ([]dto.OrderDAO, error) {
 	return presenter.FromEntityListToDAOList(orders), nil
 }
 
-func (c *Controller) GetPanel(ctx context.Context, status []string) ([]dto.OrderDAO, error) {
+func (c *Controller) GetPanel(ctx context.Context) ([]dto.OrderDAO, error) {
 	presenter := presenter.Build()
 
-	orders, err := c.orderUseCase.GetPanel(ctx, status)
+	orders, err := c.orderUseCase.GetPanel(ctx)
 	if err != nil {
 		return nil, err
 	}
