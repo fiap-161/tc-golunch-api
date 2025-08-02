@@ -19,10 +19,6 @@ type AdminDAO struct {
 	Password string `json:"password"`
 }
 
-type TokenDTO struct {
-	TokenString string `json:"token"`
-}
-
 func ToAdminDAO(admin entity.Admin) AdminDAO {
 	return AdminDAO{
 		Entity: gormEntity.Entity{

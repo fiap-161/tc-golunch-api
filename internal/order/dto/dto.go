@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity"
+	orderentity "github.com/fiap-161/tech-challenge-fiap161/internal/order/entity"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/order/entity/enum"
-	coreentity "github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
+	"github.com/fiap-161/tech-challenge-fiap161/internal/shared/entity"
 )
 
 type CreateOrderDTO struct {
@@ -35,11 +35,15 @@ type OrderPanelItemDTO struct {
 }
 
 type OrderDAO struct {
-	coreentity.Entity
+	entity.Entity
 	CustomerID    string           `json:"customer_id" gorm:"index"`
 	Status        enum.OrderStatus `json:"status" gorm:"type:varchar(20)"`
 	Price         float64          `json:"price" gorm:"type:decimal(10,2)"`
 	PreparingTime uint             `json:"preparing_time" gorm:"type:integer"`
+}
+
+type OrderResponseListDTO struct {
+	Orders []OrderDAO `json:"orders"`
 }
 
 type ProductDTO struct {
@@ -68,7 +72,7 @@ func (c *CreateOrderDTO) Validate() error {
 	return nil
 }
 
-func ToOrderDAO(order entity.Order) OrderDAO {
+func ToOrderDAO(order orderentity.Order) OrderDAO {
 	return OrderDAO{
 		Entity:        order.Entity,
 		CustomerID:    order.CustomerID,
@@ -78,8 +82,8 @@ func ToOrderDAO(order entity.Order) OrderDAO {
 	}
 }
 
-func FromOrderDAO(dao OrderDAO) entity.Order {
-	return entity.Order{
+func FromOrderDAO(dao OrderDAO) orderentity.Order {
+	return orderentity.Order{
 		Entity:        dao.Entity,
 		CustomerID:    dao.CustomerID,
 		Status:        dao.Status,
@@ -88,15 +92,15 @@ func FromOrderDAO(dao OrderDAO) entity.Order {
 	}
 }
 
-func FromCreateOrderDTO(dto CreateOrderDTO) entity.Order {
-	return entity.Order{
+func FromCreateOrderDTO(dto CreateOrderDTO) orderentity.Order {
+	return orderentity.Order{
 		CustomerID: dto.CustomerID,
 		// Status, Price, PreparingTime podem ser definidos em outro lugar se necessário
 	}
 }
 
-func EntityListFromDAOList(daoList []OrderDAO) []entity.Order {
-	orders := make([]entity.Order, 0, len(daoList))
+func EntityListFromDAOList(daoList []OrderDAO) []orderentity.Order {
+	orders := make([]orderentity.Order, 0, len(daoList))
 	for _, dao := range daoList {
 		orders = append(orders, FromOrderDAO(dao))
 	}

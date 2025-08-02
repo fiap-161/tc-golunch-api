@@ -24,11 +24,11 @@ func New(adminController *controller.Controller) *Handler {
 // Register godoc
 // @Summary      Register Admin
 // @Description  Register a new admin user
-// @Tags         Admin Domain
+// @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.RegisterDTO  true  "Admin registration details"
-// @Success      201      {object}  map[string]interface{}
+// @Param        request  body      dto.AdminRequestDTO  true  "Admin registration details"
+// @Success      201      {object}  map[string]string     "Success message"
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
 // @Router       /admin/register [post]
@@ -60,7 +60,7 @@ func (h *Handler) Register(c *gin.Context) {
 // @Tags         Admin Domain
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.LoginDTO  true  "Admin login credentials"
+// @Param        request  body      dto.AdminRequestDTO  true  "Admin login credentials"
 // @Success      200      {object}  TokenDTO
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      401      {object}  errors.ErrorDTO
@@ -85,7 +85,11 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &dto.TokenDTO{
+	c.JSON(http.StatusOK, &TokenDTO{
 		TokenString: token,
 	})
+}
+
+type TokenDTO struct {
+	TokenString string `json:"token"`
 }

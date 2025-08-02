@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginDTO"
+                            "$ref": "#/definitions/dto.AdminRequestDTO"
                         }
                     }
                 ],
@@ -43,7 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_admin_adapters_drivers_rest.TokenDTO"
+                            "$ref": "#/definitions/handler.TokenDTO"
                         }
                     },
                     "400": {
@@ -77,7 +77,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin Domain"
+                    "Admin"
                 ],
                 "summary": "Register Admin",
                 "parameters": [
@@ -87,16 +87,18 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RegisterDTO"
+                            "$ref": "#/definitions/dto.AdminRequestDTO"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Success message",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": true
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "400": {
@@ -131,7 +133,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_customer_adapters_drivers_rest.TokenDTO"
+                            "$ref": "#/definitions/dto.TokenDTO"
                         }
                     },
                     "500": {
@@ -169,7 +171,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_customer_adapters_drivers_rest.TokenDTO"
+                            "$ref": "#/definitions/dto.TokenDTO"
                         }
                     },
                     "404": {
@@ -207,13 +209,13 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateCustomerDTO"
+                            "$ref": "#/definitions/dto.CustomerRequestDTO"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -241,7 +243,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get all orders",
+                "description": "Retrieve a list of all orders, optionally filtered by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -252,12 +254,19 @@ const docTemplate = `{
                     "Order Domain"
                 ],
                 "summary": "Get all orders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Optional order ID filter",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.OrderResponseListDTO"
                         }
                     },
                     "400": {
@@ -268,6 +277,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/errors.ErrorDTO"
                         }
@@ -762,7 +777,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CheckPaymentDTO"
+                            "$ref": "#/definitions/dto.CheckPaymentRequestDTO"
                         }
                     }
                 ],
@@ -787,7 +802,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.CheckPaymentDTO": {
+        "dto.AdminRequestDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CheckPaymentRequestDTO": {
             "type": "object",
             "required": [
                 "resource",
@@ -802,7 +832,21 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateCustomerDTO": {
+        "dto.CreateOrderDTO": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_order_dto.OrderProductInfo"
+                    }
+                }
+            }
+        },
+        "dto.CustomerRequestDTO": {
             "type": "object",
             "properties": {
                 "cpf": {
@@ -816,20 +860,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateOrderDTO": {
-            "type": "object",
-            "properties": {
-                "customer_id": {
-                    "type": "string"
-                },
-                "products": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.OrderProductInfo"
-                    }
-                }
-            }
-        },
         "dto.ImageURLDTO": {
             "type": "object",
             "properties": {
@@ -838,17 +868,28 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.LoginDTO": {
+        "dto.OrderDAO": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
-                "email": {
+                "created_at": {
                     "type": "string"
                 },
-                "password": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "preparing_time": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "$ref": "#/definitions/enum.OrderStatus"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -867,6 +908,9 @@ const docTemplate = `{
         "dto.OrderPanelItemDTO": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "order_number": {
                     "type": "string"
                 },
@@ -878,14 +922,14 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.OrderProductInfo": {
+        "dto.OrderResponseListDTO": {
             "type": "object",
             "properties": {
-                "product_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderDAO"
+                    }
                 }
             }
         },
@@ -983,17 +1027,10 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RegisterDTO": {
+        "dto.TokenDTO": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
+                "token": {
                     "type": "string"
                 }
             }
@@ -1024,6 +1061,23 @@ const docTemplate = `{
                 "Dessert"
             ]
         },
+        "enum.OrderStatus": {
+            "type": "string",
+            "enum": [
+                "awaiting_payment",
+                "received",
+                "in_preparation",
+                "ready",
+                "completed"
+            ],
+            "x-enum-varnames": [
+                "OrderStatusAwaitingPayment",
+                "OrderStatusReceived",
+                "OrderStatusInPreparation",
+                "OrderStatusReady",
+                "OrderStatusCompleted"
+            ]
+        },
         "errors.ErrorDTO": {
             "type": "object",
             "properties": {
@@ -1035,7 +1089,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_admin_adapters_drivers_rest.TokenDTO": {
+        "handler.TokenDTO": {
             "type": "object",
             "properties": {
                 "token": {
@@ -1043,11 +1097,14 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_customer_adapters_drivers_rest.TokenDTO": {
+        "internal_order_dto.OrderProductInfo": {
             "type": "object",
             "properties": {
-                "token": {
+                "product_id": {
                     "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },

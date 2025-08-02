@@ -108,16 +108,18 @@ func (h *Handler) Update(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-// GetAll Get All Orders godoc
+// GetAll godoc
 // @Summary      Get all orders
-// @Description  Get all orders
+// @Description  Retrieve a list of all orders, optionally filtered by ID
 // @Tags         Order Domain
-// @Security 	 BearerAuth
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  map[string]any
+// @Param        id   query     string  false  "Optional order ID filter"
+// @Success      200  {object}  dto.OrderResponseListDTO
 // @Failure      400  {object}  errors.ErrorDTO
 // @Failure      401  {object}  errors.ErrorDTO
+// @Failure      500  {object}  errors.ErrorDTO
 // @Router       /order/ [get]
 func (h *Handler) GetAll(c *gin.Context) {
 	id := c.Query("id")
@@ -126,8 +128,8 @@ func (h *Handler) GetAll(c *gin.Context) {
 		helper.HandleError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"orders": orders,
+	c.JSON(http.StatusOK, dto.OrderResponseListDTO{
+		Orders: orders,
 	})
 }
 
