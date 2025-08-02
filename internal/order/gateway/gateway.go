@@ -36,8 +36,8 @@ func (g *Gateway) GetAll(ctx context.Context) ([]entity.Order, error) {
 	return dto.EntityListFromDAOList(ordersDAO), nil
 }
 
-func (g *Gateway) GetPanel(ctx context.Context, status []string) ([]entity.Order, error) {
-	ordersDAO, err := g.Datasource.GetPanel(ctx, status)
+func (g *Gateway) GetPanel(ctx context.Context) ([]entity.Order, error) {
+	ordersDAO, err := g.Datasource.GetPanel(ctx)
 	if err != nil {
 		return nil, &apperror.InternalError{Msg: err.Error()}
 	}

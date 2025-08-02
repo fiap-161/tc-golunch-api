@@ -119,8 +119,8 @@ func (u *UseCases) GetAllOrById(ctx context.Context, id string) ([]entity.Order,
 	return u.orderGateway.GetAll(ctx)
 }
 
-func (u *UseCases) GetPanel(ctx context.Context, status []string) ([]entity.Order, error) {
-	return u.orderGateway.GetPanel(ctx, status)
+func (u *UseCases) GetPanel(ctx context.Context) ([]entity.Order, error) {
+	return u.orderGateway.GetPanel(ctx)
 }
 
 func (u *UseCases) FindByID(ctx context.Context, id string) (entity.Order, error) {
