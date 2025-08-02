@@ -28,7 +28,7 @@ func New(customerController *controller.Controller) *Handler {
 // @Tags         Customer Domain
 // @Accept       json
 // @Produce      json
-// @Param        request  body      dto.CreateCustomerDTO  true  "Customer data"
+// @Param        request  body      dto.CustomerRequestDTO  true  "Customer data"
 // @Success      201      {object}  map[string]interface{}
 // @Failure      400      {object}  errors.ErrorDTO
 // @Failure      500      {object}  errors.ErrorDTO
