@@ -17,11 +17,11 @@ spec:
           image: lucasonofre/golunch:v1
           resources:
             requests:
-              cpu: "0.05" # use 100 for normal use case
-              memory: 20Mi # use 128 for normal use case
+              cpu: "0.2" # use 100m for normal usecases
+              memory: 70Mi # use 128Mi for normal usecases
             limits:
-              cpu: "0.05" # use 500 for normal use case
-              memory: 25Mi # use 256 for normal use case
+              cpu: "0.3" # use 500m for normal usecases
+              memory: 70Mi # use 256Mi for normal usecases
           envFrom:
             - configMapRef:
                 name: app-config
