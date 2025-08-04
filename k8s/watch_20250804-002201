@@ -1,0 +1,24 @@
+Every 2,0s: kubectl get hpa go-web-api-hpa                                                            MacBook-Pro-de-Lucas.local: 00:22:00
+                                                                                                                             in 0,083s (0)
+NAME             REFERENCE               TARGETS                          MINPODS   MAXPODS   REPLICAS   AGE                              
+go-web-api-hpa   Deployment/go-web-api   cpu: 10%/15%, memory: 112%/15%   1         10        10         114s                             
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          
+                                                                                                                                          

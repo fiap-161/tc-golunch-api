@@ -1,0 +1,56 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: go-web-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: go-web-api
+  template:
+    metadata:
+      labels:
+        app: go-web-api
+    spec:
+      containers:
+        - name: go-web-api
+          image: lucasonofre/golunch:v1
+          resources:
+            requests:
+              cpu: "0.05" # use 100 for normal use case
+              memory: 20Mi # use 128 for normal use case
+            limits:
+              cpu: "0.05" # use 500 for normal use case
+              memory: 25Mi # use 256 for normal use case
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+          volumeMounts: 
+            - name: uploads
+              mountPath: /app/uploads
+
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 3
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 1
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads-pvc
