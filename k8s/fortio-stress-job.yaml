@@ -16,6 +16,6 @@ spec:
             - "120s"
             - "-c"
             - "10"
-            - "http://go-web-api:8080/ping"
+            - "http://go-web-api-service:8080/ping"
       restartPolicy: Never
   backoffLimit: 4
