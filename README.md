@@ -130,12 +130,14 @@ kubectl apply -f app-uploads-pvc.yaml
 
 ```bash
 kubectl apply -f app-deployment.yaml
-kubectl apply -f app-service.yaml` 
+kubectl apply -f app-service.yaml
 ```
 
 ### 6.2 Verificar pods
 
-`kubectl get pods -l app=go-web-api`
+```bash
+kubectl get pods -l app=go-web-api
+```
 
 ## 7️⃣ Criar o HPA
 
@@ -172,7 +174,9 @@ watch kubectl top pods -l app=go-web-api`
 kubectl port-forward svc/go-web-api-service 8080:8080
 ```
 
-`curl http://localhost:8080/ping` 
+```bash
+curl http://localhost:8080/ping
+```
 
 ----------
 
@@ -180,4 +184,6 @@ kubectl port-forward svc/go-web-api-service 8080:8080
 
 Caso queira fazer a deleção do cluster, basta rodar o seguinte comando:
 
-`kind delete cluster --name meu-cluster`
+```bash
+kind delete cluster --name meu-cluster
+```
