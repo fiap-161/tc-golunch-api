@@ -13,7 +13,6 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 
 ## 🧰 Tecnologias Utilizadas
 
-  
 
 - [Go](https://golang.org/)
 
@@ -24,6 +23,10 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 - [Docker](https://www.docker.com/) – Containerização
 
 - [PostgreSQL](https://www.postgresql.org/) – Banco de dados relacional
+
+- [Kubernetes](https://kubernetes.io/pt-br/) - Orquestrador de containers
+
+- [Fortio](https://fortio.org/) - Stress test
   
 
 ## 🏛️ [Link Excalidraw - Arquitetura k8s + Fluxos funcionais](https://excalidraw.com/#room=19187e25c8f502969730,UYsX9MelEMWQAT8VN4Marg)
