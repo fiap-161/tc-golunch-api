@@ -189,7 +189,11 @@ Este projeto implementa os princípios da **Arquitetura Limpa** (Clean Architect
 
 │ ├── app-service.yaml
 
+│ └── app-uploads-pvc.yaml
+
 │ ├── configmap.yaml
+
+│ └── fortio-stress-job.yaml
 
 │ ├── hpa.yaml
 
