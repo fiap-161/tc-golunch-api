@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fortio-stress-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: fortio
+          image: fortio/fortio:latest
+          args:
+            - "load"
+            - "-qps"
+            - "80000"
+            - "-t"
+            - "60s"
+            - "-c"
+            - "100"
+            - "http://go-web-api-service:8080/ping"
+      restartPolicy: Never
+  backoffLimit: 4
