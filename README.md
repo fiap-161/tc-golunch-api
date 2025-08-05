@@ -32,12 +32,20 @@ API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquit
 
 ### Arquitetura Kubernetes
 
+<img width="805" height="765" alt="image" src="https://github.com/user-attachments/assets/d04c4f4c-a54f-4f0b-9fce-01235d12ad92" />
+
+
 ### Fluxo de criação de pedido
+
+<img width="1062" height="602" alt="image" src="https://github.com/user-attachments/assets/be42b3db-19d1-4939-a212-c48a230717de" />
 
 ### Fluxo de pagamento
 
+<img width="1151" height="402" alt="image" src="https://github.com/user-attachments/assets/0f0f6963-e28e-452c-9d75-83df268814e1" />
+
 ### Fluxo de atualização de pedido
-  
+
+<img width="643" height="384" alt="image" src="https://github.com/user-attachments/assets/bddefb7e-a2c0-4a9c-91c5-7e348997ac45" />
 
 ## Desenho da arquitetura
 
