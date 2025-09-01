@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  UPLOAD_DIR: "/app/uploads"
+  PUBLIC_URL: "https://api.golunch.me"
+  WEBHOOK_URL: "https://api.golunch.me/webhook"
