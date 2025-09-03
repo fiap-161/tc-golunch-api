@@ -1,5 +1,4 @@
 name: Go CI
-
 on:
   push:
     branches: [ "main" ]
@@ -8,7 +7,7 @@ on:
 
 jobs:
   tests:
-    name: Go CI
+    name: testes/cobertura
     runs-on: ubuntu-latest
 
     steps:
