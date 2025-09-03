@@ -1,4 +1,4 @@
-name: Testes e Cobertura
+name: Continuous Integration
 
 on:
   push:
