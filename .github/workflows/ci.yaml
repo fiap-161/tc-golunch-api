@@ -28,3 +28,15 @@ jobs:
 
       - name: Verificar cobertura
         run: go test -cover ./...
+
+      - name: Checar cobertura mínima
+        run: |
+          go tool cover -func=coverage.out | tee coverage.txt
+          total=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          echo "Cobertura total: $total%"
+          min=5.0
+          below=$(echo "$total < $min" | bc -l)
+          if [ $below -eq 1 ]; then
+            echo "❌ Cobertura abaixo do mínimo ($min%)"
+            exit 1
+          fi
