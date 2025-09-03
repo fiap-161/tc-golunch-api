@@ -49,7 +49,7 @@ func TestCheckPasswordHash(t *testing.T) {
 		hash     string
 		want     bool
 	}{
-		{"correct password", "correctpassword", validHash, false},
+		{"correct password", "correctpassword", validHash, true},
 		{"incorrect password", "wrongpassword", validHash, false},
 		{"empty password", "", validHash, false},
 		{"empty hash", "correctpassword", "", false},
