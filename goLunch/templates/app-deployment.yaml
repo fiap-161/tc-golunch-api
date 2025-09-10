@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: {{ include "goLunch.fullname" . }}
-          image: 509689628129.dkr.ecr.us-east-1.amazonaws.com/golunch:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             requests:
               cpu: 50m

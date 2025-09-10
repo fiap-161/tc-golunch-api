@@ -4,5 +4,5 @@ metadata:
   name: app-config
 data:
   UPLOAD_DIR: "/app/uploads"
-  PUBLIC_URL: "https://api.golunch.me"
-  WEBHOOK_URL: "https://api.golunch.me/webhook"
+  PUBLIC_URL: "{{ .Values.app.publicURL }}"
+  WEBHOOK_URL: "{{ .Values.app.webhookURL }}"
