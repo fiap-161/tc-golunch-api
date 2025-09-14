@@ -1,8 +1,8 @@
 name: Continuous Deployment
 
 on:
-  # push:
-  #   branches: ["master"]
+  push:
+    branches: ["master"]
   pull_request:
     branches: ["master"]
 
@@ -81,5 +81,5 @@ jobs:
           helm upgrade --install golunch-api-0.0.1 ./goLunch \
             --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
             --set image.tag=${IMAGE_TAG} \
-            --set app.publicURL="http://${SERVICE_URL}:8080"
+            --set app.publicURL="http://${SERVICE_URL}:8080" \
             --set app.webhookURL="http://${SERVICE_URL}:8080/webhook"
