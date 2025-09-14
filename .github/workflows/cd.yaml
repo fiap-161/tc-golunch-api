@@ -1,0 +1,85 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: ["master"]
+  # pull_request:
+  #   branches: ["master"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar credenciais AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Obter AWS Account ID
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "ACCOUNT_ID=$ACCOUNT_ID" >> $GITHUB_ENV
+
+      - name: Login no ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 \
+            | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+
+      - name: Build da imagem
+        run: |
+          IMAGE_TAG=${GITHUB_SHA}
+          docker build -t golunch:${IMAGE_TAG} .
+          docker tag golunch:${IMAGE_TAG} $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch:${IMAGE_TAG}
+          docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch:${IMAGE_TAG}
+
+      - name: Configurar kubectl para o EKS
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-golunch-terraform-infra
+
+      - name: Verificar se já existe a release instalada
+        id: helm_package
+        run: |
+            helm package goLunch
+            if helm status golunch-api-0.0.1 >/dev/null 2>&1; then
+              echo "Release já existe, fazendo upgrade..."
+              helm upgrade golunch-api-0.0.1 ./goLunch-0.1.0.tgz \
+                --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
+                --set image.tag=$IMAGE_TAG
+            else
+              echo "Release não existe, instalando..."
+              helm install golunch-api-0.0.1 ./goLunch-0.1.0.tgz \
+                --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
+                --set image.tag=$IMAGE_TAG
+            fi
+
+      - name: Obter URL do serviço (LoadBalancer)
+        run: |
+          echo "⏳ Aguardando LoadBalancer atribuir EXTERNAL-IP..."
+          for i in {1..30}; do
+            SERVICE_URL=$(kubectl get svc golunch-api -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+            if [ -n "$SERVICE_URL" ]; then
+              echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+              echo "✅ Encontrado: $SERVICE_URL"
+              exit 0
+            fi
+            echo "Ainda aguardando... ($i/30)"
+            sleep 10
+          done
+          echo "❌ Não foi possível obter EXTERNAL-IP"
+          exit 1
+
+      - name: Deploy com Helm (configmap atualizado)
+        run: |
+          IMAGE_TAG=${GITHUB_SHA}
+          helm upgrade --install golunch-api-0.0.1 ./goLunch \
+            --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
+            --set image.tag=${IMAGE_TAG} \
+            --set app.publicURL="http://${SERVICE_URL}:8080" \
+            --set app.webhookURL="http://${SERVICE_URL}:8080/webhook"
