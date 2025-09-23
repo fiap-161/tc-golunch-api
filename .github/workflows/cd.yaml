@@ -75,7 +75,7 @@ jobs:
               helm install golunch-api-0.0.1 ./goLunch-0.1.0.tgz \
                 --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
                 --set image.tag=$IMAGE_TAG \
-                --set app.db_url=${{ steps.db_secret.outputs.db_url }}
+                --set app.db_url="${{ steps.db_secret.outputs.db_url }}" \
                 --set app.db_user="${{ secrets.DB_USER }}" \
                 --set app.db_password="${{ secrets.DB_PASSWORD }}" \
                 --set app.mp_access_token="${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }}" \
