@@ -33,12 +33,13 @@ jobs:
             | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
 
       - name: Buscar URL do banco de dados
+        id: db_secret
         run: |
           DB_URL=$(aws secretsmanager get-secret-value \
             --secret-id golunch/db-url \
             --query SecretString \
             --output text)
-          echo "AWS_DB_URL=$DB_URL" >> $GITHUB_ENV
+          echo "db_url=$DB_URL" >> $GITHUB_OUTPUT
 
       - name: Build da imagem
         run: |
@@ -65,7 +66,7 @@ jobs:
               helm install golunch-api-0.0.1 ./goLunch-0.1.0.tgz \
                 --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
                 --set image.tag=$IMAGE_TAG \
-                --set app.db_url="$AWS_DB_URL" \
+                --set app.db_url="${{ steps.db_secret.outputs.db_url }}" \
                 --set app.db_user="${{ secrets.DB_USER }}" \
                 --set app.db_password="${{ secrets.DB_PASSWORD }}" \
                 --set app.mp_access_token="${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }}" \
