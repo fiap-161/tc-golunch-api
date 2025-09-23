@@ -58,11 +58,11 @@ affinity: {}
 
 # Variáveis do ConfigMap (injetadas pelo pipeline)
 app:
-  publicURL: ""
-  webhookURL: ""
-  db_url: ""
-  db_user: ""
-  db_password: ""
-  mp_access_token: ""
-  mp_seller_app_user_id: ""
-  secret_key: ""
+  publicURL:
+  webhookURL: 
+  db_url:
+  db_user:
+  db_password:
+  mp_access_token:
+  mp_seller_app_user_id:
+  secret_key:
