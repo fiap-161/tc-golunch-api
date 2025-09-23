@@ -39,7 +39,10 @@ jobs:
             --secret-id golunch/db-url \
             --query SecretString \
             --output text)
-          echo "db_url=$DB_URL" >> $GITHUB_OUTPUT
+            echo "db_url=$DB_URL" >> $GITHUB_OUTPUT
+
+      - name: Debug valor DB_URL
+        run: echo "DB_URL capturado ${{ steps.db_secret.outputs.db_url }}"
 
       - name: Build da imagem
         run: |
@@ -60,7 +63,13 @@ jobs:
               echo "Release já existe, fazendo upgrade..."
               helm upgrade golunch-api-0.0.1 ./goLunch-0.1.0.tgz \
                 --set image.repository=$ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/golunch \
-                --set image.tag=$IMAGE_TAG
+                --set image.tag=$IMAGE_TAG \
+                --set app.db_url="${{ steps.db_secret.outputs.db_url }}" \
+                --set app.db_user="${{ secrets.DB_USER }}" \
+                --set app.db_password="${{ secrets.DB_PASSWORD }}" \
+                --set app.mp_access_token="${{ secrets.MERCADO_PAGO_ACCESS_TOKEN }}" \
+                --set app.mp_seller_app_user_id="${{ secrets.MERCADO_PAGO_SELLER_APP_USER_ID }}" \
+                --set app.secret_key="${{ secrets.SECRET_KEY }}"
             else
               echo "Release não existe, instalando..."
               helm install golunch-api-0.0.1 ./goLunch-0.1.0.tgz \
