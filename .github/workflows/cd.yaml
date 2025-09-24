@@ -55,6 +55,9 @@ jobs:
         run: |
           aws eks update-kubeconfig --region us-east-1 --name eks-golunch-terraform-infra
 
+      - name: Deletar Secret antigo
+        run: kubectl delete secret app-secrets --ignore-not-found
+
       - name: Verificar se já existe a release instalada
         id: helm_package
         run: |
