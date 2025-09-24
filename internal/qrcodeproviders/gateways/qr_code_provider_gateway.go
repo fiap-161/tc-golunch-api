@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/dtos"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/entities"
 	external2 "github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/external"
 	"github.com/fiap-161/tech-challenge-fiap161/internal/qrcodeproviders/presenters"
-	"os"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
@@ -67,9 +68,14 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.Ge
 	res, reqErr := m.client.Post(resolvedPath, requestBody, &responseDTO)
 
 	if res != nil && res.IsError() {
-		fmt.Println(res.Error())
+		fmt.Println("❌ Erro na chamada MercadoPago")
+		fmt.Println("Status Code:", res.StatusCode())
+		fmt.Println("Status:", res.Status())
+		fmt.Println("Request URL:", res.Request.URL)
+		fmt.Println("Response Body:", string(res.Body()))
 		return "", errors.New("error in request, endpoint called: " + res.Request.URL)
 	}
+
 	if reqErr != nil {
 		return "", reqErr
 	}
