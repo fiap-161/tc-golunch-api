@@ -57,9 +57,13 @@ jobs:
 
       - name: Criar Secret manualmente
         run: |
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=${{ steps.db_secret.outputs.db_url }}
+
           kubectl delete secret app-secrets --ignore-not-found
           kubectl create secret generic app-secrets \
-            --from-literal=DATABASE_URL="postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ steps.db_secret.outputs.db_url }}:5432/golunchDB?sslmode=require" \
+            --from-literal=DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/golunchDB?sslmode=require" \
             --from-literal=POSTGRES_USER="${{ secrets.DB_USER }}" \
             --from-literal=POSTGRES_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             --from-literal=POSTGRES_DB="golunchDB" \
