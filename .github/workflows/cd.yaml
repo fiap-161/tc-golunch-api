@@ -110,3 +110,7 @@ jobs:
             --set image.tag=${IMAGE_TAG} \
             --set app.publicURL="http://${SERVICE_URL}:8080" \
             --set app.webhookURL="http://${SERVICE_URL}:8080/webhook/payment/check"
+
+      - name: Atualizando pods
+        run: |
+          kubectl rollout restart deployment golunch-api 
