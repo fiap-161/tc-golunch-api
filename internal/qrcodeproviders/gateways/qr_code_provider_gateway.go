@@ -68,11 +68,15 @@ func (m *MercadoPagoClient) GenerateQRCode(_ context.Context, params entities.Ge
 	res, reqErr := m.client.Post(resolvedPath, requestBody, &responseDTO)
 
 	if res != nil && res.IsError() {
+		fmt.Println(" ")
 		fmt.Println("❌ Erro na chamada MercadoPago")
 		fmt.Println("Status Code:", res.StatusCode())
 		fmt.Println("Status:", res.Status())
 		fmt.Println("Request URL:", res.Request.URL)
 		fmt.Println("Response Body:", string(res.Body()))
+		fmt.Println("*** Notification URL: ", requestBody.NotificationURL)
+		fmt.Println(" ")
+
 		return "", errors.New("error in request, endpoint called: " + res.Request.URL)
 	}
 
