@@ -1,5 +1,5 @@
 
-# 🍔 Repositório da aplicação + manifestos k8s - GoLunch API
+#  Repositório da aplicação + manifestos k8s - GoLunch API
 
 API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquitetura da aplicação segue princípios da arquitetura hexagonal, com foco na separação entre os domínios.
 
