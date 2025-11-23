@@ -1,0 +1,802 @@
+{
+  "info": {
+    "name": "GoLunch API - Complete",
+    "description": "Collection completa da API GoLunch com todas as rotas, payloads corretos e organizada por seções",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearer_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "description": "Endpoints para gerenciamento de administradores",
+      "item": [
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/register",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@golunch.com\",\n  \"password\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"bearer_token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@golunch.com\",\n  \"password\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "description": "Endpoints para gerenciamento de clientes",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/register",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"cpf\": \"12345678900\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Identify by CPF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"bearer_token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/customer/identify/:cpf",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "identify", ":cpf"],
+              "variable": [
+                {
+                  "key": "cpf",
+                  "value": "12345678900",
+                  "description": "CPF do cliente"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Anonymous Identify",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"bearer_token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/customer/anonymous",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "anonymous"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Endpoints para gerenciamento de produtos",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/product/categories",
+              "host": ["{{base_url}}"],
+              "path": ["product", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/product",
+              "host": ["{{base_url}}"],
+              "path": ["product"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Products by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/product?category=MEAL",
+              "host": ["{{base_url}}"],
+              "path": ["product"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "MEAL",
+                  "description": "Valores: MEAL, SIDE, DRINK, DESSERT"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product",
+              "host": ["{{base_url}}"],
+              "path": ["product"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"X-Burger Deluxe\",\n  \"price\": 25.90,\n  \"description\": \"Hambúrguer artesanal com queijo, alface, tomate e molho especial\",\n  \"preparing_time\": 15,\n  \"category\": \"MEAL\",\n  \"image_url\": \"https://example.com/images/x-burger.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product/:id",
+              "host": ["{{base_url}}"],
+              "path": ["product", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{product_id}}",
+                  "description": "ID do produto (UUID)"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"X-Burger Premium\",\n  \"price\": 29.90,\n  \"description\": \"Hambúrguer artesanal premium com queijo, bacon, alface, tomate e molho especial\",\n  \"preparing_time\": 20,\n  \"category\": \"MEAL\",\n  \"image_url\": \"https://example.com/images/x-burger-premium.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/product/:id",
+              "host": ["{{base_url}}"],
+              "path": ["product", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{product_id}}",
+                  "description": "ID do produto (UUID)"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Product Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/product/image/upload",
+              "host": ["{{base_url}}"],
+              "path": ["product", "image", "upload"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "",
+                  "description": "Arquivo de imagem (JPEG ou PNG, máx 5MB)"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "description": "Endpoints para gerenciamento de pedidos",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.qr_code) {",
+                  "        pm.collectionVariables.set(\"qr_code\", jsonData.qr_code);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order",
+              "host": ["{{base_url}}"],
+              "path": ["order"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\n    {\n      \"product_id\": \"{{product_id}}\",\n      \"quantity\": 2\n    },\n    {\n      \"product_id\": \"{{product_id_2}}\",\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order",
+              "host": ["{{base_url}}"],
+              "path": ["order"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order?id={{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["order"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{order_id}}",
+                  "description": "ID do pedido (UUID)"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": ["{{base_url}}"],
+              "path": ["order", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{order_id}}",
+                  "description": "ID do pedido (UUID)"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_preparation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Panel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/order/panel",
+              "host": ["{{base_url}}"],
+              "path": ["order", "panel"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "description": "Endpoints para gerenciamento de pagamentos",
+      "item": [
+        {
+          "name": "Webhook Payment Check",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/webhook/payment/check",
+              "host": ["{{base_url}}"],
+              "path": ["webhook", "payment", "check"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": \"https://api.mercadolibre.com/merchant_orders/31445486889\",\n  \"topic\": \"merchant_order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Examples",
+      "description": "Exemplos de diferentes categorias de produtos",
+      "item": [
+        {
+          "name": "Create Product - MEAL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product",
+              "host": ["{{base_url}}"],
+              "path": ["product"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"X-Burger\",\n  \"price\": 25.90,\n  \"description\": \"Hambúrguer artesanal com queijo, alface e tomate\",\n  \"preparing_time\": 15,\n  \"category\": \"MEAL\",\n  \"image_url\": \"https://example.com/images/x-burger.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product - SIDE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product",
+              "host": ["{{base_url}}"],
+              "path": ["product"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Batata Frita Grande\",\n  \"price\": 12.90,\n  \"description\": \"Porção grande de batatas fritas crocantes\",\n  \"preparing_time\": 8,\n  \"category\": \"SIDE\",\n  \"image_url\": \"https://example.com/images/fries.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product - DRINK",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product",
+              "host": ["{{base_url}}"],
+              "path": ["product"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Coca-Cola 350ml\",\n  \"price\": 5.50,\n  \"description\": \"Refrigerante Coca-Cola lata 350ml\",\n  \"preparing_time\": 1,\n  \"category\": \"DRINK\",\n  \"image_url\": \"https://example.com/images/coca-cola.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product - DESSERT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product",
+              "host": ["{{base_url}}"],
+              "path": ["product"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sorvete de Chocolate\",\n  \"price\": 8.90,\n  \"description\": \"Sorvete artesanal de chocolate belga\",\n  \"preparing_time\": 3,\n  \"category\": \"DESSERT\",\n  \"image_url\": \"https://example.com/images/ice-cream.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status - Received",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": ["{{base_url}}"],
+              "path": ["order", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{order_id}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"received\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status - In Preparation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": ["{{base_url}}"],
+              "path": ["order", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{order_id}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_preparation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status - Ready",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": ["{{base_url}}"],
+              "path": ["order", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{order_id}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ready\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status - Completed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/:id",
+              "host": ["{{base_url}}"],
+              "path": ["order", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{order_id}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "bearer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "product_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "product_id_2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "qr_code",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
