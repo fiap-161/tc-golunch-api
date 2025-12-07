@@ -3,7 +3,7 @@
 
 API desenvolvida em Go para gerenciamento de pedidos em uma lanchonete. A arquitetura da aplicação segue princípios da arquitetura hexagonal, com foco na separação entre os domínios.
 
-### 🎥 Link para o vídeo detalhando o projeto: TO DO
+### 🎥 Link para o vídeo detalhando o projeto: 
   
 
 ## 🏛️ [Link Excalidraw - Arquitetura k8s + Fluxos funcionais](https://excalidraw.com/#room=19187e25c8f502969730,UYsX9MelEMWQAT8VN4Marg)
